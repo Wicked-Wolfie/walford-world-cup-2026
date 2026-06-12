@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walford World Cup Syndicate 2026</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="site-bg"></div>
+
+<header class="topbar">
+  <div class="brand"><span>🏆</span><strong>Walford Syndicate</strong></div>
+  <nav>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#results">Results</a>
+    <a href="#draw">Draw</a>
+    <a href="#teams">Teams</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-copy">
+    <p class="kicker">FIFA World Cup 2026 • Family Sweepstake HQ</p>
+    <h1>The Walford World Cup Syndicate</h1>
+    <p class="subtitle">A daily-results fantasy ownership league with live standings, banter, bonus points, and eternal bragging rights.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#results">Enter a Result</a>
+      <a class="btn secondary" href="#dashboard">View Leaderboard</a>
+    </div>
+  </div>
+  <div class="trophy-card">
+    <div class="trophy">🏆</div>
+    <p>Current Champion</p>
+    <h2 id="heroLeader">Awaiting kick-off</h2>
+    <span id="heroPoints">0 pts</span>
+  </div>
+</section>
+
+<main>
+<section id="dashboard" class="section">
+  <div class="section-head">
+    <p class="kicker">Live Competition Centre</p>
+    <h2>Dashboard</h2>
+  </div>
+  <div class="stats-grid">
+    <article class="stat-card"><span>Leader</span><strong id="statLeader">—</strong></article>
+    <article class="stat-card"><span>Matches Entered</span><strong id="statMatches">0</strong></article>
+    <article class="stat-card"><span>Top Team</span><strong id="statTeam">—</strong></article>
+    <article class="stat-card"><span>Teams Alive</span><strong id="statAlive">48</strong></article>
+  </div>
+  <div class="dashboard-grid">
+    <article class="panel">
+      <h3>📈 Leaderboard</h3>
+      <div id="leaderboard" class="leaderboard"></div>
+    </article>
+    <article class="panel">
+      <h3>🎭 Banter Index</h3>
+      <div class="banter-list">
+        <div><span>Current favourite</span><strong id="favourite">—</strong></div>
+        <div><span>Biggest flop</span><strong id="flop">—</strong></div>
+        <div><span>David's Miracle Watch™</span><strong id="davidWatch">—</strong></div>
+        <div><span>England Watch™</span><strong id="englandWatch">—</strong></div>
+        <div><span>Team of the Tournament</span><strong id="teamTournament">—</strong></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="results" class="section">
+  <div class="section-head">
+    <p class="kicker">Daily Match Entry</p>
+    <h2>Match Results</h2>
+    <p>Enter the score once. The site automatically awards 3 points for a win, 1 for a draw, and 0 for a loss.</p>
+  </div>
+  <article class="panel">
+    <form id="resultForm" class="result-form">
+      <input type="date" id="date">
+      <select id="teamA"></select>
+      <input type="number" id="scoreA" min="0" placeholder="0">
+      <span class="versus">v</span>
+      <input type="number" id="scoreB" min="0" placeholder="0">
+      <select id="teamB"></select>
+      <button class="btn primary" type="submit">Add Result</button>
+    </form>
+    <div id="resultsList" class="results-list"></div>
+  </article>
+</section>
+
+<section id="draw" class="section">
+  <div class="section-head">
+    <p class="kicker">Locked Allocation</p>
+    <h2>Sweepstake Draw</h2>
+  </div>
+  <div id="drawGrid" class="draw-grid"></div>
+</section>
+
+<section id="teams" class="section">
+  <div class="section-head">
+    <p class="kicker">All 48 Nations</p>
+    <h2>Team Tracker</h2>
+  </div>
+  <article class="panel">
+    <input id="search" class="search" placeholder="Search team or owner">
+    <div id="teamTable" class="team-table"></div>
+  </article>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <p class="kicker">Tournament Bonuses</p>
+    <h2>Knockout Progress</h2>
+    <p>Use these when teams reach the knockout rounds. Bonuses stack with daily match points.</p>
+  </div>
+  <article class="panel">
+    <div id="bonusGrid" class="bonus-grid"></div>
+  </article>
+</section>
+
+<section class="poster-section">
+  <div class="poster-card">
+    <p class="kicker">Official Poster</p>
+    <h2>Fortuna Favet Fortibus</h2>
+    <p>Fortune Favours the Bold</p>
+    <div id="posterDraw" class="poster-draw"></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <strong>Walford World Cup Syndicate 2026</strong>
+  <span>Built for daily drama, dubious predictions, and family glory.</span>
+</footer>
+
+<script>
+window.TEAMS = [{"flag": "🇺🇸", "team": "United States", "owner": "Myles"}, {"flag": "🇲🇽", "team": "Mexico", "owner": "Myles"}, {"flag": "🇨🇦", "team": "Canada", "owner": "Charlotte"}, {"flag": "🇯🇵", "team": "Japan", "owner": "Debbie"}, {"flag": "🇮🇷", "team": "Iran", "owner": "Marnie"}, {"flag": "🇰🇷", "team": "South Korea", "owner": "Matt"}, {"flag": "🇦🇺", "team": "Australia", "owner": "Debbie"}, {"flag": "🇸🇦", "team": "Saudi Arabia", "owner": "Debbie"}, {"flag": "🇶🇦", "team": "Qatar", "owner": "Matt"}, {"flag": "🇺🇿", "team": "Uzbekistan", "owner": "Charlotte"}, {"flag": "🇯🇴", "team": "Jordan", "owner": "David"}, {"flag": "🇮🇶", "team": "Iraq", "owner": "Dan"}, {"flag": "🇦🇷", "team": "Argentina", "owner": "Debbie"}, {"flag": "🇧🇷", "team": "Brazil", "owner": "Matt"}, {"flag": "🇺🇾", "team": "Uruguay", "owner": "Marnie"}, {"flag": "🇨🇴", "team": "Colombia", "owner": "Marnie"}, {"flag": "🇪🇨", "team": "Ecuador", "owner": "Charlotte"}, {"flag": "🇵🇾", "team": "Paraguay", "owner": "Debbie"}, {"flag": "🇳🇿", "team": "New Zealand", "owner": "David"}, {"flag": "🇲🇦", "team": "Morocco", "owner": "Charlotte"}, {"flag": "🇸🇳", "team": "Senegal", "owner": "Myles"}, {"flag": "🇪🇬", "team": "Egypt", "owner": "Matt"}, {"flag": "🇩🇿", "team": "Algeria", "owner": "Marnie"}, {"flag": "🇹🇳", "team": "Tunisia", "owner": "David"}, {"flag": "🇿🇦", "team": "South Africa", "owner": "Marnie"}, {"flag": "🇨🇮", "team": "Ivory Coast", "owner": "Debbie"}, {"flag": "🇬🇭", "team": "Ghana", "owner": "Myles"}, {"flag": "🇨🇻", "team": "Cape Verde", "owner": "Charlotte"}, {"flag": "🇨🇩", "team": "DR Congo", "owner": "Dan"}, {"flag": "🏴", "team": "England", "owner": "Charlotte"}, {"flag": "🇫🇷", "team": "France", "owner": "Dan"}, {"flag": "🇪🇸", "team": "Spain", "owner": "Marnie"}, {"flag": "🇩🇪", "team": "Germany", "owner": "Matt"}, {"flag": "🇵🇹", "team": "Portugal", "owner": "Dan"}, {"flag": "🇳🇱", "team": "Netherlands", "owner": "Myles"}, {"flag": "🇧🇪", "team": "Belgium", "owner": "Myles"}, {"flag": "🇭🇷", "team": "Croatia", "owner": "Charlotte"}, {"flag": "🇨🇭", "team": "Switzerland", "owner": "Dan"}, {"flag": "🇦🇹", "team": "Austria", "owner": "Matt"}, {"flag": "🏴", "team": "Scotland", "owner": "Myles"}, {"flag": "🇳🇴", "team": "Norway", "owner": "David"}, {"flag": "🇧🇦", "team": "Bosnia and Herzegovina", "owner": "Debbie"}, {"flag": "🇸🇪", "team": "Sweden", "owner": "Dan"}, {"flag": "🇹🇷", "team": "Türkiye", "owner": "Marnie"}, {"flag": "🇨🇿", "team": "Czechia", "owner": "David"}, {"flag": "🇵🇦", "team": "Panama", "owner": "Dan"}, {"flag": "🇨🇼", "team": "Curacao", "owner": "David"}, {"flag": "🇭🇹", "team": "Haiti", "owner": "Matt"}];
+</script>
+<script src="app.js"></script>
+</body>
+</html>
