@@ -1,21 +1,20 @@
-# Walford V5.5.3 Alphabetical Dropdowns
+# Walford V5.5.4 Alphabetical Player Lists
 
 Upload/replace:
-- app.js
 - match-scorers-admin.js
+- squad-hub.js
 
 What this fixes:
-- Main Match Centre Team A / Team B dropdowns are alphabetical.
-- Fixture Team A / Team B dropdowns are alphabetical.
-- Golden Boot team dropdown is alphabetically cleaned up after it renders.
-- V5.5 Match Result + Scorers combined admin dropdowns are alphabetical.
-- Scorer-row team dropdowns are alphabetical too.
+- Player autocomplete in Match Result + Scorers now sorts alphabetically by player name.
+- It no longer follows shirt/squad number order.
+- Golden Boot player datalists also get a safety sort after rendering.
 
 No Supabase changes needed.
 
 After upload:
-1. Commit the files.
+1. Commit both files.
 2. Wait for GitHub Pages green tick.
-3. Open the site.
-4. Press Ctrl + Shift + R.
-5. Open Admin and check the team dropdowns start around Argentina / Australia / Belgium rather than United States.
+3. Press Ctrl + Shift + R.
+4. Go to Admin > Match Result + Scorers.
+5. Choose a team and open the player field.
+6. Players should now be alphabetical.

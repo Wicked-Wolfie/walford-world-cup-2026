@@ -1,4 +1,4 @@
-// Walford V5.5 Match Result + Scorers Combined Admin
+// Walford V5.5.4 Match Result + Scorers Combined Admin - alphabetical players
 // Add-on file. Uses existing results and goal_scorers tables.
 // Adds a combined admin panel so match result and scorers can be saved together.
 
@@ -81,7 +81,7 @@
       .from("squad_players")
       .select("team,player_name,shirt_name,position,club,squad_number")
       .order("team", { ascending: true })
-      .order("squad_number", { ascending: true });
+      .order("player_name", { ascending: true });
 
     if (!error && data) {
       msPlayers = data;
@@ -206,7 +206,13 @@
   }
 
   function msPlayerOptionsForTeam(teamName) {
-    const rows = msPlayers.filter(p => p.team === teamName);
+    const rows = msPlayers
+      .filter(p => p.team === teamName)
+      .slice()
+      .sort((a, b) =>
+        String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" })
+      );
+
     return rows
       .map(p => `<option value="${msEsc(p.player_name)}" label="${msEsc(`#${p.squad_number || ""} ${p.position || ""} ${p.club || ""}`)}"></option>`)
       .join("");

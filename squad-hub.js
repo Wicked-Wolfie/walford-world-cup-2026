@@ -68,7 +68,10 @@
     if (!db) return;
 
     const [playersResult, coachesResult] = await Promise.all([
-      db.from("squad_players").select("*").order("team", { ascending: true }).order("squad_number", { ascending: true }),
+      db.from("squad_players")
+      .select("*")
+      .order("team", { ascending: true })
+      .order("player_name", { ascending: true }),
       db.from("head_coaches").select("*").order("team", { ascending: true })
     ]);
 
@@ -343,5 +346,36 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     setTimeout(shStart, 2600);
+  });
+})();
+
+// Walford V5.5.4 Alphabetical Player Datalist Safety Net
+(function () {
+  function sortDatalist(datalist) {
+    if (!datalist || datalist.dataset.walfordPlayerSorted === "yes") return;
+    const options = Array.from(datalist.querySelectorAll("option"));
+    if (options.length < 2) return;
+
+    options
+      .sort((a, b) =>
+        String(a.value || a.textContent || "").localeCompare(String(b.value || b.textContent || ""), "en", { sensitivity: "base" })
+      )
+      .forEach(option => datalist.appendChild(option));
+
+    datalist.dataset.walfordPlayerSorted = "yes";
+  }
+
+  function sortPlayerDatalists() {
+    document.querySelectorAll("datalist").forEach(sortDatalist);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(sortPlayerDatalists, 1200);
+    setTimeout(sortPlayerDatalists, 3000);
+    setTimeout(sortPlayerDatalists, 5500);
+  });
+
+  window.addEventListener("walford:goldenboot-rendered", () => {
+    setTimeout(sortPlayerDatalists, 100);
   });
 })();
