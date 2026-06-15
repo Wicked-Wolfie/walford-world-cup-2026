@@ -1,0 +1,88 @@
+/* V3.6 Knockout Bracket */
+.bracket-panel {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(220px, 1fr));
+  gap: 18px;
+  align-items: start;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.bracket-round {
+  min-width: 220px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
+  border-radius: 26px;
+  padding: 18px;
+}
+
+.bracket-round h3 {
+  margin: 0 0 14px;
+  color: var(--gold2);
+  font-size: 1.2rem;
+}
+
+.bracket-list {
+  display: grid;
+  gap: 12px;
+}
+
+.bracket-match {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(0,0,0,.18);
+  padding: 12px;
+}
+
+.bracket-match small {
+  display: block;
+  color: var(--gold);
+  font-weight: 900;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .68rem;
+}
+
+.bracket-team {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.bracket-team span:last-child {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.winner-card {
+  margin-top: 16px;
+  border: 1px solid rgba(215,173,71,.45);
+  background: rgba(215,173,71,.08);
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.winner-card span {
+  display: block;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .72rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.winner-card strong {
+  color: var(--gold2);
+  font-size: 1.15rem;
+}
+
+@media(max-width: 1200px) {
+  .bracket-panel {
+    grid-template-columns: repeat(5, 240px);
+  }
+}
