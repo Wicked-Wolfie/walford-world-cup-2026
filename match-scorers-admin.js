@@ -72,7 +72,9 @@
     const session = await db.auth.getSession();
     msSession = session?.data?.session || null;
 
-    msTeams = msFallbackTeams();
+    msTeams = msFallbackTeams().slice().sort((a, b) =>
+      String(a.team || "").localeCompare(String(b.team || ""), "en", { sensitivity: "base" })
+    ); // Walford V5.5.3: keep combined admin team dropdowns alphabetical
 
     // Pull squad players if the V5 Squad Hub table exists. If not, the form still works manually.
     const { data, error } = await db
