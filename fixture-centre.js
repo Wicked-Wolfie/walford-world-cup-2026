@@ -1,6 +1,6 @@
-// Walford V4.1 Fixture Centre Future Starts After Today
+// Walford V4.2 Fixture Centre Local Date Fix
 // Replaces fixture-centre.js only.
-// Keeps app.js, Supabase, Admin and results untouched.
+// Fixes UTC date issue so Future Fixtures starts after the real local date.
 
 const WALFORD_FIXTURE_DATES = [
   "2026-06-11","2026-06-12","2026-06-13","2026-06-14","2026-06-15",
@@ -10,7 +10,11 @@ const WALFORD_FIXTURE_DATES = [
 ];
 
 function walfordIsoToday() {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 function walfordDisplayDate(iso) {
