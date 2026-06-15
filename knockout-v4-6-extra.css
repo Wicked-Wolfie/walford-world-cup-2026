@@ -1,0 +1,30 @@
+/* Walford V4.6 Knockout Resolved Rounds polish */
+.wk-team.waiting span {
+  color: var(--muted);
+}
+
+.wk-champion-card {
+  margin-top: 18px;
+  border: 1px solid rgba(215,173,71,.55);
+  background: rgba(215,173,71,.1);
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.wk-champion-card span,
+.wk-champion-card em {
+  display: block;
+  color: var(--muted);
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .72rem;
+}
+
+.wk-champion-card strong {
+  display: block;
+  color: var(--gold2);
+  font-size: 1.2rem;
+  margin: 8px 0;
+}

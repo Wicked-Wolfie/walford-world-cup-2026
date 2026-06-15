@@ -1,6 +1,7 @@
-// Walford V4.5 Knockout Bracket with Winner Progression
+// Walford V4.6 Knockout Bracket Resolved Rounds
 // Replaces knockout-auto.js only.
-// Requires knockout_results table in Supabase.
+// Requires knockout_results table from V4.5.
+// Improves display so saved winners appear throughout later rounds.
 
 const WALFORD_KNOCKOUT = {
   r32: [
@@ -83,7 +84,10 @@ function wkOwner(teamName) {
 }
 
 function wkCleanTeamName(label) {
-  return String(label || "").replace(/^[^\wA-ZÀ-ž]+/u, "").trim();
+  return String(label || "")
+    .replace(/^[^\wA-ZÀ-ž]+/u, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function wkGroupStatsSafe() {
@@ -99,21 +103,23 @@ function wkGroupTop(groupLetter, position) {
   return groupRows[position - 1] || null;
 }
 
-function wkResolveSlot(slot) {
-  const winnerRef = slot.match(/^Winner (M\d+|FINAL)$/);
+function wkResolveSlot(slot, depth = 0) {
+  if (depth > 6) return slot;
+
+  const winnerRef = String(slot).match(/^Winner (M\d+|FINAL)$/);
   if (winnerRef) {
     const result = wkResults[winnerRef[1]];
     if (result && result.winner) return result.winner;
     return slot;
   }
 
-  const groupWinner = slot.match(/^Group ([A-L]) Winner$/);
+  const groupWinner = String(slot).match(/^Group ([A-L]) Winner$/);
   if (groupWinner) {
     const team = wkGroupTop(groupWinner[1], 1);
     return team ? team.team : slot;
   }
 
-  const groupRunner = slot.match(/^Group ([A-L]) Runner-up$/);
+  const groupRunner = String(slot).match(/^Group ([A-L]) Runner-up$/);
   if (groupRunner) {
     const team = wkGroupTop(groupRunner[1], 2);
     return team ? team.team : slot;
@@ -122,21 +128,26 @@ function wkResolveSlot(slot) {
   return slot;
 }
 
+function wkIsPlaceholder(label) {
+  return /^Winner /.test(label) || /^Group /.test(label) || label === "Best 3rd Place" || label === "TBC";
+}
+
 function wkIsRealTeam(label) {
-  return !/^Winner /.test(label) && !/^Group /.test(label) && label !== "Best 3rd Place" && label !== "TBC";
+  return !wkIsPlaceholder(label);
 }
 
 function wkTeamLine(label, matchResult, side) {
   const resolved = wkResolveSlot(label);
-  const real = wkIsRealTeam(resolved);
   const clean = wkCleanTeamName(resolved);
+  const real = wkIsRealTeam(resolved);
   const resultScore = matchResult ? (side === "a" ? matchResult.score_a : matchResult.score_b) : null;
   const isWinner = matchResult && matchResult.winner === clean;
   const ownerText = real ? wkOwner(clean) : "TBC";
   const icon = real ? wkFlag(clean) : "";
+  const waitingClass = real ? "" : "waiting";
 
   return `
-    <div class="wk-team ${isWinner ? "winner" : ""}">
+    <div class="wk-team ${isWinner ? "winner" : ""} ${waitingClass}">
       <span>${icon} ${clean}</span>
       <em>${resultScore !== null && resultScore !== undefined ? resultScore : ownerText}</em>
     </div>
@@ -210,7 +221,28 @@ function wkRenderBracket() {
     ${wkRound("Final", "final")}
   `;
 
+  wkRenderChampion();
   wkRenderAdmin();
+}
+
+function wkRenderChampion() {
+  const finalResult = wkResults.FINAL;
+  const finalRound = document.querySelector(".wk-round:last-child");
+  if (!finalRound) return;
+
+  let champion = document.getElementById("wkChampionCard");
+  if (!champion) {
+    champion = document.createElement("div");
+    champion.id = "wkChampionCard";
+    champion.className = "wk-champion-card";
+    finalRound.appendChild(champion);
+  }
+
+  if (finalResult && finalResult.winner) {
+    champion.innerHTML = `<span>Champion</span><strong>${wkFlag(finalResult.winner)} ${finalResult.winner}</strong><em>${wkOwner(finalResult.winner)}</em>`;
+  } else {
+    champion.innerHTML = `<span>Projected Champion</span><strong>Awaiting Final</strong><em>TBC</em>`;
+  }
 }
 
 function wkResolvedMatchTeams(code) {

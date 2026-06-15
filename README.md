@@ -1,12 +1,10 @@
-# Walford V4.5 Knockout Progression
+# Walford V4.6 Knockout Resolved Rounds
 
-Step 1:
-Run knockout_results_table.sql in Supabase SQL Editor.
-
-Step 2:
 Upload/replace:
 - knockout-auto.js
-- knockout-auto.css
+
+Optional:
+- paste knockout-v4-6-extra.css at the bottom of knockout-auto.css
 
 Do not replace:
 - index.html
@@ -16,8 +14,7 @@ Do not replace:
 - fixture-centre.css
 - config.js
 
-What it adds:
-- Knockout result storage
-- Knockout admin entry panel when signed in
-- Winner progression into later rounds
-- Played match highlighting
+What it improves:
+- Saved winners resolve through later rounds.
+- Round of 16/Quarter/Semi/Final slots display real team names as soon as previous winners are saved.
+- Adds a champion/projected champion card.
