@@ -1,22 +1,19 @@
-# Walford V5.7.1 Walford TV Embed Block Fix
+# Walford V5.7.2 Wide Layout Polish
 
 Upload/replace:
 - index.html
-- walford-tv.css
 
-Why:
-- The YouTube video is showing "Video unavailable" because the video/playlist content blocks playback inside embedded players.
-- This patch changes Walford TV from an embedded player into a reliable YouTube launcher card.
+Upload this new file:
+- v5-7-2-wide-layout.css
 
-What changes:
-- The TV section now shows a clickable preview card.
-- Clicking it opens the YouTube video/playlist directly on YouTube:
-  https://www.youtube.com/watch?v=1R-snvCDsco&list=PLPc9-Pu8oghQ
-- No MP4 files are needed.
-- You can still add videos to the YouTube playlist later.
+What this fixes:
+- Centres the whole site on large screens.
+- Stops the full-page screenshot looking tiny and stuck to the left.
+- Uses the screen better for Hero, Walford TV, standings, and Squad Hub.
+- Keeps mobile/tablet layouts stacked.
 
 After upload:
-1. Commit files.
+1. Commit index.html and v5-7-2-wide-layout.css.
 2. Wait for GitHub Pages green tick.
 3. Press Ctrl + Shift + R.
-4. Click the Walford TV preview card.
+4. Take another full-page screenshot in Chrome.

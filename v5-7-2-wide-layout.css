@@ -1,0 +1,106 @@
+/* Walford V5.7.2 Wide Layout Polish */
+
+/* Centre the whole site on wide screens.
+   This fixes the full-page screenshot where everything sits too far left. */
+
+:root {
+  --walford-page-max: 1560px;
+  --walford-page-gutter: clamp(16px, 3vw, 42px);
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Main page containers */
+.nav,
+.hero,
+main,
+footer {
+  width: min(var(--walford-page-max), calc(100% - (var(--walford-page-gutter) * 2)));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* The nav itself is fixed/sticky styled already, so keep it full visual width if original styles require it,
+   but centre its inner content by limiting usable width. */
+.nav {
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: var(--walford-page-max);
+  box-sizing: border-box;
+}
+
+/* Hero: use the available width better */
+.hero {
+  grid-template-columns: minmax(360px, 1.25fr) minmax(260px, .75fr);
+  gap: clamp(20px, 3vw, 42px);
+}
+
+/* Major two-column sections should breathe on desktop */
+.two-col {
+  grid-template-columns: minmax(420px, 1fr) minmax(520px, 1fr);
+  gap: 20px;
+}
+
+.summary-grid {
+  gap: 16px;
+}
+
+/* Walford TV: make the card feel intentional at full page width */
+.walford-tv-card {
+  grid-template-columns: minmax(320px, .75fr) minmax(620px, 1.35fr);
+  gap: 22px;
+}
+
+/* Squad Hub: give the player list more useful space without making side panels silly wide */
+.sh-grid {
+  grid-template-columns: 320px minmax(620px, 1fr) 320px;
+}
+
+/* Tables/cards: no accidental tiny centralisation */
+.panel,
+.gb-panel,
+.sh-panel,
+.ms-panel,
+.home-ko-card,
+.walford-tv-card {
+  box-sizing: border-box;
+}
+
+/* Knockout bracket: keep it contained but visually centred */
+.wk-bracket-wrap,
+.wk-bracket {
+  width: 100%;
+}
+
+/* Very large monitors: don't let text lines become ridiculous */
+@media(min-width: 1700px) {
+  :root {
+    --walford-page-max: 1640px;
+  }
+}
+
+/* Laptop/tablet fallback */
+@media(max-width: 1100px) {
+  .hero,
+  .two-col,
+  .walford-tv-card,
+  .sh-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nav {
+    transform: translateX(-50%);
+  }
+}
+
+/* Mobile */
+@media(max-width: 760px) {
+  .nav,
+  .hero,
+  main,
+  footer {
+    width: calc(100% - 24px);
+  }
+}
