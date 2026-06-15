@@ -1,50 +1,72 @@
-// Walford V4.3 Knockout Bracket Auto Section
-// Separate file. Does not modify app.js or Supabase.
-// Injects a knockout bracket section before Banter and calculates current group position placeholders.
+// Walford V4.5 Knockout Bracket with Winner Progression
+// Replaces knockout-auto.js only.
+// Requires knockout_results table in Supabase.
 
-const WALFORD_KNOCKOUT_MATCHES = {
+const WALFORD_KNOCKOUT = {
   r32: [
-    ["M73", "Group A Runner-up", "Group B Runner-up"],
-    ["M74", "Group E Winner", "Best 3rd Place"],
-    ["M75", "Group F Winner", "Group C Runner-up"],
-    ["M76", "Group C Winner", "Group F Runner-up"],
-    ["M77", "Group I Winner", "Best 3rd Place"],
-    ["M78", "Group E Runner-up", "Group I Runner-up"],
-    ["M79", "Group A Winner", "Best 3rd Place"],
-    ["M80", "Group L Winner", "Best 3rd Place"],
-    ["M81", "Group D Winner", "Best 3rd Place"],
-    ["M82", "Group G Winner", "Best 3rd Place"],
-    ["M83", "Group K Runner-up", "Group L Runner-up"],
-    ["M84", "Group H Winner", "Group J Runner-up"],
-    ["M85", "Group B Winner", "Best 3rd Place"],
-    ["M86", "Group J Winner", "Group H Runner-up"],
-    ["M87", "Group K Winner", "Best 3rd Place"],
-    ["M88", "Group D Runner-up", "Group G Runner-up"]
+    ["M73", "Round of 32", "Group A Runner-up", "Group B Runner-up"],
+    ["M74", "Round of 32", "Group E Winner", "Best 3rd Place"],
+    ["M75", "Round of 32", "Group F Winner", "Group C Runner-up"],
+    ["M76", "Round of 32", "Group C Winner", "Group F Runner-up"],
+    ["M77", "Round of 32", "Group I Winner", "Best 3rd Place"],
+    ["M78", "Round of 32", "Group E Runner-up", "Group I Runner-up"],
+    ["M79", "Round of 32", "Group A Winner", "Best 3rd Place"],
+    ["M80", "Round of 32", "Group L Winner", "Best 3rd Place"],
+    ["M81", "Round of 32", "Group D Winner", "Best 3rd Place"],
+    ["M82", "Round of 32", "Group G Winner", "Best 3rd Place"],
+    ["M83", "Round of 32", "Group K Runner-up", "Group L Runner-up"],
+    ["M84", "Round of 32", "Group H Winner", "Group J Runner-up"],
+    ["M85", "Round of 32", "Group B Winner", "Best 3rd Place"],
+    ["M86", "Round of 32", "Group J Winner", "Group H Runner-up"],
+    ["M87", "Round of 32", "Group K Winner", "Best 3rd Place"],
+    ["M88", "Round of 32", "Group D Runner-up", "Group G Runner-up"]
   ],
   r16: [
-    ["M89", "Winner M74", "Winner M77"],
-    ["M90", "Winner M73", "Winner M75"],
-    ["M91", "Winner M76", "Winner M78"],
-    ["M92", "Winner M79", "Winner M80"],
-    ["M93", "Winner M83", "Winner M84"],
-    ["M94", "Winner M81", "Winner M82"],
-    ["M95", "Winner M86", "Winner M88"],
-    ["M96", "Winner M85", "Winner M87"]
+    ["M89", "Round of 16", "Winner M74", "Winner M77"],
+    ["M90", "Round of 16", "Winner M73", "Winner M75"],
+    ["M91", "Round of 16", "Winner M76", "Winner M78"],
+    ["M92", "Round of 16", "Winner M79", "Winner M80"],
+    ["M93", "Round of 16", "Winner M83", "Winner M84"],
+    ["M94", "Round of 16", "Winner M81", "Winner M82"],
+    ["M95", "Round of 16", "Winner M86", "Winner M88"],
+    ["M96", "Round of 16", "Winner M85", "Winner M87"]
   ],
   qf: [
-    ["M97", "Winner M89", "Winner M90"],
-    ["M98", "Winner M93", "Winner M94"],
-    ["M99", "Winner M91", "Winner M92"],
-    ["M100", "Winner M95", "Winner M96"]
+    ["M97", "Quarter-final", "Winner M89", "Winner M90"],
+    ["M98", "Quarter-final", "Winner M93", "Winner M94"],
+    ["M99", "Quarter-final", "Winner M91", "Winner M92"],
+    ["M100", "Quarter-final", "Winner M95", "Winner M96"]
   ],
   sf: [
-    ["M101", "Winner M97", "Winner M98"],
-    ["M102", "Winner M99", "Winner M100"]
+    ["M101", "Semi-final", "Winner M97", "Winner M98"],
+    ["M102", "Semi-final", "Winner M99", "Winner M100"]
   ],
   final: [
-    ["Final", "Winner M101", "Winner M102"]
+    ["FINAL", "Final", "Winner M101", "Winner M102"]
   ]
 };
+
+let wkResults = {};
+let wkDb = null;
+let wkSession = null;
+
+function wkInitDb() {
+  if (wkDb) return wkDb;
+  if (window.supabase && typeof SUPABASE_URL === "string" && typeof SUPABASE_ANON_KEY === "string") {
+    wkDb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return wkDb;
+}
+
+function wkAllMatches() {
+  return [
+    ...WALFORD_KNOCKOUT.r32,
+    ...WALFORD_KNOCKOUT.r16,
+    ...WALFORD_KNOCKOUT.qf,
+    ...WALFORD_KNOCKOUT.sf,
+    ...WALFORD_KNOCKOUT.final
+  ];
+}
 
 function wkFlag(teamName) {
   try {
@@ -60,6 +82,10 @@ function wkOwner(teamName) {
   return "";
 }
 
+function wkCleanTeamName(label) {
+  return String(label || "").replace(/^[^\wA-ZÀ-ž]+/u, "").trim();
+}
+
 function wkGroupStatsSafe() {
   try {
     if (typeof groupStats === "function") return groupStats();
@@ -70,44 +96,61 @@ function wkGroupStatsSafe() {
 function wkGroupTop(groupLetter, position) {
   const all = wkGroupStatsSafe();
   const groupRows = all.filter(t => t.group === groupLetter);
-  if (!groupRows.length) return null;
   return groupRows[position - 1] || null;
 }
 
 function wkResolveSlot(slot) {
-  const winner = slot.match(/^Group ([A-L]) Winner$/);
-  if (winner) {
-    const team = wkGroupTop(winner[1], 1);
-    if (team) return `${team.flag || wkFlag(team.team)} ${team.team}`;
+  const winnerRef = slot.match(/^Winner (M\d+|FINAL)$/);
+  if (winnerRef) {
+    const result = wkResults[winnerRef[1]];
+    if (result && result.winner) return result.winner;
+    return slot;
   }
 
-  const runner = slot.match(/^Group ([A-L]) Runner-up$/);
-  if (runner) {
-    const team = wkGroupTop(runner[1], 2);
-    if (team) return `${team.flag || wkFlag(team.team)} ${team.team}`;
+  const groupWinner = slot.match(/^Group ([A-L]) Winner$/);
+  if (groupWinner) {
+    const team = wkGroupTop(groupWinner[1], 1);
+    return team ? team.team : slot;
+  }
+
+  const groupRunner = slot.match(/^Group ([A-L]) Runner-up$/);
+  if (groupRunner) {
+    const team = wkGroupTop(groupRunner[1], 2);
+    return team ? team.team : slot;
   }
 
   return slot;
 }
 
-function wkTeamLine(label) {
+function wkIsRealTeam(label) {
+  return !/^Winner /.test(label) && !/^Group /.test(label) && label !== "Best 3rd Place" && label !== "TBC";
+}
+
+function wkTeamLine(label, matchResult, side) {
   const resolved = wkResolveSlot(label);
-  const isPlaceholder = resolved === label;
-  const ownerText = isPlaceholder ? "TBC" : wkOwner(resolved.replace(/^[^\w]*\s?/, ""));
+  const real = wkIsRealTeam(resolved);
+  const clean = wkCleanTeamName(resolved);
+  const resultScore = matchResult ? (side === "a" ? matchResult.score_a : matchResult.score_b) : null;
+  const isWinner = matchResult && matchResult.winner === clean;
+  const ownerText = real ? wkOwner(clean) : "TBC";
+  const icon = real ? wkFlag(clean) : "";
+
   return `
-    <div class="wk-team">
-      <span>${resolved}</span>
-      <em>${ownerText || "TBC"}</em>
+    <div class="wk-team ${isWinner ? "winner" : ""}">
+      <span>${icon} ${clean}</span>
+      <em>${resultScore !== null && resultScore !== undefined ? resultScore : ownerText}</em>
     </div>
   `;
 }
 
 function wkCard(match) {
+  const [code, round, slotA, slotB] = match;
+  const result = wkResults[code];
   return `
-    <article class="wk-match">
-      <small>${match[0]}</small>
-      ${wkTeamLine(match[1])}
-      ${wkTeamLine(match[2])}
+    <article class="wk-match ${result ? "played" : ""}">
+      <small>${code}</small>
+      ${wkTeamLine(slotA, result, "a")}
+      ${wkTeamLine(slotB, result, "b")}
     </article>
   `;
 }
@@ -117,7 +160,7 @@ function wkRound(title, key) {
     <div class="wk-round">
       <h3>${title}</h3>
       <div class="wk-list">
-        ${WALFORD_KNOCKOUT_MATCHES[key].map(wkCard).join("")}
+        ${WALFORD_KNOCKOUT[key].map(wkCard).join("")}
       </div>
     </div>
   `;
@@ -133,21 +176,17 @@ function wkInsertSection() {
     <div class="section-title">
       <span>Road to Glory</span>
       <h2>Knockout Bracket</h2>
-      <p>Round of 32 through to the Final. Group winners and runners-up are projected from the current live group tables.</p>
+      <p>Round of 32 through to the Final. Winners progress automatically when knockout results are saved.</p>
     </div>
 
     <div class="wk-notice">
       <strong>Projection mode:</strong>
-      Bracket slots update from current group standings. Final confirmed places will lock in once the group stage is complete.
+      Group slots come from current group standings. Saved knockout results move winners into the next round.
     </div>
 
-    <div class="wk-bracket">
-      ${wkRound("Round of 32", "r32")}
-      ${wkRound("Round of 16", "r16")}
-      ${wkRound("Quarter-finals", "qf")}
-      ${wkRound("Semi-finals", "sf")}
-      ${wkRound("Final", "final")}
-    </div>
+    <div id="wkAdminPanel" class="wk-admin"></div>
+
+    <div class="wk-bracket"></div>
   `;
 
   const banter = document.getElementById("banter");
@@ -160,10 +199,7 @@ function wkInsertSection() {
 
 function wkRenderBracket() {
   wkInsertSection();
-  const old = document.getElementById("knockout");
-  if (!old) return;
-
-  const bracket = old.querySelector(".wk-bracket");
+  const bracket = document.querySelector("#knockout .wk-bracket");
   if (!bracket) return;
 
   bracket.innerHTML = `
@@ -173,8 +209,126 @@ function wkRenderBracket() {
     ${wkRound("Semi-finals", "sf")}
     ${wkRound("Final", "final")}
   `;
+
+  wkRenderAdmin();
+}
+
+function wkResolvedMatchTeams(code) {
+  const match = wkAllMatches().find(m => m[0] === code);
+  if (!match) return null;
+  const teamA = wkCleanTeamName(wkResolveSlot(match[2]));
+  const teamB = wkCleanTeamName(wkResolveSlot(match[3]));
+  return { code: match[0], round: match[1], teamA, teamB };
+}
+
+async function wkLoadResults() {
+  const db = wkInitDb();
+  if (!db) return;
+
+  const { data: sessionData } = await db.auth.getSession();
+  wkSession = sessionData?.session || null;
+
+  const { data, error } = await db.from("knockout_results").select("*").order("id", { ascending: true });
+  if (error) {
+    console.warn("Knockout results not loaded. Have you run knockout_results_table.sql?", error);
+    wkResults = {};
+    return;
+  }
+
+  wkResults = Object.fromEntries((data || []).map(r => [r.match_code, r]));
+}
+
+function wkAvailableMatches() {
+  return wkAllMatches()
+    .map(m => wkResolvedMatchTeams(m[0]))
+    .filter(m => m && wkIsRealTeam(m.teamA) && wkIsRealTeam(m.teamB));
+}
+
+function wkRenderAdmin() {
+  const admin = document.getElementById("wkAdminPanel");
+  if (!admin) return;
+
+  if (!wkSession) {
+    admin.innerHTML = `
+      <div class="wk-admin-note">
+        Sign in using the main Admin button to enter knockout results.
+      </div>
+    `;
+    return;
+  }
+
+  const options = wkAvailableMatches()
+    .map(m => `<option value="${m.code}">${m.code} — ${m.teamA} v ${m.teamB}</option>`)
+    .join("");
+
+  admin.innerHTML = `
+    <div class="wk-admin-box">
+      <h3>Knockout Result Entry</h3>
+      <form id="wkResultForm">
+        <select id="wkMatchCode">${options}</select>
+        <input id="wkScoreA" type="number" min="0" placeholder="A">
+        <span>v</span>
+        <input id="wkScoreB" type="number" min="0" placeholder="B">
+        <button class="button gold" type="submit">Save Knockout Result</button>
+      </form>
+      <p id="wkStatus" class="status"></p>
+    </div>
+  `;
+
+  const form = document.getElementById("wkResultForm");
+  if (form) form.addEventListener("submit", wkSaveResult);
+}
+
+async function wkSaveResult(event) {
+  event.preventDefault();
+
+  const db = wkInitDb();
+  if (!db || !wkSession) return alert("Please sign in first.");
+
+  const code = document.getElementById("wkMatchCode").value;
+  const scoreA = Number(document.getElementById("wkScoreA").value);
+  const scoreB = Number(document.getElementById("wkScoreB").value);
+  const match = wkResolvedMatchTeams(code);
+
+  if (!match) return alert("Match not available yet.");
+  if (match.teamA === match.teamB) return alert("Invalid match.");
+  if (scoreA === scoreB) return alert("Knockout matches need a winner. Enter the post-penalty winner score.");
+  if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB)) return alert("Enter valid scores.");
+
+  const winner = scoreA > scoreB ? match.teamA : match.teamB;
+
+  const payload = {
+    match_code: code,
+    round: match.round,
+    team_a: match.teamA,
+    team_b: match.teamB,
+    score_a: scoreA,
+    score_b: scoreB,
+    winner
+  };
+
+  const { error } = await db
+    .from("knockout_results")
+    .upsert(payload, { onConflict: "match_code" });
+
+  if (error) {
+    console.error(error);
+    return alert("Could not save knockout result. Check the SQL table and RLS policies.");
+  }
+
+  document.getElementById("wkScoreA").value = "";
+  document.getElementById("wkScoreB").value = "";
+
+  await wkLoadResults();
+  wkRenderBracket();
+}
+
+async function wkStart() {
+  wkInsertSection();
+  await wkLoadResults();
+  wkRenderBracket();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(wkRenderBracket, 1500);
+  setTimeout(wkStart, 1600);
 });

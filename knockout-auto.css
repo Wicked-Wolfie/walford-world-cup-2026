@@ -1,6 +1,4 @@
-/* Walford V4.4 Proper Tournament Bracket Visual */
-/* Replaces knockout-auto.css only */
-
+/* Walford V4.5 Knockout Progression Visual */
 .wk-notice {
   border: 1px solid rgba(215,173,71,.4);
   background: rgba(215,173,71,.08);
@@ -8,6 +6,36 @@
   padding: 16px 18px;
   margin: 18px 0;
   color: var(--gold2);
+}
+
+.wk-admin {
+  margin: 18px 0;
+}
+
+.wk-admin-note,
+.wk-admin-box {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.05);
+  border-radius: 22px;
+  padding: 16px;
+}
+
+.wk-admin-box h3 {
+  margin-top: 0;
+  color: var(--gold2);
+}
+
+#wkResultForm {
+  display: grid;
+  grid-template-columns: 2fr .5fr auto .5fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+#wkResultForm span {
+  text-align: center;
+  color: var(--gold);
+  font-weight: 900;
 }
 
 .wk-bracket {
@@ -29,13 +57,9 @@
 }
 
 .wk-round h3 {
-  position: sticky;
-  top: 0;
-  z-index: 1;
   margin: 0 0 18px;
   color: var(--gold2);
   font-size: 1.2rem;
-  letter-spacing: -.02em;
 }
 
 .wk-list {
@@ -56,6 +80,11 @@
   background: rgba(0,0,0,.24);
   padding: 12px;
   box-shadow: 0 12px 30px rgba(0,0,0,.2);
+}
+
+.wk-match.played {
+  border-color: rgba(215,173,71,.65);
+  background: rgba(215,173,71,.08);
 }
 
 .wk-match::after {
@@ -81,10 +110,10 @@
   right: -35px;
   top: 50%;
   width: 1px;
-  height: calc(100% + 10px);
   background: rgba(215,173,71,.25);
 }
 
+.wk-round:nth-child(1) .wk-match:nth-child(odd)::before { height: calc(100% + 10px); }
 .wk-round:nth-child(2) .wk-match:nth-child(odd)::before { height: calc(100% + 24px); }
 .wk-round:nth-child(3) .wk-match:nth-child(odd)::before { height: calc(100% + 58px); }
 .wk-round:nth-child(4) .wk-match:nth-child(odd)::before { height: calc(100% + 132px); }
@@ -112,6 +141,11 @@
   border-top: 0;
 }
 
+.wk-team.winner span,
+.wk-team.winner em {
+  color: var(--gold2);
+}
+
 .wk-team span {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -137,7 +171,11 @@
   content: " 🏆";
 }
 
-@media(max-width: 1200px) {
+@media(max-width: 900px) {
+  #wkResultForm {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .wk-bracket {
     grid-template-columns: 330px 300px 280px 260px 240px;
   }

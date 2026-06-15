@@ -1,15 +1,23 @@
-# Walford V4.4 Proper Bracket Visual
+# Walford V4.5 Knockout Progression
 
-Upload/replace only:
+Step 1:
+Run knockout_results_table.sql in Supabase SQL Editor.
+
+Step 2:
+Upload/replace:
+- knockout-auto.js
 - knockout-auto.css
 
 Do not replace:
 - index.html
-- knockout-auto.js
 - app.js
 - styles.css
 - fixture-centre.js
 - fixture-centre.css
 - config.js
 
-This improves the knockout section into a proper tournament bracket-style layout with connecting lines and better spacing.
+What it adds:
+- Knockout result storage
+- Knockout admin entry panel when signed in
+- Winner progression into later rounds
+- Played match highlighting
