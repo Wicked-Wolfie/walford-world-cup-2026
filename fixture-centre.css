@@ -1,37 +1,30 @@
-/* Walford V3.7 Fixture Centre */
-.fixture-centre-tabs {
+/* Walford V3.9 Fixture Centre Clean UI */
+.fixture-date-chooser {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 8px;
+  margin: 6px 0 18px;
 }
 
-.fixture-centre-tabs button {
+.fixture-date-pill {
   border: 1px solid var(--line);
   background: rgba(255,255,255,.08);
   color: var(--text);
   border-radius: 999px;
-  padding: 10px 14px;
+  padding: 9px 12px;
   font-weight: 900;
   cursor: pointer;
 }
 
-.fixture-centre-tabs button.active {
+.fixture-date-pill.active {
   background: linear-gradient(135deg,var(--gold),var(--gold2));
   color: #07111e;
 }
 
-.fixture-mode-title {
-  color: var(--gold2);
-  font-size: 1.25rem;
-  font-weight: 900;
-  margin-bottom: 12px;
+.fixture-date-pill:hover {
+  border-color: var(--gold);
 }
 
-#todayDate[style*="none"] + #showTodayBtn {
-  display: none;
-}
-
-#todayMatches .result-item {
-  text-align: left;
+.today-controls {
+  margin-bottom: 0;
 }
