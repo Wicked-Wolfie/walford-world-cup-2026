@@ -74,3 +74,71 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Walford V5.7.1 Walford TV YouTube Launcher Fix */
+
+/* Some third-party YouTube videos block playback inside embedded iframes.
+   This turns Walford TV into a reliable launcher that opens YouTube directly. */
+
+.walford-tv-link {
+  display: block;
+  text-decoration: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.walford-tv-link img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+  opacity: .82;
+  filter: saturate(1.05) contrast(1.04);
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+.walford-tv-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(0,0,0,.1), rgba(0,0,0,.55)),
+    linear-gradient(180deg, transparent, rgba(0,0,0,.62));
+}
+
+.walford-tv-link:hover img {
+  transform: scale(1.035);
+  opacity: .95;
+}
+
+.walford-tv-play {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(215,173,71,.92);
+  color: #111;
+  font-size: 2rem;
+  font-weight: 950;
+  box-shadow: 0 16px 45px rgba(0,0,0,.45);
+  padding-left: 4px;
+}
+
+.walford-tv-link strong {
+  position: absolute;
+  z-index: 2;
+  left: 18px;
+  bottom: 16px;
+  color: white;
+  font-size: 1.05rem;
+  text-shadow: 0 2px 16px rgba(0,0,0,.65);
+}
