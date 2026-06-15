@@ -1,0 +1,76 @@
+/* Walford V5.7 Walford TV */
+
+.walford-tv {
+  margin-top: 10px;
+}
+
+.walford-tv-card {
+  display: grid;
+  grid-template-columns: minmax(250px, .8fr) minmax(420px, 1.4fr);
+  gap: 18px;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at top left, rgba(215,173,71,.18), transparent 32%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
+  border-radius: 30px;
+  padding: 18px;
+  box-shadow: 0 20px 55px rgba(0,0,0,.28);
+}
+
+.walford-tv-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.walford-tv-badge {
+  width: fit-content;
+  border: 1px solid rgba(215,173,71,.38);
+  background: rgba(215,173,71,.12);
+  color: var(--gold2);
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: .76rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.walford-tv-copy h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(1.35rem, 2vw, 2rem);
+}
+
+.walford-tv-copy p {
+  margin: 0 0 6px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.walford-tv-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.35);
+}
+
+.walford-tv-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media(max-width: 950px) {
+  .walford-tv-card {
+    grid-template-columns: 1fr;
+  }
+}
