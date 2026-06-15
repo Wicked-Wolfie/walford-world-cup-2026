@@ -1,0 +1,247 @@
+/* Walford V5.0 Squad Hub */
+
+.squad-hub {
+  margin-top: 28px;
+}
+
+.sh-tabs,
+.sh-pos-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sh-tabs button,
+.sh-pos-tabs button {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.sh-tabs button.active,
+.sh-pos-tabs button.active {
+  background: var(--gold);
+  color: #061526;
+  border-color: var(--gold);
+}
+
+.sh-grid {
+  display: grid;
+  grid-template-columns: 330px 1fr 320px;
+  gap: 16px;
+  align-items: start;
+}
+
+.sh-panel {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.03));
+  border-radius: 26px;
+  padding: 18px;
+  box-shadow: 0 18px 42px rgba(0,0,0,.22);
+}
+
+.sh-team-summary {
+  border-color: rgba(215,173,71,.45);
+  background: linear-gradient(180deg, rgba(215,173,71,.12), rgba(255,255,255,.03));
+}
+
+.sh-team-title {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.sh-team-title > span {
+  font-size: 2rem;
+}
+
+.sh-team-title h3,
+.sh-detail-card h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.5rem;
+}
+
+.sh-team-title p,
+.sh-coach em,
+.sh-key-list span,
+.sh-player-card span,
+.sh-detail-empty span {
+  color: var(--muted);
+}
+
+.sh-coach {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+  margin-bottom: 16px;
+}
+
+.sh-coach span,
+.sh-main-label,
+.sh-panel h4,
+.sh-toolbar h3,
+.sh-detail-card span {
+  display: block;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .74rem;
+  font-weight: 950;
+}
+
+.sh-coach strong {
+  display: block;
+  color: var(--gold2);
+  font-size: 1.1rem;
+  margin: 6px 0;
+}
+
+.sh-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sh-stat-row article {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 10px;
+  background: rgba(0,0,0,.17);
+}
+
+.sh-stat-row span {
+  display: block;
+  color: var(--muted);
+  font-size: .68rem;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+.sh-stat-row strong {
+  color: var(--gold2);
+  font-size: 1.1rem;
+}
+
+.sh-key-list {
+  display: grid;
+  gap: 8px;
+}
+
+.sh-key-list button,
+.sh-player-card {
+  border: 1px solid var(--line);
+  background: rgba(0,0,0,.18);
+  color: var(--text);
+  border-radius: 16px;
+  padding: 11px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sh-key-list button:hover,
+.sh-player-card:hover {
+  border-color: rgba(215,173,71,.55);
+  background: rgba(215,173,71,.08);
+}
+
+.sh-key-list strong,
+.sh-player-card strong {
+  display: block;
+  color: var(--text);
+}
+
+.sh-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.sh-players {
+  display: grid;
+  gap: 8px;
+  max-height: 760px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.sh-player-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.sh-number {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(215,173,71,.5);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+  font-weight: 950;
+}
+
+.sh-player-card em {
+  color: var(--gold2);
+  font-style: normal;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.sh-detail-card p {
+  border-top: 1px solid var(--line);
+  margin: 0;
+  padding: 10px 0;
+  color: var(--text);
+}
+
+.sh-detail-card p:first-of-type {
+  margin-top: 12px;
+}
+
+.sh-detail-card strong {
+  color: var(--gold2);
+}
+
+.sh-detail-empty {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: var(--muted);
+}
+
+.sh-detail-empty strong {
+  display: block;
+  color: var(--gold2);
+  font-size: 1.2rem;
+}
+
+@media(max-width: 1100px) {
+  .sh-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sh-toolbar {
+    display: block;
+  }
+
+  .sh-player-card {
+    grid-template-columns: auto 1fr;
+  }
+
+  .sh-player-card em {
+    grid-column: 2;
+  }
+}

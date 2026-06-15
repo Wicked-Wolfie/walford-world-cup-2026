@@ -1,28 +1,36 @@
-# Walford V4.9 Golden Boot
+# Walford V5.0 Squad Hub
 
-Phase 3 add-on.
+This phase uses the uploaded FIFA squad list PDF.
 
 Files:
-- golden-boot.sql
-- golden-boot.js
-- golden-boot.css
+- squad-hub.sql
+- squad-hub.js
+- squad-hub.css
 
 Step 1:
-Run golden-boot.sql in Supabase SQL Editor.
+Run squad-hub.sql in Supabase SQL Editor.
+
+This creates and fills:
+- head_coaches
+- squad_players
+
+It imports:
+- 48 head coaches
+- 1,248 squad players
 
 Step 2:
-Upload these two files to GitHub:
-- golden-boot.js
-- golden-boot.css
+Upload these two files to GitHub root, same folder as index.html:
+- squad-hub.js
+- squad-hub.css
 
 Step 3:
 Edit index.html.
 
-In the <head>, add:
-<link rel="stylesheet" href="golden-boot.css">
+In the <head>, after golden-boot.css, add:
+<link rel="stylesheet" href="squad-hub.css">
 
-Near the bottom, after home-knockout-tracker.js, add:
-<script src="golden-boot.js"></script>
+Near the bottom, after golden-boot.js, add:
+<script src="squad-hub.js"></script>
 
 Recommended bottom script order:
 <script src="config.js"></script>
@@ -31,10 +39,12 @@ Recommended bottom script order:
 <script src="knockout-auto.js"></script>
 <script src="home-knockout-tracker.js"></script>
 <script src="golden-boot.js"></script>
+<script src="squad-hub.js"></script>
 
 What it adds:
-- Golden Boot section
-- Current scorer leader card
-- Top scorers leaderboard
-- Latest scorer entries
-- Admin goal scorer form
+- Squad Hub section
+- Head coach details
+- Full player squad cards
+- Player details panel
+- Key players by international goals
+- Golden Boot scorer autocomplete based on selected team
