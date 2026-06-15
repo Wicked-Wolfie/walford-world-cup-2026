@@ -1,30 +1,28 @@
-# Walford V5.7.7 Integrated Player Dropdown Fix
+# Walford V5.7.8 USA Player List Fix
 
 Upload/replace:
 - index.html
 - golden-boot.js
-- golden-boot.css
 - match-scorers-admin.js
-- match-scorers-admin.css
 
-Important:
-- This removes the V5.7.6 add-on approach.
-- Player dropdowns are now built directly inside Golden Boot and Match Result + Scorers.
-- That avoids scripts fighting each other and fixes the player list not reloading.
+What this fixes:
+- United States / USA naming mismatch.
+- If squad_players stores the team as USA but the website dropdown says United States, the player list now still loads.
+- Also adds safe aliases for:
+  South Korea / Korea Republic
+  Türkiye / Turkey
+  Ivory Coast / Cote d'Ivoire
+  DR Congo / Congo DR
+  Curacao / Curaçao
+  Cape Verde / Cabo Verde
+  Czechia / Czech Republic
 
 What to test:
 1. Sign in as Admin.
-2. Golden Boot:
-   - Select team.
-   - Player dropdown should fill.
-   - Change team.
-   - Player dropdown should reload.
-   - Save scorer.
-   - Form should return with a fresh player dropdown.
-3. Match Result + Scorers:
-   - Add scorer row.
-   - Change scorer team.
-   - Player dropdown should reload.
-   - Add another row and repeat.
+2. Go to Golden Boot.
+3. Select United States.
+4. Player dropdown should show USA players.
+5. Go to Match Result + Scorers.
+6. Add scorer row, select United States, check player dropdown.
 
-No Supabase SQL changes needed if V5.7.5 edit policy is already run.
+No Supabase SQL changes needed.

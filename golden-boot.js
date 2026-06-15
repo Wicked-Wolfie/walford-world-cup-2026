@@ -1,4 +1,4 @@
-// Walford V5.7.7 Golden Boot Direct Player Select
+// Walford V5.7.8 Golden Boot Direct Player Select - team alias fix
 // Integrated version: no datalist, no add-on replacement script.
 // Includes leaderboard, add/edit/delete admin tools, and direct squad player dropdowns.
 
@@ -34,6 +34,47 @@
       .replace(/"/g, "&quot;");
   }
 
+
+  function gbCanonTeam(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/&/g, "and")
+      .replace(/\./g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+  }
+
+  function gbTeamKeys(team) {
+    const key = gbCanonTeam(team);
+    const aliases = {
+      "united states": ["united states", "usa", "u s a", "united states of america", "usmnt"],
+      "usa": ["united states", "usa", "u s a", "united states of america", "usmnt"],
+      "south korea": ["south korea", "korea republic", "korea republic of", "republic of korea"],
+      "korea republic": ["south korea", "korea republic", "republic of korea"],
+      "czechia": ["czechia", "czech republic"],
+      "turkiye": ["turkiye", "turkey", "türkiye"],
+      "turkey": ["turkiye", "turkey", "türkiye"],
+      "ivory coast": ["ivory coast", "cote d ivoire", "cote divoire", "côte d’ivoire", "côte d'ivoire"],
+      "cote d ivoire": ["ivory coast", "cote d ivoire", "cote divoire"],
+      "dr congo": ["dr congo", "d r congo", "congo dr", "democratic republic of congo", "congo democratic republic"],
+      "congo dr": ["dr congo", "congo dr", "democratic republic of congo"],
+      "curacao": ["curacao", "curaçao"],
+      "cape verde": ["cape verde", "cabo verde"],
+      "bosnia and herzegovina": ["bosnia and herzegovina", "bosnia herzegovina", "bosnia"],
+      "new zealand": ["new zealand", "newzealand"]
+    };
+
+    return aliases[key] || [key];
+  }
+
+  function gbTeamMatches(a, b) {
+    const aKeys = gbTeamKeys(a);
+    const bKeys = gbTeamKeys(b);
+    return aKeys.some(key => bKeys.includes(key));
+  }
+
   function gbTeams() {
     try {
       if (Array.isArray(window.teams) && window.teams.length) return window.teams;
@@ -55,7 +96,7 @@
 
   function gbPlayersForTeam(team) {
     return gbPlayers
-      .filter(p => p.team === team)
+      .filter(p => gbTeamMatches(p.team, team))
       .slice()
       .sort((a, b) => String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" }));
   }
@@ -63,6 +104,11 @@
   function gbPlayerOptions(team, selected = "") {
     const rows = gbPlayersForTeam(team);
     let html = `<option value="">Select player...</option>`;
+
+    if (!rows.length) {
+      html += `<option value="">No squad players found for ${gbEsc(team)}</option>`;
+      return html;
+    }
 
     if (selected && !rows.some(p => p.player_name === selected)) {
       html += `<option value="${gbEsc(selected)}" selected>${gbEsc(selected)} — existing value</option>`;

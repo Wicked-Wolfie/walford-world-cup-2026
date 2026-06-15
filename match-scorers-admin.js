@@ -1,4 +1,4 @@
-// Walford V5.7.7 Match Result + Scorers Direct Player Select
+// Walford V5.7.8 Match Result + Scorers Direct Player Select - team alias fix
 // Uses proper player select dropdowns inside scorer rows.
 
 (function () {
@@ -33,6 +33,47 @@
       .replace(/"/g, "&quot;");
   }
 
+
+  function msCanonTeam(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/&/g, "and")
+      .replace(/\./g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+  }
+
+  function msTeamKeys(team) {
+    const key = msCanonTeam(team);
+    const aliases = {
+      "united states": ["united states", "usa", "u s a", "united states of america", "usmnt"],
+      "usa": ["united states", "usa", "u s a", "united states of america", "usmnt"],
+      "south korea": ["south korea", "korea republic", "korea republic of", "republic of korea"],
+      "korea republic": ["south korea", "korea republic", "republic of korea"],
+      "czechia": ["czechia", "czech republic"],
+      "turkiye": ["turkiye", "turkey", "türkiye"],
+      "turkey": ["turkiye", "turkey", "türkiye"],
+      "ivory coast": ["ivory coast", "cote d ivoire", "cote divoire", "côte d’ivoire", "côte d'ivoire"],
+      "cote d ivoire": ["ivory coast", "cote d ivoire", "cote divoire"],
+      "dr congo": ["dr congo", "d r congo", "congo dr", "democratic republic of congo", "congo democratic republic"],
+      "congo dr": ["dr congo", "congo dr", "democratic republic of congo"],
+      "curacao": ["curacao", "curaçao"],
+      "cape verde": ["cape verde", "cabo verde"],
+      "bosnia and herzegovina": ["bosnia and herzegovina", "bosnia herzegovina", "bosnia"],
+      "new zealand": ["new zealand", "newzealand"]
+    };
+
+    return aliases[key] || [key];
+  }
+
+  function msTeamMatches(a, b) {
+    const aKeys = msTeamKeys(a);
+    const bKeys = msTeamKeys(b);
+    return aKeys.some(key => bKeys.includes(key));
+  }
+
   function msFallbackTeams() {
     try {
       if (Array.isArray(window.teams) && window.teams.length) return window.teams;
@@ -50,7 +91,7 @@
 
   function msPlayersForTeam(teamName) {
     return msPlayers
-      .filter(p => p.team === teamName)
+      .filter(p => msTeamMatches(p.team, teamName))
       .slice()
       .sort((a, b) =>
         String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" })
@@ -61,6 +102,11 @@
     const rows = msPlayersForTeam(teamName);
 
     let html = `<option value="">Select player...</option>`;
+
+    if (!rows.length) {
+      html += `<option value="">No squad players found for ${msEsc(teamName)}</option>`;
+      return html;
+    }
 
     if (selected && !rows.some(p => p.player_name === selected)) {
       html += `<option value="${msEsc(selected)}" selected>${msEsc(selected)} — existing value</option>`;
