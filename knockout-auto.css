@@ -179,4 +179,84 @@
   .wk-bracket {
     grid-template-columns: 330px 300px 280px 260px 240px;
   }
+/* Walford V4.7 Knockout Phase 1 CSS Additions */
+/* Paste at bottom of knockout-auto.css */
+
+.wk-team.waiting span {
+  color: var(--muted);
 }
+
+.wk-champion-card {
+  margin-top: 18px;
+  border: 1px solid rgba(215,173,71,.55);
+  background: rgba(215,173,71,.1);
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.wk-champion-card span,
+.wk-champion-card em {
+  display: block;
+  color: var(--muted);
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .72rem;
+}
+
+.wk-champion-card strong {
+  display: block;
+  color: var(--gold2);
+  font-size: 1.2rem;
+  margin: 8px 0;
+}
+
+.wk-history {
+  margin-top: 24px;
+}
+
+.wk-history-box {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+  border-radius: 26px;
+  padding: 20px;
+}
+
+.wk-history-box h3 {
+  margin-top: 0;
+  color: var(--gold2);
+}
+
+.wk-history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.wk-history-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding: 12px 0;
+}
+
+.wk-history-row:first-child {
+  border-top: 0;
+}
+
+.wk-history-row strong {
+  color: var(--gold);
+}
+
+.wk-history-row em {
+  color: var(--gold2);
+  font-style: normal;
+  font-weight: 900;
+}
+
+@media(max-width: 900px) {
+  .wk-history-row {
+    grid-template-columns: 1fr;
+  }
