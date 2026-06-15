@@ -1,0 +1,54 @@
+/* Walford V5.3 Points Chart Colour Polish */
+
+/* The original chart used one yellow gradient for every bar.
+   This gives each family member a distinct, calmer colour while keeping the leader gold. */
+
+#chart .bar-row {
+  margin-bottom: 6px;
+}
+
+#chart .bar {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18), 0 8px 20px rgba(0,0,0,.18);
+}
+
+#chart .bar-row:nth-child(1) .bar {
+  background: linear-gradient(90deg, #d7ad47, #ffe6a3);
+}
+
+#chart .bar-row:nth-child(2) .bar {
+  background: linear-gradient(90deg, #60a5fa, #bfdbfe);
+}
+
+#chart .bar-row:nth-child(3) .bar {
+  background: linear-gradient(90deg, #34d399, #a7f3d0);
+}
+
+#chart .bar-row:nth-child(4) .bar {
+  background: linear-gradient(90deg, #a78bfa, #ddd6fe);
+}
+
+#chart .bar-row:nth-child(5) .bar {
+  background: linear-gradient(90deg, #fb923c, #fed7aa);
+}
+
+#chart .bar-row:nth-child(6) .bar {
+  background: linear-gradient(90deg, #f472b6, #fbcfe8);
+}
+
+#chart .bar-row:nth-child(7) .bar {
+  background: linear-gradient(90deg, #94a3b8, #cbd5e1);
+}
+
+#chart .bar-row strong {
+  color: var(--text);
+}
+
+#chart .bar-row span {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+#chart .panel,
+#chart {
+  min-height: 0;
+}

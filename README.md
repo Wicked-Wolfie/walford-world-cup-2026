@@ -1,22 +1,20 @@
-# Walford V5.1 Squad Hub Responsiveness Fix
+# Walford V5.3 Points Chart Colour Polish
 
-Upload/replace only this file:
-
-- squad-hub.js
-
-Do not change:
+Upload/replace:
 - index.html
-- squad-hub.css
-- golden-boot.js
-- golden-boot.css
-- any Supabase SQL
 
-What this fixes:
-- Removes the page-wide MutationObserver loop from Squad Hub.
-- Keeps Golden Boot autocomplete.
-- Stops Chrome showing "Page Unresponsive".
+Upload this new file:
+- v5-3-chart-polish.css
+
+What it does:
+- Adds cache-busting v=5.3.0 to local JS/CSS.
+- Restores/keeps Golden Boot and Squad Hub links.
+- Adds a new points chart colour palette.
+- Keeps the leader gold but makes the other bars blue/green/purple/orange/pink/grey so they are easier to distinguish.
+
+Do not change Supabase.
 
 After upload:
-1. Commit the file.
-2. Wait for GitHub Pages deploy.
-3. Press Ctrl + F5.
+1. Commit the files.
+2. Wait for the GitHub Pages green tick.
+3. Use Ctrl + Shift + R or Shift + Reload.
