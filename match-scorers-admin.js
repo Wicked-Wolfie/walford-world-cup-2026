@@ -1,4 +1,4 @@
-// Walford V5.5.4 Match Result + Scorers Combined Admin - alphabetical players
+// Walford V5.7.4 Match Result + Scorers Combined Admin - player reload fix
 // Add-on file. Uses existing results and goal_scorers tables.
 // Adds a combined admin panel so match result and scorers can be saved together.
 
@@ -199,6 +199,7 @@
     document.getElementById("msClearRows").addEventListener("click", () => {
       document.getElementById("msScorerRows").innerHTML = "";
       msRowCounter = 0;
+      msAddScorerRow();
     });
     document.getElementById("msForm").addEventListener("submit", msSaveAll);
 
@@ -240,10 +241,19 @@
     container.appendChild(row);
 
     const teamSelect = row.querySelector(".msScorerTeam");
+    const playerInput = row.querySelector(".msScorerPlayer");
     const datalist = row.querySelector("datalist");
 
-    teamSelect.addEventListener("change", () => {
+    function refreshPlayerOptions(clearPlayer) {
       datalist.innerHTML = msPlayerOptionsForTeam(teamSelect.value);
+      if (clearPlayer) playerInput.value = "";
+    }
+
+    teamSelect.addEventListener("change", () => refreshPlayerOptions(true));
+    playerInput.addEventListener("focus", () => refreshPlayerOptions(false));
+    playerInput.addEventListener("click", () => refreshPlayerOptions(false));
+    playerInput.addEventListener("input", () => {
+      if (!playerInput.value.trim()) refreshPlayerOptions(false);
     });
 
     row.querySelector(".msRemoveScorer").addEventListener("click", () => row.remove());

@@ -1,4 +1,4 @@
-// Walford V5.1 Squad Hub - responsiveness fix
+// Walford V5.7.4 Squad Hub - Golden Boot player reload fix
 // Add-on file. Requires squad-hub.sql.
 // Adds team squads, head coach cards, player details, and Golden Boot scorer autocomplete.
 
@@ -311,20 +311,35 @@
 
     playerInput.setAttribute("list", "gbPlayerOptions");
 
-    function updateOptions() {
+    function updateOptions(clearPlayer) {
       const team = teamSelect.value;
       const options = shPlayers
         .filter(p => p.team === team)
-        .sort((a, b) => Number(a.squad_number) - Number(b.squad_number))
-        .map(p => `<option value="${shEsc(p.player_name)}" label="${shEsc(`#${p.squad_number} ${p.position} - ${p.club || ""}`)}"></option>`)
+        .slice()
+        .sort((a, b) =>
+          String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" })
+        )
+        .map(p => `<option value="${shEsc(p.player_name)}" label="${shEsc(`#${p.squad_number || ""} ${p.position || ""} - ${p.club || ""}`)}"></option>`)
         .join("");
 
       datalist.innerHTML = options;
+      datalist.dataset.walfordPlayerSorted = "yes";
+
+      if (clearPlayer) {
+        playerInput.value = "";
+      }
     }
 
-    teamSelect.removeEventListener("change", updateOptions);
-    teamSelect.addEventListener("change", updateOptions);
-    updateOptions();
+    // V5.7.4: Golden Boot re-renders after each save, so the player input is replaced.
+    // Reconnect the list every time and reload suggestions on team/focus/click.
+    teamSelect.onchange = () => updateOptions(true);
+    playerInput.onfocus = () => updateOptions(false);
+    playerInput.onclick = () => updateOptions(false);
+    playerInput.oninput = () => {
+      if (!playerInput.value.trim()) updateOptions(false);
+    };
+
+    updateOptions(false);
   }
 
   function shWatchGoldenBoot() {
@@ -342,6 +357,12 @@
     shRender();
     shUpgradeGoldenBoot();
     shWatchGoldenBoot();
+
+    // V5.7.4: Golden Boot replaces its form after saving a scorer.
+    // This event reconnects the new player input to the squad datalist.
+    window.addEventListener("walford:goldenboot-rendered", () => {
+      setTimeout(shUpgradeGoldenBoot, 80);
+    });
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -352,7 +373,7 @@
 // Walford V5.5.4 Alphabetical Player Datalist Safety Net
 (function () {
   function sortDatalist(datalist) {
-    if (!datalist || datalist.dataset.walfordPlayerSorted === "yes") return;
+    if (!datalist) return;
     const options = Array.from(datalist.querySelectorAll("option"));
     if (options.length < 2) return;
 
