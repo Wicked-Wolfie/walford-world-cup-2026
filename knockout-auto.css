@@ -175,7 +175,8 @@
   #wkResultForm {
     grid-template-columns: 1fr 1fr;
   }
-
+}
+  
   .wk-bracket {
     grid-template-columns: 330px 300px 280px 260px 240px;
   }
