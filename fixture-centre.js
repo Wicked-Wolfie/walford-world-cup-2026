@@ -1,6 +1,6 @@
-// Walford V4.0 Fixture Centre Final Polish
+// Walford V4.1 Fixture Centre Future Starts After Today
 // Replaces fixture-centre.js only.
-// Keeps app.js, Supabase, Admin and existing results untouched.
+// Keeps app.js, Supabase, Admin and results untouched.
 
 const WALFORD_FIXTURE_DATES = [
   "2026-06-11","2026-06-12","2026-06-13","2026-06-14","2026-06-15",
@@ -25,14 +25,10 @@ function walfordShortDate(iso) {
   return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
 }
 
-function walfordNearestFixtureDate(fromIso) {
-  return WALFORD_FIXTURE_DATES.find(d => d >= fromIso) || WALFORD_FIXTURE_DATES[WALFORD_FIXTURE_DATES.length - 1];
-}
-
-function walfordUpcomingFixtureDates() {
+function walfordFutureFixtureDates() {
   const today = walfordIsoToday();
-  const upcoming = WALFORD_FIXTURE_DATES.filter(d => d >= today);
-  return upcoming.length ? upcoming : WALFORD_FIXTURE_DATES.slice(-4);
+  const future = WALFORD_FIXTURE_DATES.filter(d => d > today);
+  return future.length ? future : WALFORD_FIXTURE_DATES.slice(-3);
 }
 
 function walfordSetActiveTab(mode) {
@@ -94,9 +90,8 @@ function walfordSetFutureMode(selectedDate) {
   walfordSetActiveTab("future");
   walfordHideNativeDate();
 
-  const upcomingDates = walfordUpcomingFixtureDates();
-  const today = walfordIsoToday();
-  const chosen = selectedDate || upcomingDates[0] || walfordNearestFixtureDate(today);
+  const futureDates = walfordFutureFixtureDates();
+  const chosen = selectedDate || futureDates[0];
 
   walfordTitle("Future Fixtures");
   walfordRenderViaApp(chosen);
@@ -104,7 +99,7 @@ function walfordSetFutureMode(selectedDate) {
   const chooser = walfordEnsureDateChooser();
   if (!chooser) return;
 
-  chooser.innerHTML = upcomingDates.map(date => {
+  chooser.innerHTML = futureDates.map(date => {
     const active = date === chosen ? "active" : "";
     return `<button type="button" class="fixture-date-pill ${active}" data-date="${date}">${walfordShortDate(date)}</button>`;
   }).join("");

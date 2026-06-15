@@ -1,17 +1,15 @@
-# Walford V4.0 Fixture Centre Final Polish
+# Walford V4.1 Future Fixtures Fix
 
 Upload/replace only:
 - fixture-centre.js
-- fixture-centre.css
 
 Do not replace:
 - index.html
 - app.js
 - styles.css
+- fixture-centre.css
 - config.js
 
-Changes:
-- Opens on Today's Fixtures by default.
-- Results tab is renamed Latest Results.
-- Future Fixtures shows only useful upcoming date buttons.
-- Removes the duplicated selected-date title.
+Fix:
+- Future Fixtures now starts from the day after today.
+- If today is 15 Jun, Future Fixtures starts at 16 Jun.
