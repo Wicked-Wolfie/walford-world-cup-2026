@@ -238,3 +238,21 @@
     justify-content: flex-start;
   }
 }
+
+
+/* Walford V5.7.7 Direct Player Select */
+
+.gb-form select#gbPlayer {
+  background: rgba(5, 18, 32, .95);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px 12px;
+  font-weight: 850;
+  min-width: 0;
+}
+
+.gb-form select#gbPlayer:focus {
+  border-color: rgba(215,173,71,.72);
+  box-shadow: 0 0 0 3px rgba(215,173,71,.16);
+}

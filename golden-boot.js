@@ -1,11 +1,12 @@
-// Walford V5.7.5 Golden Boot Edit Entries
-// Add-on file. Requires goal_scorers table from golden-boot.sql.
-// Adds Golden Boot leaderboard, admin scorer entry, recent admin list, and delete mistakes.
+// Walford V5.7.7 Golden Boot Direct Player Select
+// Integrated version: no datalist, no add-on replacement script.
+// Includes leaderboard, add/edit/delete admin tools, and direct squad player dropdowns.
 
 (function () {
   let gbDb = null;
   let gbSession = null;
   let gbRows = [];
+  let gbPlayers = [];
   let gbEditingId = null;
 
   function gbClient() {
@@ -25,6 +26,14 @@
     return gbDb;
   }
 
+  function gbEsc(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function gbTeams() {
     try {
       if (Array.isArray(window.teams) && window.teams.length) return window.teams;
@@ -32,20 +41,43 @@
     return Array.isArray(window.FALLBACK_TEAMS) ? window.FALLBACK_TEAMS : [];
   }
 
-  function gbTeamOptions() {
+  function gbSortedTeams() {
     return gbTeams()
       .slice()
-      .sort((a, b) => String(a.team).localeCompare(String(b.team)))
-      .map(t => `<option value="${gbEsc(t.team)}">${gbEsc(t.flag || "")} ${gbEsc(t.team)} — ${gbEsc(t.owner || "")}</option>`)
+      .sort((a, b) => String(a.team || "").localeCompare(String(b.team || ""), "en", { sensitivity: "base" }));
+  }
+
+  function gbTeamOptions(selected = "") {
+    return gbSortedTeams()
+      .map(t => `<option value="${gbEsc(t.team)}" ${t.team === selected ? "selected" : ""}>${gbEsc(t.flag || "")} ${gbEsc(t.team)} — ${gbEsc(t.owner || "")}</option>`)
       .join("");
   }
 
-  function gbEsc(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+  function gbPlayersForTeam(team) {
+    return gbPlayers
+      .filter(p => p.team === team)
+      .slice()
+      .sort((a, b) => String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" }));
+  }
+
+  function gbPlayerOptions(team, selected = "") {
+    const rows = gbPlayersForTeam(team);
+    let html = `<option value="">Select player...</option>`;
+
+    if (selected && !rows.some(p => p.player_name === selected)) {
+      html += `<option value="${gbEsc(selected)}" selected>${gbEsc(selected)} — existing value</option>`;
+    }
+
+    html += rows.map(p => {
+      const bits = [];
+      if (p.squad_number) bits.push(`#${p.squad_number}`);
+      if (p.position) bits.push(p.position);
+      if (p.club) bits.push(p.club);
+      const detail = bits.length ? ` — ${bits.join(" · ")}` : "";
+      return `<option value="${gbEsc(p.player_name)}" ${p.player_name === selected ? "selected" : ""}>${gbEsc(p.player_name)}${gbEsc(detail)}</option>`;
+    }).join("");
+
+    return html;
   }
 
   function gbFlag(teamName) {
@@ -78,18 +110,30 @@
     const session = await db.auth.getSession();
     gbSession = session?.data?.session || null;
 
-    const { data, error } = await db
+    const scorerResult = await db
       .from("goal_scorers")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (error) {
-      console.warn("Golden Boot could not load goal_scorers. Have you run golden-boot.sql?", error);
+    if (scorerResult.error) {
+      console.warn("Golden Boot could not load goal_scorers.", scorerResult.error);
       gbRows = [];
-      return;
+    } else {
+      gbRows = scorerResult.data || [];
     }
 
-    gbRows = data || [];
+    const playerResult = await db
+      .from("squad_players")
+      .select("team,player_name,position,club,squad_number")
+      .order("team", { ascending: true })
+      .order("player_name", { ascending: true });
+
+    if (playerResult.error) {
+      console.warn("Golden Boot could not load squad_players for player dropdown.", playerResult.error);
+      gbPlayers = [];
+    } else {
+      gbPlayers = playerResult.data || [];
+    }
   }
 
   function gbTotals() {
@@ -110,10 +154,6 @@
 
     return Array.from(map.values())
       .sort((a, b) => b.goals - a.goals || a.player.localeCompare(b.player));
-  }
-
-  function gbLatest() {
-    return gbRows.slice(0, 6);
   }
 
   function gbPodium(totals) {
@@ -139,7 +179,7 @@
   }
 
   function gbLatestList() {
-    const latest = gbLatest();
+    const latest = gbRows.slice(0, 6);
     if (!latest.length) return `<p class="gb-muted">No scorer entries yet.</p>`;
 
     return latest.map(row => `
@@ -190,12 +230,14 @@
       return `<div class="gb-admin-note">Sign in using the main Admin button to add goal scorers.</div>`;
     }
 
+    const defaultTeam = gbSortedTeams()[0]?.team || "";
+
     return `
       <form id="goldenBootForm" class="gb-form">
         <input id="gbMatchDate" type="date">
         <input id="gbMatchCode" type="text" placeholder="Match code, e.g. M73">
-        <select id="gbTeam">${gbTeamOptions()}</select>
-        <input id="gbPlayer" type="text" placeholder="Player name">
+        <select id="gbTeam">${gbTeamOptions(defaultTeam)}</select>
+        <select id="gbPlayer">${gbPlayerOptions(defaultTeam)}</select>
         <input id="gbGoals" type="number" min="1" value="1" placeholder="Goals">
         <button id="gbSaveBtn" class="button gold" type="submit">Save scorer</button>
         <button id="gbCancelEdit" class="button dark hidden" type="button">Cancel edit</button>
@@ -261,31 +303,45 @@
       </div>
     `;
 
-    const form = document.getElementById("goldenBootForm");
-    if (form) form.addEventListener("submit", gbSave);
+    gbWireForm();
+  }
 
-    section.querySelectorAll("[data-gb-delete]").forEach(button => {
+  function gbWireForm() {
+    const form = document.getElementById("goldenBootForm");
+    const teamSelect = document.getElementById("gbTeam");
+    const playerSelect = document.getElementById("gbPlayer");
+    const cancelEdit = document.getElementById("gbCancelEdit");
+
+    if (form) form.addEventListener("submit", gbSave);
+    if (cancelEdit) cancelEdit.addEventListener("click", gbCancelEditMode);
+
+    if (teamSelect && playerSelect) {
+      teamSelect.addEventListener("change", () => {
+        playerSelect.innerHTML = gbPlayerOptions(teamSelect.value);
+        playerSelect.value = "";
+      });
+    }
+
+    document.querySelectorAll("[data-gb-delete]").forEach(button => {
       button.addEventListener("click", gbDelete);
     });
 
-    section.querySelectorAll("[data-gb-edit]").forEach(button => {
+    document.querySelectorAll("[data-gb-edit]").forEach(button => {
       button.addEventListener("click", gbStartEdit);
     });
-
-    const cancelEdit = document.getElementById("gbCancelEdit");
-    if (cancelEdit) cancelEdit.addEventListener("click", gbCancelEditMode);
-
-    // Let Squad Hub reconnect autocomplete after Golden Boot re-renders.
-    window.dispatchEvent(new CustomEvent("walford:goldenboot-rendered"));
   }
 
   function gbSetEditMode(row) {
     gbEditingId = Number(row.id);
 
+    const teamSelect = document.getElementById("gbTeam");
+    const playerSelect = document.getElementById("gbPlayer");
+
     document.getElementById("gbMatchDate").value = row.match_date || "";
     document.getElementById("gbMatchCode").value = row.match_code || "";
-    document.getElementById("gbTeam").value = row.team || "";
-    document.getElementById("gbPlayer").value = row.player || "";
+    teamSelect.value = row.team || "";
+    playerSelect.innerHTML = gbPlayerOptions(row.team || "", row.player || "");
+    playerSelect.value = row.player || "";
     document.getElementById("gbGoals").value = Number(row.goals || 1);
 
     const saveBtn = document.getElementById("gbSaveBtn");
@@ -299,8 +355,7 @@
       hint.textContent = `Editing: ${row.player} — ${row.team} — ${Number(row.goals || 0)} goal${Number(row.goals || 0) === 1 ? "" : "s"}`;
     }
 
-    document.getElementById("gbPlayer")?.focus();
-    window.dispatchEvent(new CustomEvent("walford:goldenboot-rendered"));
+    playerSelect.focus();
   }
 
   function gbCancelEditMode() {
@@ -308,6 +363,13 @@
 
     const form = document.getElementById("goldenBootForm");
     if (form) form.reset();
+
+    const teamSelect = document.getElementById("gbTeam");
+    const playerSelect = document.getElementById("gbPlayer");
+    if (teamSelect && playerSelect) {
+      playerSelect.innerHTML = gbPlayerOptions(teamSelect.value);
+      playerSelect.value = "";
+    }
 
     const goals = document.getElementById("gbGoals");
     if (goals) goals.value = 1;
@@ -322,8 +384,6 @@
       hint.classList.add("hidden");
       hint.textContent = "";
     }
-
-    window.dispatchEvent(new CustomEvent("walford:goldenboot-rendered"));
   }
 
   function gbStartEdit(event) {
@@ -342,33 +402,22 @@
     const match_date = document.getElementById("gbMatchDate").value || null;
     const match_code = document.getElementById("gbMatchCode").value.trim() || null;
     const team = document.getElementById("gbTeam").value;
-    const player = document.getElementById("gbPlayer").value.trim();
+    const player = document.getElementById("gbPlayer").value;
     const goals = Number(document.getElementById("gbGoals").value);
 
     if (!team || !player || !Number.isInteger(goals) || goals < 1) {
-      return alert("Enter a team, player and valid number of goals.");
+      return alert("Choose a team, player and valid number of goals.");
     }
 
-    const payload = {
-      match_date,
-      match_code,
-      team,
-      player,
-      goals
-    };
+    const payload = { match_date, match_code, team, player, goals };
 
     let error = null;
 
     if (gbEditingId) {
-      const result = await db
-        .from("goal_scorers")
-        .update(payload)
-        .eq("id", gbEditingId);
+      const result = await db.from("goal_scorers").update(payload).eq("id", gbEditingId);
       error = result.error;
     } else {
-      const result = await db
-        .from("goal_scorers")
-        .insert(payload);
+      const result = await db.from("goal_scorers").insert(payload);
       error = result.error;
     }
 
@@ -380,7 +429,6 @@
     }
 
     gbEditingId = null;
-
     await gbLoad();
     gbRender();
   }

@@ -1,6 +1,5 @@
-// Walford V5.7.4 Match Result + Scorers Combined Admin - player reload fix
-// Add-on file. Uses existing results and goal_scorers tables.
-// Adds a combined admin panel so match result and scorers can be saved together.
+// Walford V5.7.7 Match Result + Scorers Direct Player Select
+// Uses proper player select dropdowns inside scorer rows.
 
 (function () {
   let msDb = null;
@@ -41,28 +40,42 @@
     return Array.isArray(window.FALLBACK_TEAMS) ? window.FALLBACK_TEAMS : [];
   }
 
-  function msFlag(teamName) {
-    try {
-      if (typeof flag === "function") return flag(teamName) || "";
-    } catch (e) {}
-    const row = msFallbackTeams().find(t => t.team === teamName);
-    return row ? row.flag || "" : "";
-  }
-
-  function msOwner(teamName) {
-    try {
-      if (typeof owner === "function") return owner(teamName) || "";
-    } catch (e) {}
-    const row = msFallbackTeams().find(t => t.team === teamName);
-    return row ? row.owner || "" : "";
-  }
-
   function msTeamOptions(selected = "") {
     return msTeams
       .slice()
-      .sort((a, b) => String(a.team).localeCompare(String(b.team)))
+      .sort((a, b) => String(a.team || "").localeCompare(String(b.team || ""), "en", { sensitivity: "base" }))
       .map(t => `<option value="${msEsc(t.team)}" ${t.team === selected ? "selected" : ""}>${msEsc(t.flag || "")} ${msEsc(t.team)} — ${msEsc(t.owner || "")}</option>`)
       .join("");
+  }
+
+  function msPlayersForTeam(teamName) {
+    return msPlayers
+      .filter(p => p.team === teamName)
+      .slice()
+      .sort((a, b) =>
+        String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" })
+      );
+  }
+
+  function msPlayerOptionsForTeam(teamName, selected = "") {
+    const rows = msPlayersForTeam(teamName);
+
+    let html = `<option value="">Select player...</option>`;
+
+    if (selected && !rows.some(p => p.player_name === selected)) {
+      html += `<option value="${msEsc(selected)}" selected>${msEsc(selected)} — existing value</option>`;
+    }
+
+    html += rows.map(p => {
+      const bits = [];
+      if (p.squad_number) bits.push(`#${p.squad_number}`);
+      if (p.position) bits.push(p.position);
+      if (p.club) bits.push(p.club);
+      const detail = bits.length ? ` — ${bits.join(" · ")}` : "";
+      return `<option value="${msEsc(p.player_name)}" ${p.player_name === selected ? "selected" : ""}>${msEsc(p.player_name)}${msEsc(detail)}</option>`;
+    }).join("");
+
+    return html;
   }
 
   async function msLoad() {
@@ -74,9 +87,8 @@
 
     msTeams = msFallbackTeams().slice().sort((a, b) =>
       String(a.team || "").localeCompare(String(b.team || ""), "en", { sensitivity: "base" })
-    ); // Walford V5.5.3: keep combined admin team dropdowns alphabetical
+    );
 
-    // Pull squad players if the V5 Squad Hub table exists. If not, the form still works manually.
     const { data, error } = await db
       .from("squad_players")
       .select("team,player_name,shirt_name,position,club,squad_number")
@@ -87,7 +99,7 @@
       msPlayers = data;
     } else {
       msPlayers = [];
-      console.warn("Combined admin could not load squad_players. Manual scorer typing still works.", error);
+      console.warn("Combined admin could not load squad_players.", error);
     }
   }
 
@@ -126,6 +138,9 @@
       return;
     }
 
+    const firstTeam = msTeams[0]?.team || "";
+    const secondTeam = msTeams[1]?.team || "";
+
     section.innerHTML = `
       <div class="section-title">
         <span>Admin Shortcut</span>
@@ -148,7 +163,7 @@
 
             <label>
               Team A
-              <select id="msTeamA" required>${msTeamOptions()}</select>
+              <select id="msTeamA" required>${msTeamOptions(firstTeam)}</select>
             </label>
 
             <label>
@@ -163,7 +178,7 @@
 
             <label>
               Team B
-              <select id="msTeamB" required>${msTeamOptions()}</select>
+              <select id="msTeamB" required>${msTeamOptions(secondTeam)}</select>
             </label>
           </div>
 
@@ -187,14 +202,6 @@
       </div>
     `;
 
-    const teamA = document.getElementById("msTeamA");
-    const teamB = document.getElementById("msTeamB");
-
-    if (teamA && teamB && msTeams.length > 1) {
-      teamA.value = msTeams[0].team;
-      teamB.value = msTeams[1].team;
-    }
-
     document.getElementById("msAddScorer").addEventListener("click", () => msAddScorerRow());
     document.getElementById("msClearRows").addEventListener("click", () => {
       document.getElementById("msScorerRows").innerHTML = "";
@@ -203,20 +210,7 @@
     });
     document.getElementById("msForm").addEventListener("submit", msSaveAll);
 
-    msAddScorerRow();
-  }
-
-  function msPlayerOptionsForTeam(teamName) {
-    const rows = msPlayers
-      .filter(p => p.team === teamName)
-      .slice()
-      .sort((a, b) =>
-        String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" })
-      );
-
-    return rows
-      .map(p => `<option value="${msEsc(p.player_name)}" label="${msEsc(`#${p.squad_number || ""} ${p.position || ""} ${p.club || ""}`)}"></option>`)
-      .join("");
+    msAddScorerRow(firstTeam);
   }
 
   function msAddScorerRow(defaultTeam = "") {
@@ -224,16 +218,13 @@
     if (!container) return;
 
     msRowCounter += 1;
-    const rowId = `msPlayerList${msRowCounter}`;
-    const teamA = document.getElementById("msTeamA")?.value || "";
-    const selected = defaultTeam || teamA;
+    const selected = defaultTeam || document.getElementById("msTeamA")?.value || msTeams[0]?.team || "";
 
     const row = document.createElement("div");
     row.className = "ms-scorer-row";
     row.innerHTML = `
       <select class="msScorerTeam">${msTeamOptions(selected)}</select>
-      <input class="msScorerPlayer" list="${rowId}" type="text" placeholder="Player name">
-      <datalist id="${rowId}">${msPlayerOptionsForTeam(selected)}</datalist>
+      <select class="msScorerPlayer">${msPlayerOptionsForTeam(selected)}</select>
       <input class="msScorerGoals" type="number" min="1" value="1" placeholder="Goals">
       <button class="button dark msRemoveScorer" type="button">Remove</button>
     `;
@@ -241,19 +232,11 @@
     container.appendChild(row);
 
     const teamSelect = row.querySelector(".msScorerTeam");
-    const playerInput = row.querySelector(".msScorerPlayer");
-    const datalist = row.querySelector("datalist");
+    const playerSelect = row.querySelector(".msScorerPlayer");
 
-    function refreshPlayerOptions(clearPlayer) {
-      datalist.innerHTML = msPlayerOptionsForTeam(teamSelect.value);
-      if (clearPlayer) playerInput.value = "";
-    }
-
-    teamSelect.addEventListener("change", () => refreshPlayerOptions(true));
-    playerInput.addEventListener("focus", () => refreshPlayerOptions(false));
-    playerInput.addEventListener("click", () => refreshPlayerOptions(false));
-    playerInput.addEventListener("input", () => {
-      if (!playerInput.value.trim()) refreshPlayerOptions(false);
+    teamSelect.addEventListener("change", () => {
+      playerSelect.innerHTML = msPlayerOptionsForTeam(teamSelect.value);
+      playerSelect.value = "";
     });
 
     row.querySelector(".msRemoveScorer").addEventListener("click", () => row.remove());
@@ -263,7 +246,7 @@
     const rows = Array.from(document.querySelectorAll("#msScorerRows .ms-scorer-row"));
     return rows.map(row => {
       const team = row.querySelector(".msScorerTeam").value;
-      const player = row.querySelector(".msScorerPlayer").value.trim();
+      const player = row.querySelector(".msScorerPlayer").value;
       const goals = Number(row.querySelector(".msScorerGoals").value);
       return { team, player, goals };
     }).filter(s => s.team && s.player && Number.isInteger(s.goals) && s.goals > 0);
@@ -307,7 +290,6 @@
       }
     }
 
-    // Update existing result for same date and teams if found, otherwise insert.
     const { data: existing, error: findError } = await db
       .from("results")
       .select("id,team_a,team_b")
@@ -322,11 +304,10 @@
     let resultError = null;
 
     if (existing && existing.length) {
-      const id = existing[0].id;
       const update = await db
         .from("results")
         .update({ match_date, team_a, team_b, score_a, score_b })
-        .eq("id", id);
+        .eq("id", existing[0].id);
       resultError = update.error;
     } else {
       const insert = await db
@@ -341,8 +322,6 @@
       return alert("Could not save match result. Use the original Match Centre form for the result, then try scorers again.");
     }
 
-    // If match code is supplied, replace scorers for that match code.
-    // If no match code, add scorer entries without deleting anything.
     if (match_code) {
       const del = await db.from("goal_scorers").delete().eq("match_code", match_code);
       if (del.error) {
