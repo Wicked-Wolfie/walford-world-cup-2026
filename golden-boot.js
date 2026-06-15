@@ -1,6 +1,6 @@
-// Walford V4.9 Golden Boot
+// Walford V5.4 Golden Boot Admin Cleanup
 // Add-on file. Requires goal_scorers table from golden-boot.sql.
-// Adds Golden Boot leaderboard and admin scorer entry.
+// Adds Golden Boot leaderboard, admin scorer entry, recent admin list, and delete mistakes.
 
 (function () {
   let gbDb = null;
@@ -61,6 +61,13 @@
     } catch (e) {}
     const row = gbTeams().find(t => t.team === teamName);
     return row ? row.owner || "" : "";
+  }
+
+  function gbDateLabel(value) {
+    if (!value) return "";
+    const parts = String(value).split("-");
+    if (parts.length !== 3) return value;
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
 
   async function gbLoad() {
@@ -137,10 +144,41 @@
     return latest.map(row => `
       <div class="gb-latest-row">
         <strong>${gbEsc(row.player)}</strong>
-        <span>${gbFlag(row.team)} ${gbEsc(row.team)}</span>
+        <span>${gbFlag(row.team)} ${gbEsc(row.team)}${row.match_code ? ` · ${gbEsc(row.match_code)}` : ""}</span>
         <em>${Number(row.goals || 0)} goal${Number(row.goals || 0) === 1 ? "" : "s"}</em>
       </div>
     `).join("");
+  }
+
+  function gbAdminList() {
+    if (!gbSession) return "";
+
+    if (!gbRows.length) {
+      return `
+        <div class="gb-admin-list">
+          <h4>Recent scorer entries</h4>
+          <p class="gb-muted">No scorer entries to edit yet.</p>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="gb-admin-list">
+        <h4>Recent scorer entries</h4>
+        <div class="gb-admin-rows">
+          ${gbRows.slice(0, 12).map(row => `
+            <div class="gb-admin-row" data-gb-row="${row.id}">
+              <div>
+                <strong>${gbEsc(row.player)}</strong>
+                <span>${gbFlag(row.team)} ${gbEsc(row.team)}${row.match_code ? ` · ${gbEsc(row.match_code)}` : ""}${row.match_date ? ` · ${gbEsc(gbDateLabel(row.match_date))}` : ""}</span>
+              </div>
+              <em>${Number(row.goals || 0)} goal${Number(row.goals || 0) === 1 ? "" : "s"}</em>
+              <button type="button" class="button dark gb-delete" data-gb-delete="${row.id}">Delete</button>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
   }
 
   function gbAdmin() {
@@ -158,6 +196,7 @@
         <button class="button gold" type="submit">Save scorer</button>
       </form>
       <p id="gbStatus" class="status"></p>
+      ${gbAdminList()}
     `;
   }
 
@@ -211,13 +250,20 @@
       </div>
 
       <div class="gb-panel gb-admin">
-        <h3>Admin: Add goal scorer</h3>
+        <h3>Admin: Add / fix goal scorers</h3>
         ${gbAdmin()}
       </div>
     `;
 
     const form = document.getElementById("goldenBootForm");
     if (form) form.addEventListener("submit", gbSave);
+
+    section.querySelectorAll("[data-gb-delete]").forEach(button => {
+      button.addEventListener("click", gbDelete);
+    });
+
+    // Let Squad Hub reconnect autocomplete after Golden Boot re-renders.
+    window.dispatchEvent(new CustomEvent("walford:goldenboot-rendered"));
   }
 
   async function gbSave(event) {
@@ -251,6 +297,28 @@
 
     document.getElementById("gbPlayer").value = "";
     document.getElementById("gbGoals").value = 1;
+
+    await gbLoad();
+    gbRender();
+  }
+
+  async function gbDelete(event) {
+    const id = Number(event.currentTarget.getAttribute("data-gb-delete"));
+    const row = gbRows.find(r => Number(r.id) === id);
+    if (!row) return;
+
+    const ok = confirm(`Delete this scorer entry?\n\n${row.player} — ${row.team} — ${row.goals} goal${Number(row.goals) === 1 ? "" : "s"}${row.match_code ? ` — ${row.match_code}` : ""}`);
+    if (!ok) return;
+
+    const db = gbClient();
+    if (!db || !gbSession) return alert("Please sign in first.");
+
+    const { error } = await db.from("goal_scorers").delete().eq("id", id);
+
+    if (error) {
+      console.error(error);
+      return alert("Could not delete scorer. Check Supabase delete policy.");
+    }
 
     await gbLoad();
     gbRender();
