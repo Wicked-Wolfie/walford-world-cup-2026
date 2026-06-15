@@ -133,3 +133,71 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Walford V5.4 Golden Boot Admin Cleanup */
+
+.gb-admin-list {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.gb-admin-list h4 {
+  margin: 0 0 12px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .78rem;
+  font-weight: 950;
+}
+
+.gb-admin-rows {
+  display: grid;
+  gap: 8px;
+}
+
+.gb-admin-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  background: rgba(0,0,0,.16);
+  border-radius: 16px;
+  padding: 10px;
+}
+
+.gb-admin-row strong {
+  display: block;
+  color: var(--text);
+}
+
+.gb-admin-row span {
+  display: block;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: .82rem;
+}
+
+.gb-admin-row em {
+  color: var(--gold2);
+  font-style: normal;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.gb-delete {
+  padding: 8px 12px;
+  min-width: 72px;
+}
+
+@media(max-width: 900px) {
+  .gb-admin-row {
+    grid-template-columns: 1fr;
+  }
+
+  .gb-delete {
+    width: fit-content;
+  }
+}
