@@ -1,31 +1,26 @@
-# Walford V5.7.5 Golden Boot Edit Entries
+# Walford V5.7.6 Player Select Dropdowns
 
 Upload/replace:
 - index.html
-- golden-boot.js
-- golden-boot.css
 
-Then run this in Supabase SQL Editor:
-- golden-boot-edit-policy.sql
+Upload these new files:
+- player-select-dropdowns.js
+- player-select-dropdowns.css
 
-What this adds:
-- Edit button next to each Recent scorer entry.
-- Click Edit to load that scorer into the admin form.
-- Amend date, match code, team, player, or goals.
-- Click Update scorer.
-- Cancel edit button returns the form to normal add mode.
+What this fixes:
+- The browser datalist kept closing, so you could not reliably select the next player.
+- This patch replaces those fragile player inputs with proper player select dropdowns.
+- Golden Boot player field becomes a real dropdown.
+- Match Result + Scorers player fields become real dropdowns.
+- Changing team reloads the player dropdown.
+- Player names stay alphabetical.
 
-How to use:
-1. Sign in as Admin.
-2. Go to Golden Boot.
-3. Find the entry in Recent scorer entries.
-4. Click Edit.
-5. Change the fields.
-6. Click Update scorer.
+No Supabase SQL changes needed.
 
-For missing entries:
-- Use the same form in normal Save scorer mode.
-
-Why the SQL is needed:
-- Delete and insert already worked.
-- Update needs its own Supabase Row Level Security policy.
+After upload:
+1. Commit files.
+2. Wait for GitHub Pages green tick.
+3. Press Ctrl + Shift + R.
+4. Sign in as Admin.
+5. Go to Golden Boot and try adding several scorers in a row.
+6. Go to Match Result + Scorers and try Add scorer row.
