@@ -1,10 +1,13 @@
-# Walford V4.6 Knockout Resolved Rounds
+# Walford V4.7 Knockout Phase 1
 
 Upload/replace:
 - knockout-auto.js
 
-Optional:
-- paste knockout-v4-6-extra.css at the bottom of knockout-auto.css
+Then paste the contents of:
+- knockout-v4-7-css-additions.css
+
+at the bottom of:
+- knockout-auto.css
 
 Do not replace:
 - index.html
@@ -14,7 +17,8 @@ Do not replace:
 - fixture-centre.css
 - config.js
 
-What it improves:
-- Saved winners resolve through later rounds.
-- Round of 16/Quarter/Semi/Final slots display real team names as soon as previous winners are saved.
-- Adds a champion/projected champion card.
+Fixes/adds:
+- Proper Champion card display.
+- Completed match status.
+- Knockout Results History section.
+- Cleaner waiting-placeholder styling.
