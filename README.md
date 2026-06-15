@@ -1,34 +1,27 @@
-# Walford V5.5 Match Result + Scorers Combined Entry
+# Walford V5.5.1 Index Script Order Fix
 
-This is a safe add-on.
+Upload/replace:
+- index.html
 
-Upload these two new files:
-- match-scorers-admin.js
-- match-scorers-admin.css
+What this fixes:
+- Removes the accidental duplicate unversioned knockout-auto.js line.
+- Keeps the correct script order:
+  config.js
+  app.js
+  fixture-centre.js
+  knockout-auto.js
+  home-knockout-tracker.js
+  golden-boot.js
+  squad-hub.js
+  match-scorers-admin.js
+- Updates cache-busting to v=5.5.1.
 
-Then edit index.html.
+Why:
+- knockout-auto.js was being loaded twice.
+- The first accidental copy was loaded before config.js.
+- Duplicate scripts can cause odd repeated rendering or admin behaviour.
 
-In the <head>, after your other CSS files, add:
-<link rel="stylesheet" href="match-scorers-admin.css?v=5.5.0">
-
-Near the bottom, after squad-hub.js, add:
-<script src="match-scorers-admin.js?v=5.5.0"></script>
-
-Recommended bottom order:
-<script src="config.js?v=5.3.0"></script>
-<script src="app.js?v=5.3.0"></script>
-<script src="fixture-centre.js?v=5.3.0"></script>
-<script src="knockout-auto.js?v=5.3.0"></script>
-<script src="home-knockout-tracker.js?v=5.3.0"></script>
-<script src="golden-boot.js?v=5.3.0"></script>
-<script src="squad-hub.js?v=5.3.0"></script>
-<script src="match-scorers-admin.js?v=5.5.0"></script>
-
-No Supabase changes needed.
-
-What it adds:
-- New Match Result + Scorers admin panel.
-- Saves match result to results table.
-- Saves scorers to goal_scorers table.
-- If match code is supplied, replaces old scorers for that match code.
-- Uses squad player autocomplete if Squad Hub database is loaded.
+After upload:
+1. Commit index.html.
+2. Wait for the GitHub Pages green tick.
+3. Open the site and press Ctrl + Shift + R.
