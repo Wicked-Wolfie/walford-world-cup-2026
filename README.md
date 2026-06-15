@@ -1,16 +1,14 @@
-# Walford World Cup Syndicate 2026 Website
+# Walford World Cup Syndicate 2026 V3.2
 
-Open `index.html` in a browser.
+Adds:
+- Today's Matches
+- Team v Team
+- Syndicate v Syndicate
+- Kick-off time in GMT
+- Relationship-based cheeky banter
+- Display name changes: Debbie -> Dubs, Charlotte -> Lottie
+- Group / Match Table with P W D L GF GA GD Pts Owner
 
-This is a static website with:
-- Landing page
-- Dashboard
-- Daily match result entry
-- Automatic leaderboard
-- Banter Index
-- Team tracker
-- Sweepstake draw
-- Knockout bonuses
-- Poster section
-
-Data saves in your browser automatically using localStorage.
+Before upload:
+1. Put your Supabase anon public key into config.js.
+2. Run fixtures_table.sql in Supabase if you want live fixtures from the database.
