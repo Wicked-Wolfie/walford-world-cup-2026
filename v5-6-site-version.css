@@ -1,0 +1,10 @@
+/* Walford V5.6 Site Version Tidy */
+
+.site-version {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
