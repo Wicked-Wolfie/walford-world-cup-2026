@@ -1,11 +1,18 @@
-# Walford World Cup Syndicate 2026 V3.3
+# Walford World Cup Syndicate 2026 V3.5
 
-New in V3.3:
-- Proper Group A-L tables
-- Overall table still available
-- Admin button fixed: opens Admin Panel and scrolls to Match Centre
-- Admin can enter results and fixtures after Supabase login
-- Relationship-based banter retained
-- Today's Matches uses fixtures table or fallback fixtures
+This patch changes the Group section to a professional 2-column group grid:
 
-Important: copy your working Supabase anon key into config.js before upload.
+A | B
+C | D
+E | F
+G | H
+I | J
+K | L
+
+Keep your existing Supabase config.js key.
+
+Replace these files in GitHub:
+- app.js
+- styles.css
+
+You do not need to change Supabase.

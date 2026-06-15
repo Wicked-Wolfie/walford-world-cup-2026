@@ -1,0 +1,60 @@
+/* V3.5 Proper Group Grid */
+.group-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 24px;
+}
+
+.group-jump {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.08);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+}
+
+.group-jump:hover {
+  background: var(--gold);
+  color: #07111e;
+}
+
+.group-tables {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.compact-group {
+  overflow-x: auto;
+}
+
+.compact-group h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--gold2);
+  margin: 0 0 14px;
+}
+
+.compact-group .table-row {
+  min-width: 720px;
+  grid-template-columns: 1.7fr .9fr .35fr .35fr .35fr .35fr .45fr .45fr .45fr .45fr;
+  font-size: .92rem;
+  padding: 10px 8px;
+}
+
+.compact-group .table-head {
+  font-size: .7rem;
+}
+
+@media(max-width: 1100px) {
+  .group-tables {
+    grid-template-columns: 1fr;
+  }
+}
