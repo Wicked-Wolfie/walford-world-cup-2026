@@ -1,4 +1,4 @@
-// Walford V5.4 Golden Boot Admin Cleanup
+// Walford V5.7.5 Golden Boot Edit Entries
 // Add-on file. Requires goal_scorers table from golden-boot.sql.
 // Adds Golden Boot leaderboard, admin scorer entry, recent admin list, and delete mistakes.
 
@@ -6,6 +6,7 @@
   let gbDb = null;
   let gbSession = null;
   let gbRows = [];
+  let gbEditingId = null;
 
   function gbClient() {
     if (gbDb) return gbDb;
@@ -173,7 +174,10 @@
                 <span>${gbFlag(row.team)} ${gbEsc(row.team)}${row.match_code ? ` · ${gbEsc(row.match_code)}` : ""}${row.match_date ? ` · ${gbEsc(gbDateLabel(row.match_date))}` : ""}</span>
               </div>
               <em>${Number(row.goals || 0)} goal${Number(row.goals || 0) === 1 ? "" : "s"}</em>
-              <button type="button" class="button dark gb-delete" data-gb-delete="${row.id}">Delete</button>
+              <div class="gb-admin-buttons">
+                <button type="button" class="button dark gb-edit" data-gb-edit="${row.id}">Edit</button>
+                <button type="button" class="button dark gb-delete" data-gb-delete="${row.id}">Delete</button>
+              </div>
             </div>
           `).join("")}
         </div>
@@ -193,9 +197,11 @@
         <select id="gbTeam">${gbTeamOptions()}</select>
         <input id="gbPlayer" type="text" placeholder="Player name">
         <input id="gbGoals" type="number" min="1" value="1" placeholder="Goals">
-        <button class="button gold" type="submit">Save scorer</button>
+        <button id="gbSaveBtn" class="button gold" type="submit">Save scorer</button>
+        <button id="gbCancelEdit" class="button dark hidden" type="button">Cancel edit</button>
       </form>
       <p id="gbStatus" class="status"></p>
+      <p id="gbEditHint" class="gb-edit-hint hidden"></p>
       ${gbAdminList()}
     `;
   }
@@ -262,8 +268,69 @@
       button.addEventListener("click", gbDelete);
     });
 
+    section.querySelectorAll("[data-gb-edit]").forEach(button => {
+      button.addEventListener("click", gbStartEdit);
+    });
+
+    const cancelEdit = document.getElementById("gbCancelEdit");
+    if (cancelEdit) cancelEdit.addEventListener("click", gbCancelEditMode);
+
     // Let Squad Hub reconnect autocomplete after Golden Boot re-renders.
     window.dispatchEvent(new CustomEvent("walford:goldenboot-rendered"));
+  }
+
+  function gbSetEditMode(row) {
+    gbEditingId = Number(row.id);
+
+    document.getElementById("gbMatchDate").value = row.match_date || "";
+    document.getElementById("gbMatchCode").value = row.match_code || "";
+    document.getElementById("gbTeam").value = row.team || "";
+    document.getElementById("gbPlayer").value = row.player || "";
+    document.getElementById("gbGoals").value = Number(row.goals || 1);
+
+    const saveBtn = document.getElementById("gbSaveBtn");
+    const cancelBtn = document.getElementById("gbCancelEdit");
+    const hint = document.getElementById("gbEditHint");
+
+    if (saveBtn) saveBtn.textContent = "Update scorer";
+    if (cancelBtn) cancelBtn.classList.remove("hidden");
+    if (hint) {
+      hint.classList.remove("hidden");
+      hint.textContent = `Editing: ${row.player} — ${row.team} — ${Number(row.goals || 0)} goal${Number(row.goals || 0) === 1 ? "" : "s"}`;
+    }
+
+    document.getElementById("gbPlayer")?.focus();
+    window.dispatchEvent(new CustomEvent("walford:goldenboot-rendered"));
+  }
+
+  function gbCancelEditMode() {
+    gbEditingId = null;
+
+    const form = document.getElementById("goldenBootForm");
+    if (form) form.reset();
+
+    const goals = document.getElementById("gbGoals");
+    if (goals) goals.value = 1;
+
+    const saveBtn = document.getElementById("gbSaveBtn");
+    const cancelBtn = document.getElementById("gbCancelEdit");
+    const hint = document.getElementById("gbEditHint");
+
+    if (saveBtn) saveBtn.textContent = "Save scorer";
+    if (cancelBtn) cancelBtn.classList.add("hidden");
+    if (hint) {
+      hint.classList.add("hidden");
+      hint.textContent = "";
+    }
+
+    window.dispatchEvent(new CustomEvent("walford:goldenboot-rendered"));
+  }
+
+  function gbStartEdit(event) {
+    const id = Number(event.currentTarget.getAttribute("data-gb-edit"));
+    const row = gbRows.find(r => Number(r.id) === id);
+    if (!row) return alert("Could not find that scorer entry.");
+    gbSetEditMode(row);
   }
 
   async function gbSave(event) {
@@ -282,21 +349,37 @@
       return alert("Enter a team, player and valid number of goals.");
     }
 
-    const { error } = await db.from("goal_scorers").insert({
+    const payload = {
       match_date,
       match_code,
       team,
       player,
       goals
-    });
+    };
+
+    let error = null;
+
+    if (gbEditingId) {
+      const result = await db
+        .from("goal_scorers")
+        .update(payload)
+        .eq("id", gbEditingId);
+      error = result.error;
+    } else {
+      const result = await db
+        .from("goal_scorers")
+        .insert(payload);
+      error = result.error;
+    }
 
     if (error) {
       console.error(error);
-      return alert("Could not save scorer. Check golden-boot.sql has been run.");
+      return alert(gbEditingId
+        ? "Could not update scorer. Check Supabase update policy."
+        : "Could not save scorer. Check golden-boot.sql has been run.");
     }
 
-    document.getElementById("gbPlayer").value = "";
-    document.getElementById("gbGoals").value = 1;
+    gbEditingId = null;
 
     await gbLoad();
     gbRender();
@@ -319,6 +402,8 @@
       console.error(error);
       return alert("Could not delete scorer. Check Supabase delete policy.");
     }
+
+    if (gbEditingId === id) gbEditingId = null;
 
     await gbLoad();
     gbRender();

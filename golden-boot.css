@@ -201,3 +201,40 @@
     width: fit-content;
   }
 }
+
+
+/* Walford V5.7.5 Golden Boot Edit Entries */
+
+.gb-admin-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.gb-edit,
+.gb-delete {
+  padding: 8px 12px;
+  min-width: 68px;
+}
+
+.gb-edit-hint {
+  margin-top: 10px;
+  border: 1px solid rgba(215,173,71,.35);
+  background: rgba(215,173,71,.1);
+  color: var(--gold2);
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+}
+
+#gbCancelEdit.hidden,
+.gb-edit-hint.hidden {
+  display: none !important;
+}
+
+@media(max-width: 900px) {
+  .gb-admin-buttons {
+    justify-content: flex-start;
+  }
+}
