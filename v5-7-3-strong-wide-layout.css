@@ -1,0 +1,148 @@
+/* Walford V5.7.3 Strong Wide Layout Override */
+
+/* V5.7.2 centred the site, but the original stylesheet still had narrower max-widths.
+   This file deliberately overrides those old caps so the desktop page uses the screen properly. */
+
+:root {
+  --walford-wide-max: 1500px;
+  --walford-wide-gutter: clamp(18px, 4vw, 56px);
+}
+
+/* Hard override the old narrow wrappers */
+.nav,
+.hero,
+main,
+footer,
+.section {
+  width: min(var(--walford-wide-max), calc(100vw - (var(--walford-wide-gutter) * 2))) !important;
+  max-width: var(--walford-wide-max) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Stop fixed/sticky nav transforms from shrinking/offsetting the page */
+.nav {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+}
+
+/* Hero should feel like a proper landing panel */
+.hero {
+  min-height: 360px;
+  grid-template-columns: minmax(460px, 1.4fr) minmax(280px, .6fr) !important;
+  align-items: center;
+  padding-left: clamp(24px, 4vw, 58px);
+  padding-right: clamp(24px, 4vw, 58px);
+}
+
+/* Give big sections room */
+.two-col {
+  grid-template-columns: minmax(520px, 1fr) minmax(620px, 1fr) !important;
+  gap: 22px !important;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.today-grid,
+.draw-grid,
+.banter-grid {
+  width: 100%;
+}
+
+/* Make the TV module bigger on desktop */
+.walford-tv-card {
+  grid-template-columns: minmax(380px, .75fr) minmax(760px, 1.35fr) !important;
+}
+
+.walford-tv-frame {
+  min-height: 360px;
+}
+
+/* Squad hub and tables should use space, but stay readable */
+.sh-grid {
+  grid-template-columns: 330px minmax(720px, 1fr) 330px !important;
+}
+
+.group-tables,
+#overallTable,
+#teamTable {
+  width: 100%;
+}
+
+/* Admin forms: spread neatly, not ultra thin */
+.result-form {
+  grid-template-columns: 170px minmax(240px, 1fr) 90px 32px 90px minmax(240px, 1fr) 160px !important;
+}
+
+.fixture-form {
+  grid-template-columns: 170px 150px minmax(260px, 1fr) 32px minmax(260px, 1fr) 150px !important;
+}
+
+.ms-result-grid {
+  grid-template-columns: 160px 150px minmax(260px, 1fr) 90px 90px minmax(260px, 1fr) !important;
+}
+
+/* Full-page screenshots can make content look small; slightly increase base readability on wide desktop */
+@media(min-width: 1200px) {
+  body {
+    font-size: 16px;
+  }
+
+  .section {
+    margin-top: 42px;
+  }
+
+  .section-title h2 {
+    font-size: clamp(1.7rem, 2.2vw, 2.6rem);
+  }
+}
+
+/* Wide monitor */
+@media(min-width: 1700px) {
+  :root {
+    --walford-wide-max: 1620px;
+  }
+}
+
+/* Normal laptop fallback */
+@media(max-width: 1250px) {
+  .hero,
+  .two-col,
+  .walford-tv-card,
+  .sh-grid,
+  .result-form,
+  .fixture-form,
+  .ms-result-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .result-form span,
+  .fixture-form span {
+    display: none;
+  }
+}
+
+/* Mobile */
+@media(max-width: 760px) {
+  .nav,
+  .hero,
+  main,
+  footer,
+  .section {
+    width: calc(100vw - 24px) !important;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .walford-tv-frame {
+    min-height: 0;
+  }
+}
