@@ -1,4 +1,6 @@
-/* Walford V4.3 Knockout Bracket */
+/* Walford V4.4 Proper Tournament Bracket Visual */
+/* Replaces knockout-auto.css only */
+
 .wk-notice {
   border: 1px solid rgba(215,173,71,.4);
   background: rgba(215,173,71,.08);
@@ -10,37 +12,82 @@
 
 .wk-bracket {
   display: grid;
-  grid-template-columns: repeat(5, minmax(240px, 1fr));
-  gap: 18px;
+  grid-template-columns: 330px 300px 280px 260px 240px;
+  gap: 34px;
+  align-items: stretch;
   overflow-x: auto;
-  padding-bottom: 8px;
+  padding: 10px 8px 24px;
 }
 
 .wk-round {
-  min-width: 240px;
+  position: relative;
+  min-width: 220px;
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
   border-radius: 26px;
   padding: 18px;
 }
 
 .wk-round h3 {
-  margin: 0 0 14px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0 0 18px;
   color: var(--gold2);
   font-size: 1.2rem;
+  letter-spacing: -.02em;
 }
 
 .wk-list {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
+.wk-round:nth-child(1) .wk-list { gap: 10px; }
+.wk-round:nth-child(2) .wk-list { gap: 24px; padding-top: 18px; }
+.wk-round:nth-child(3) .wk-list { gap: 58px; padding-top: 54px; }
+.wk-round:nth-child(4) .wk-list { gap: 132px; padding-top: 132px; }
+.wk-round:nth-child(5) .wk-list { padding-top: 260px; }
+
 .wk-match {
+  position: relative;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: rgba(0,0,0,.2);
+  background: rgba(0,0,0,.24);
   padding: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.2);
 }
+
+.wk-match::after {
+  content: "";
+  position: absolute;
+  right: -35px;
+  top: 50%;
+  width: 35px;
+  height: 1px;
+  background: rgba(215,173,71,.35);
+}
+
+.wk-round:last-child .wk-match::after {
+  display: none;
+}
+
+.wk-round:nth-child(1) .wk-match:nth-child(odd)::before,
+.wk-round:nth-child(2) .wk-match:nth-child(odd)::before,
+.wk-round:nth-child(3) .wk-match:nth-child(odd)::before,
+.wk-round:nth-child(4) .wk-match:nth-child(odd)::before {
+  content: "";
+  position: absolute;
+  right: -35px;
+  top: 50%;
+  width: 1px;
+  height: calc(100% + 10px);
+  background: rgba(215,173,71,.25);
+}
+
+.wk-round:nth-child(2) .wk-match:nth-child(odd)::before { height: calc(100% + 24px); }
+.wk-round:nth-child(3) .wk-match:nth-child(odd)::before { height: calc(100% + 58px); }
+.wk-round:nth-child(4) .wk-match:nth-child(odd)::before { height: calc(100% + 132px); }
 
 .wk-match small {
   display: block;
@@ -56,8 +103,18 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  padding: 6px 0;
+  padding: 7px 0;
   font-weight: 900;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+
+.wk-team:first-of-type {
+  border-top: 0;
+}
+
+.wk-team span {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .wk-team em {
@@ -67,8 +124,21 @@
   white-space: nowrap;
 }
 
+.wk-round:first-child .wk-match {
+  border-left: 3px solid rgba(215,173,71,.55);
+}
+
+.wk-round:last-child {
+  border-color: rgba(215,173,71,.45);
+  background: linear-gradient(180deg, rgba(215,173,71,.12), rgba(255,255,255,.03));
+}
+
+.wk-round:last-child h3::after {
+  content: " 🏆";
+}
+
 @media(max-width: 1200px) {
   .wk-bracket {
-    grid-template-columns: repeat(5, 260px);
+    grid-template-columns: 330px 300px 280px 260px 240px;
   }
 }

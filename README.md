@@ -1,19 +1,15 @@
-# Walford V4.3 Knockout Bracket Auto Section
+# Walford V4.4 Proper Bracket Visual
 
-Upload/replace:
-- index.html
-- knockout-auto.js
+Upload/replace only:
 - knockout-auto.css
 
 Do not replace:
+- index.html
+- knockout-auto.js
 - app.js
 - styles.css
 - fixture-centre.js
 - fixture-centre.css
 - config.js
 
-What it does:
-- Adds Knockout to the nav.
-- Injects a Knockout Bracket section before Banter.
-- Projects Group Winner and Runner-up slots using your current live group tables.
-- Keeps working Supabase/Admin/Fixture Centre untouched.
+This improves the knockout section into a proper tournament bracket-style layout with connecting lines and better spacing.
