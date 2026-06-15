@@ -1,8 +1,6 @@
-# Walford V3.9 Fixture Centre Clean UI
+# Walford V4.0 Fixture Centre Final Polish
 
-This fixes the Fixture Centre so it is easier to understand.
-
-Upload/replace:
+Upload/replace only:
 - fixture-centre.js
 - fixture-centre.css
 
@@ -13,6 +11,7 @@ Do not replace:
 - config.js
 
 Changes:
-- Today's Fixtures hides the date picker.
-- Future Fixtures shows date buttons: 11 Jun, 12 Jun, 13 Jun, etc.
-- Results still shows latest results.
+- Opens on Today's Fixtures by default.
+- Results tab is renamed Latest Results.
+- Future Fixtures shows only useful upcoming date buttons.
+- Removes the duplicated selected-date title.

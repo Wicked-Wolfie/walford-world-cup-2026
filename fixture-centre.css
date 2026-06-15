@@ -1,4 +1,4 @@
-/* Walford V3.9 Fixture Centre Clean UI */
+/* Walford V4.0 Fixture Centre Final Polish */
 .fixture-date-chooser {
   display: flex;
   flex-wrap: wrap;
@@ -23,6 +23,11 @@
 
 .fixture-date-pill:hover {
   border-color: var(--gold);
+}
+
+.fixture-mode-title {
+  margin-top: 6px;
+  margin-bottom: 12px;
 }
 
 .today-controls {

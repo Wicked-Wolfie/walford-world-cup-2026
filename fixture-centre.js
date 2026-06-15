@@ -1,4 +1,4 @@
-// Walford V3.9 Fixture Centre Clean UI
+// Walford V4.0 Fixture Centre Final Polish
 // Replaces fixture-centre.js only.
 // Keeps app.js, Supabase, Admin and existing results untouched.
 
@@ -27,6 +27,12 @@ function walfordShortDate(iso) {
 
 function walfordNearestFixtureDate(fromIso) {
   return WALFORD_FIXTURE_DATES.find(d => d >= fromIso) || WALFORD_FIXTURE_DATES[WALFORD_FIXTURE_DATES.length - 1];
+}
+
+function walfordUpcomingFixtureDates() {
+  const today = walfordIsoToday();
+  const upcoming = WALFORD_FIXTURE_DATES.filter(d => d >= today);
+  return upcoming.length ? upcoming : WALFORD_FIXTURE_DATES.slice(-4);
 }
 
 function walfordSetActiveTab(mode) {
@@ -88,16 +94,17 @@ function walfordSetFutureMode(selectedDate) {
   walfordSetActiveTab("future");
   walfordHideNativeDate();
 
+  const upcomingDates = walfordUpcomingFixtureDates();
   const today = walfordIsoToday();
-  const chosen = selectedDate || walfordNearestFixtureDate(today);
+  const chosen = selectedDate || upcomingDates[0] || walfordNearestFixtureDate(today);
 
-  walfordTitle(`Future Fixtures — ${walfordDisplayDate(chosen)}`);
+  walfordTitle("Future Fixtures");
   walfordRenderViaApp(chosen);
 
   const chooser = walfordEnsureDateChooser();
   if (!chooser) return;
 
-  chooser.innerHTML = WALFORD_FIXTURE_DATES.map(date => {
+  chooser.innerHTML = upcomingDates.map(date => {
     const active = date === chosen ? "active" : "";
     return `<button type="button" class="fixture-date-pill ${active}" data-date="${date}">${walfordShortDate(date)}</button>`;
   }).join("");
@@ -126,16 +133,22 @@ function walfordSetResultsMode() {
   }
 }
 
+function walfordRenameResultsTab() {
+  const resultsBtn = document.getElementById("fcResults");
+  if (resultsBtn) resultsBtn.textContent = "Latest Results";
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const todayBtn = document.getElementById("fcToday");
   const futureBtn = document.getElementById("fcFuture");
   const resultsBtn = document.getElementById("fcResults");
 
+  walfordRenameResultsTab();
+
   if (todayBtn) todayBtn.addEventListener("click", walfordSetTodayMode);
   if (futureBtn) futureBtn.addEventListener("click", () => walfordSetFutureMode());
   if (resultsBtn) resultsBtn.addEventListener("click", walfordSetResultsMode);
 
-  // Hide the original controls immediately.
   setTimeout(() => {
     walfordHideNativeDate();
     walfordSetTodayMode();
