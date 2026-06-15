@@ -1,0 +1,74 @@
+/* Walford V4.3 Knockout Bracket */
+.wk-notice {
+  border: 1px solid rgba(215,173,71,.4);
+  background: rgba(215,173,71,.08);
+  border-radius: 20px;
+  padding: 16px 18px;
+  margin: 18px 0;
+  color: var(--gold2);
+}
+
+.wk-bracket {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(240px, 1fr));
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.wk-round {
+  min-width: 240px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
+  border-radius: 26px;
+  padding: 18px;
+}
+
+.wk-round h3 {
+  margin: 0 0 14px;
+  color: var(--gold2);
+  font-size: 1.2rem;
+}
+
+.wk-list {
+  display: grid;
+  gap: 12px;
+}
+
+.wk-match {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(0,0,0,.2);
+  padding: 12px;
+}
+
+.wk-match small {
+  display: block;
+  color: var(--gold);
+  font-weight: 900;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .68rem;
+}
+
+.wk-team {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  font-weight: 900;
+}
+
+.wk-team em {
+  color: var(--muted);
+  font-style: normal;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+@media(max-width: 1200px) {
+  .wk-bracket {
+    grid-template-columns: repeat(5, 260px);
+  }
+}

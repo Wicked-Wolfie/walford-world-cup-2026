@@ -1,15 +1,19 @@
-# Walford V4.1 Future Fixtures Fix
+# Walford V4.3 Knockout Bracket Auto Section
 
-Upload/replace only:
-- fixture-centre.js
+Upload/replace:
+- index.html
+- knockout-auto.js
+- knockout-auto.css
 
 Do not replace:
-- index.html
 - app.js
 - styles.css
+- fixture-centre.js
 - fixture-centre.css
 - config.js
 
-Fix:
-- Future Fixtures now starts from the day after today.
-- If today is 15 Jun, Future Fixtures starts at 16 Jun.
+What it does:
+- Adds Knockout to the nav.
+- Injects a Knockout Bracket section before Banter.
+- Projects Group Winner and Runner-up slots using your current live group tables.
+- Keeps working Supabase/Admin/Fixture Centre untouched.
