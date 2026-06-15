@@ -1,0 +1,59 @@
+/* Walford V4.8 Homepage Knockout Tracker */
+
+.home-ko {
+  margin-top: 26px;
+}
+
+.home-ko-title {
+  margin-bottom: 12px;
+}
+
+.home-ko-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.home-ko-card {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.03));
+  border-radius: 24px;
+  padding: 18px;
+  box-shadow: 0 18px 42px rgba(0,0,0,.22);
+}
+
+.home-ko-card.featured {
+  border-color: rgba(215,173,71,.55);
+  background: linear-gradient(180deg, rgba(215,173,71,.13), rgba(255,255,255,.03));
+}
+
+.home-ko-card span {
+  display: block;
+  color: var(--gold);
+  font-size: .74rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.home-ko-card strong {
+  display: block;
+  color: var(--text);
+  font-size: 1.08rem;
+  line-height: 1.35;
+}
+
+.home-ko-card em {
+  display: block;
+  color: var(--gold2);
+  font-style: normal;
+  font-weight: 850;
+  margin-top: 10px;
+}
+
+@media(max-width: 900px) {
+  .home-ko-grid {
+    grid-template-columns: 1fr;
+  }
+}
