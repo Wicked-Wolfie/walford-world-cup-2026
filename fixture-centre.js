@@ -1,64 +1,113 @@
-// Walford V3.7 Fixture Centre Tabs
-// This is intentionally separate from app.js so your working Supabase/Admin code stays untouched.
+// Walford V3.8 Fixture Centre Date Fix
+// Replaces V3.7 fixture-centre.js
+// Keeps app.js untouched.
 
 function walfordIsoToday() {
   return new Date().toISOString().slice(0, 10);
 }
 
 function walfordDisplayDate(iso) {
-  if (!iso) return "";
-  const parts = iso.split("-");
-  if (parts.length !== 3) return iso;
-  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  if (!iso || !iso.includes("-")) return iso || "";
+  const [yyyy, mm, dd] = iso.split("-");
+  return `${dd}/${mm}/${yyyy}`;
 }
 
-function setFixtureMode(mode) {
-  const todayBtn = document.getElementById("fcToday");
-  const futureBtn = document.getElementById("fcFuture");
-  const resultsBtn = document.getElementById("fcResults");
+function walfordFixtureDates() {
+  if (!Array.isArray(window.fixtures) && typeof fixtures === "undefined") return [];
+  const source = typeof fixtures !== "undefined" ? fixtures : window.fixtures;
+  return [...new Set((source || []).map(f => f.date).filter(Boolean))].sort();
+}
+
+function walfordNearestFixtureDate(fromIso) {
+  const dates = walfordFixtureDates();
+  if (!dates.length) return fromIso;
+  return dates.find(d => d >= fromIso) || dates[dates.length - 1];
+}
+
+function walfordSetTab(mode) {
+  ["fcToday", "fcFuture", "fcResults"].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.remove("active");
+  });
+
+  const active = mode === "today" ? "fcToday" : mode === "future" ? "fcFuture" : "fcResults";
+  const btn = document.getElementById(active);
+  if (btn) btn.classList.add("active");
+}
+
+function walfordUpdateTitle(text) {
+  const title = document.getElementById("fixtureModeTitle");
+  if (title) title.textContent = text;
+}
+
+function walfordShowDateControls(show) {
   const dateInput = document.getElementById("todayDate");
   const showBtn = document.getElementById("showTodayBtn");
-  const title = document.getElementById("fixtureModeTitle");
+  if (dateInput) dateInput.style.display = show ? "" : "none";
+  if (showBtn) showBtn.style.display = show ? "" : "none";
+}
+
+function walfordRenderSelectedFixtures() {
+  if (typeof renderToday === "function") renderToday();
+}
+
+function walfordSetTodayMode() {
+  walfordSetTab("today");
+  walfordShowDateControls(false);
+
+  const input = document.getElementById("todayDate");
+  const realToday = walfordIsoToday();
+
+  if (input) input.value = realToday;
+  walfordUpdateTitle(`Today’s Fixtures — ${walfordDisplayDate(realToday)}`);
+  walfordRenderSelectedFixtures();
+}
+
+function walfordSetFutureMode(optionalDate) {
+  walfordSetTab("future");
+  walfordShowDateControls(true);
+
+  const input = document.getElementById("todayDate");
+  const today = walfordIsoToday();
+  const selected = optionalDate || (input && input.value) || walfordNearestFixtureDate(today);
+  const safeDate = walfordNearestFixtureDate(selected);
+
+  if (input) input.value = safeDate;
+
+  const showBtn = document.getElementById("showTodayBtn");
+  if (showBtn) showBtn.textContent = "Show fixtures";
+
+  walfordUpdateTitle(`Future Fixtures — ${walfordDisplayDate(safeDate)}`);
+  walfordRenderSelectedFixtures();
+}
+
+function walfordSetResultsMode() {
+  walfordSetTab("results");
+  walfordShowDateControls(false);
+
   const todayGrid = document.getElementById("todayMatches");
   const resultsList = document.getElementById("resultsList");
 
-  [todayBtn, futureBtn, resultsBtn].forEach(btn => btn && btn.classList.remove("active"));
-  if (mode === "today" && todayBtn) todayBtn.classList.add("active");
-  if (mode === "future" && futureBtn) futureBtn.classList.add("active");
-  if (mode === "results" && resultsBtn) resultsBtn.classList.add("active");
+  walfordUpdateTitle("Latest Results");
 
-  if (mode === "today") {
-    if (title) title.textContent = "Today’s Fixtures";
-    if (dateInput) {
-      dateInput.value = walfordIsoToday();
-      dateInput.style.display = "none";
-    }
-    if (showBtn) showBtn.style.display = "none";
-    if (todayGrid) todayGrid.style.display = "";
-    if (typeof renderToday === "function") renderToday();
+  if (todayGrid && resultsList) {
+    todayGrid.innerHTML = resultsList.innerHTML || "<p>No results loaded yet.</p>";
   }
+}
 
-  if (mode === "future") {
-    if (title) title.textContent = "Future Fixtures";
-    if (dateInput) dateInput.style.display = "";
-    if (showBtn) {
-      showBtn.style.display = "";
-      showBtn.textContent = "Show fixtures";
-    }
-    if (todayGrid) todayGrid.style.display = "";
-    if (typeof renderToday === "function") renderToday();
-  }
+function walfordBuildFutureDateList() {
+  const input = document.getElementById("todayDate");
+  if (!input) return;
 
-  if (mode === "results") {
-    if (title) title.textContent = "Latest Results";
-    if (dateInput) dateInput.style.display = "none";
-    if (showBtn) showBtn.style.display = "none";
+  const dates = walfordFixtureDates();
+  if (!dates.length) return;
 
-    if (todayGrid && resultsList) {
-      todayGrid.style.display = "";
-      todayGrid.innerHTML = resultsList.innerHTML || "<p>No results loaded yet.</p>";
-    }
-  }
+  const today = walfordIsoToday();
+  const nearest = walfordNearestFixtureDate(today);
+
+  input.value = nearest;
+  input.min = dates[0];
+  input.max = dates[dates.length - 1];
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -68,22 +117,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const dateInput = document.getElementById("todayDate");
   const showBtn = document.getElementById("showTodayBtn");
 
-  if (todayBtn) todayBtn.addEventListener("click", () => setFixtureMode("today"));
-  if (futureBtn) futureBtn.addEventListener("click", () => setFixtureMode("future"));
-  if (resultsBtn) resultsBtn.addEventListener("click", () => setFixtureMode("results"));
+  if (todayBtn) todayBtn.addEventListener("click", walfordSetTodayMode);
+
+  if (futureBtn) {
+    futureBtn.addEventListener("click", () => {
+      const input = document.getElementById("todayDate");
+      walfordSetFutureMode(input ? input.value : undefined);
+    });
+  }
+
+  if (resultsBtn) resultsBtn.addEventListener("click", walfordSetResultsMode);
 
   if (dateInput) {
     dateInput.addEventListener("change", () => {
-      setFixtureMode("future");
+      walfordSetFutureMode(dateInput.value);
     });
   }
 
   if (showBtn) {
     showBtn.addEventListener("click", () => {
-      setFixtureMode("future");
+      const input = document.getElementById("todayDate");
+      walfordSetFutureMode(input ? input.value : undefined);
     });
   }
 
-  // Let app.js finish its first render, then switch to true Today's Fixtures mode.
-  setTimeout(() => setFixtureMode("today"), 800);
+  // Wait for app.js/Supabase to load fixtures, then initialise.
+  setTimeout(() => {
+    walfordBuildFutureDateList();
+    walfordSetTodayMode();
+  }, 1200);
 });

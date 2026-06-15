@@ -1,19 +1,19 @@
-# Walford V3.7 Fixture Centre Patch
+# Walford V3.8 Fixture Date Fix
 
-This patch fixes the confusing "Today's Matches" section.
+This replaces only fixture-centre.js.
 
-It changes it to:
+What it fixes:
+- Today's Fixtures now uses the real current date and hides the date picker.
+- Future Fixtures shows the date picker.
+- The title changes to "Future Fixtures — DD/MM/YYYY".
+- Changing the date keeps the tab and fixtures in sync.
+- Results tab still shows latest results.
 
-- Fixture Centre
-- Today's Fixtures tab: no date selector, uses actual current date
-- Future Fixtures tab: date selector appears
-- Results tab: shows latest results in the same area
-
-Upload/replace these files in GitHub:
-- index.html
+Upload/replace only:
 - fixture-centre.js
-- fixture-centre.css
 
-Do not replace app.js.
-Do not replace styles.css.
-Do not replace config.js.
+Do not replace:
+- index.html
+- app.js
+- styles.css
+- config.js
