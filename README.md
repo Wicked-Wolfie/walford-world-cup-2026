@@ -1,35 +1,40 @@
-# Walford V4.8 Homepage Knockout Tracker
+# Walford V4.9 Golden Boot
 
-This is Phase 2.
+Phase 3 add-on.
 
-Upload these two new files:
-- home-knockout-tracker.js
-- home-knockout-tracker.css
+Files:
+- golden-boot.sql
+- golden-boot.js
+- golden-boot.css
 
-Then edit index.html and add these two lines:
+Step 1:
+Run golden-boot.sql in Supabase SQL Editor.
 
-1. In the <head>, near the other CSS files:
-<link rel="stylesheet" href="home-knockout-tracker.css">
+Step 2:
+Upload these two files to GitHub:
+- golden-boot.js
+- golden-boot.css
 
-2. Near the bottom, after config.js/app.js and after knockout-auto.js:
-<script src="home-knockout-tracker.js"></script>
+Step 3:
+Edit index.html.
 
-Recommended script order near the bottom:
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+In the <head>, add:
+<link rel="stylesheet" href="golden-boot.css">
+
+Near the bottom, after home-knockout-tracker.js, add:
+<script src="golden-boot.js"></script>
+
+Recommended bottom script order:
 <script src="config.js"></script>
 <script src="app.js"></script>
 <script src="fixture-centre.js"></script>
 <script src="knockout-auto.js"></script>
 <script src="home-knockout-tracker.js"></script>
+<script src="golden-boot.js"></script>
 
 What it adds:
-- Homepage Knockout Tracker
-- Latest Knockout Result
-- Next Available Knockout Match
-- Road to the Final card
-
-It does not change:
-- app.js
-- knockout-auto.js
-- config.js
-- Supabase tables
+- Golden Boot section
+- Current scorer leader card
+- Top scorers leaderboard
+- Latest scorer entries
+- Admin goal scorer form

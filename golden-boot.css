@@ -1,0 +1,135 @@
+/* Walford V4.9 Golden Boot */
+
+.golden-boot {
+  margin-top: 28px;
+}
+
+.gb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1.2fr;
+  gap: 16px;
+}
+
+.gb-panel {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.03));
+  border-radius: 26px;
+  padding: 20px;
+  box-shadow: 0 18px 42px rgba(0,0,0,.22);
+}
+
+.gb-main {
+  border-color: rgba(215,173,71,.55);
+  background: linear-gradient(180deg, rgba(215,173,71,.14), rgba(255,255,255,.035));
+}
+
+.gb-trophy {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+}
+
+.gb-main span,
+.gb-player span,
+.gb-latest-row span,
+.gb-admin-note,
+.gb-muted {
+  color: var(--muted);
+}
+
+.gb-main span,
+.gb-panel h3 {
+  color: var(--gold);
+  text-transform: uppercase;
+  font-weight: 950;
+  letter-spacing: .08em;
+  font-size: .78rem;
+}
+
+.gb-main h3 {
+  color: var(--text);
+  font-size: 1.8rem;
+  margin: 8px 0;
+}
+
+.gb-main strong {
+  color: var(--gold2);
+  font-size: 1.2rem;
+}
+
+.gb-list,
+.gb-latest {
+  display: grid;
+  gap: 10px;
+}
+
+.gb-player,
+.gb-latest-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+}
+
+.gb-player:first-child,
+.gb-latest-row:first-child {
+  border-top: 0;
+}
+
+.gb-player.leader {
+  color: var(--gold2);
+}
+
+.gb-rank {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(215,173,71,.5);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+  font-weight: 950;
+}
+
+.gb-player strong,
+.gb-latest-row strong {
+  display: block;
+  color: var(--text);
+}
+
+.gb-player em,
+.gb-latest-row em {
+  color: var(--gold2);
+  font-style: normal;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.gb-empty {
+  color: var(--muted);
+  padding: 12px 0;
+}
+
+.gb-empty strong,
+.gb-empty span {
+  display: block;
+}
+
+.gb-admin {
+  margin-top: 16px;
+}
+
+.gb-form {
+  display: grid;
+  grid-template-columns: 170px 170px 1fr 1fr 120px auto;
+  gap: 10px;
+  align-items: center;
+}
+
+@media(max-width: 1100px) {
+  .gb-grid,
+  .gb-form {
+    grid-template-columns: 1fr;
+  }
+}
