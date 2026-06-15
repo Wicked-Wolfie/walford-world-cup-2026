@@ -1,4 +1,4 @@
-// Walford V5.0 Squad Hub
+// Walford V5.1 Squad Hub - responsiveness fix
 // Add-on file. Requires squad-hub.sql.
 // Adds team squads, head coach cards, player details, and Golden Boot scorer autocomplete.
 
@@ -325,10 +325,13 @@
   }
 
   function shWatchGoldenBoot() {
-    const observer = new MutationObserver(() => shUpgradeGoldenBoot());
-    observer.observe(document.body, { childList: true, subtree: true });
+    // V5.1 safety fix:
+    // Do not observe the whole page. The previous observer could react to
+    // its own datalist updates and make the browser think the page was stuck.
+    // A few delayed checks are enough because Golden Boot loads after the page starts.
     setTimeout(shUpgradeGoldenBoot, 1000);
-    setTimeout(shUpgradeGoldenBoot, 3000);
+    setTimeout(shUpgradeGoldenBoot, 2500);
+    setTimeout(shUpgradeGoldenBoot, 5000);
   }
 
   async function shStart() {
