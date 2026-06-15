@@ -1,0 +1,37 @@
+/* Walford V3.7 Fixture Centre */
+.fixture-centre-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.fixture-centre-tabs button {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.08);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.fixture-centre-tabs button.active {
+  background: linear-gradient(135deg,var(--gold),var(--gold2));
+  color: #07111e;
+}
+
+.fixture-mode-title {
+  color: var(--gold2);
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+#todayDate[style*="none"] + #showTodayBtn {
+  display: none;
+}
+
+#todayMatches .result-item {
+  text-align: left;
+}
