@@ -156,13 +156,86 @@
     return code;
   }
 
-  function gbExpectedCodes(teamName) {
-    const allocationCode = gbTeamCode(teamName);
-    const codes = new Set();
-    if (allocationCode) codes.add(allocationCode);
-    (GB_TEAM_CODE_ALIASES[allocationCode] || []).forEach(code => codes.add(code));
-    return Array.from(codes);
-  }
+function gbExpectedCodes(teamName) {
+  const teamKey = gbCanonTeam(teamName);
+  const allocationCode = gbTeamCode(teamName);
+  const codes = new Set();
+
+  if (allocationCode) codes.add(allocationCode);
+
+  // Add direct aliases for the allocation/site code.
+  (GB_TEAM_CODE_ALIASES[allocationCode] || []).forEach(code => codes.add(code));
+
+  // Add reverse aliases too, e.g. if stored code is USA, also allow US;
+  // if stored code is SUI, also allow CH.
+  Object.entries(GB_TEAM_CODE_ALIASES).forEach(([siteCode, fifaCodes]) => {
+    if (allocationCode === siteCode || fifaCodes.includes(allocationCode)) {
+      codes.add(siteCode);
+      fifaCodes.forEach(code => codes.add(code));
+    }
+  });
+
+  // Team-name fallbacks for cases where gbTeamCode() is blank or inconsistent.
+  const byName = {
+    "united states": ["USA", "US"],
+    "switzerland": ["SUI", "CH"],
+    "mexico": ["MEX", "MX"],
+    "south korea": ["KOR", "KR"],
+    "czechia": ["CZE", "CZ"],
+    "south africa": ["RSA", "ZA"],
+    "canada": ["CAN", "CA"],
+    "qatar": ["QAT", "QA"],
+    "bosnia and herzegovina": ["BIH", "BA"],
+    "scotland": ["SCO", "GB-SCT"],
+    "morocco": ["MAR", "MA"],
+    "brazil": ["BRA", "BR"],
+    "haiti": ["HTI", "HT"],
+    "australia": ["AUS", "AU"],
+    "turkiye": ["TUR", "TR"],
+    "paraguay": ["PAR", "PY"],
+    "germany": ["GER", "DE"],
+    "ivory coast": ["CIV", "CI"],
+    "ecuador": ["ECU", "EC"],
+    "curacao": ["CUW", "CW"],
+    "sweden": ["SWE", "SE"],
+    "japan": ["JPN", "JP"],
+    "netherlands": ["NED", "NL"],
+    "tunisia": ["TUN", "TN"],
+    "belgium": ["BEL", "BE"],
+    "egypt": ["EGY", "EG"],
+    "iran": ["IRI", "IR"],
+    "new zealand": ["NZL", "NZ"],
+    "spain": ["ESP", "ES"],
+    "cape verde": ["CPV", "CV"],
+    "saudi arabia": ["KSA", "SA"],
+    "uruguay": ["URU", "UY"],
+    "france": ["FRA", "FR"],
+    "senegal": ["SEN", "SN"],
+    "iraq": ["IRQ", "IQ"],
+    "norway": ["NOR", "NO"],
+    "argentina": ["ARG", "AR"],
+    "algeria": ["DZA", "DZ", "ALG"],
+    "austria": ["AUT", "AT"],
+    "jordan": ["JOR", "JO"],
+    "portugal": ["POR", "PT"],
+    "dr congo": ["COD", "CD", "DRC"],
+    "uzbekistan": ["UZB", "UZ"],
+    "colombia": ["COL", "CO"],
+    "england": ["ENG", "GB-ENG"],
+    "croatia": ["CRO", "HR"],
+    "ghana": ["GHA", "GH"],
+    "panama": ["PAN", "PA"]
+  };
+
+  Object.entries(byName).forEach(([name, nameCodes]) => {
+    const aliases = [name, ...(GB_TEAM_NAME_ALIASES[name] || [])].map(gbCanonTeam);
+    if (aliases.includes(teamKey)) {
+      nameCodes.forEach(code => codes.add(code));
+    }
+  });
+
+  return Array.from(codes).filter(Boolean);
+}
 
   function gbTeamKeys(team) {
     const key = gbCanonTeam(team);
