@@ -382,6 +382,16 @@
     `;
   }
 
+function gbTeams() {
+  if (typeof teams !== "undefined" && Array.isArray(teams)) return teams;
+  if (typeof window.teams !== "undefined" && Array.isArray(window.teams)) return window.teams;
+  if (typeof allocations !== "undefined" && Array.isArray(allocations)) return allocations;
+  if (typeof window.allocations !== "undefined" && Array.isArray(window.allocations)) return window.allocations;
+  if (typeof TEAMS !== "undefined" && Array.isArray(TEAMS)) return TEAMS;
+  if (typeof window.TEAMS !== "undefined" && Array.isArray(window.TEAMS)) return window.TEAMS;
+  return [];
+}
+  
   function gbSortedTeams() {
   return gbTeams()
     .slice()
