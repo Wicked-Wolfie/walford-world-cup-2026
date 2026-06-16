@@ -309,7 +309,35 @@ function gbPlayerMatchesTeam(player, teamName) {
   )) {
     return true;
   }
+const selectedKey = gbCanonTeam(gbCleanTeamLabel(teamName));
+const playerKeyRaw = gbCanonTeam(playerTeam);
+const playerKeyClean = gbCanonTeam(gbCleanTeamLabel(playerTeam));
 
+if (selectedKey === "united states") {
+  if (
+    playerKeyRaw === "united states" ||
+    playerKeyClean === "united states" ||
+    playerKeyRaw === "usa" ||
+    playerKeyClean === "usa" ||
+    playerKeyRaw.includes("united states") ||
+    playerKeyRaw.includes("usa")
+  ) {
+    return true;
+  }
+}
+
+if (selectedKey === "spain") {
+  if (
+    playerKeyRaw === "spain" ||
+    playerKeyClean === "spain" ||
+    playerKeyRaw === "esp" ||
+    playerKeyClean === "esp" ||
+    playerKeyRaw.includes("spain")
+  ) {
+    return true;
+  }
+}
+  
   const cleanPlayerTeam = gbCleanTeamLabel(playerTeam);
   const cleanSelectedTeam = gbCleanTeamLabel(teamName);
 
