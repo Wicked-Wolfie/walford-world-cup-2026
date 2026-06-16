@@ -382,6 +382,20 @@
     `;
   }
 
+  function gbSortedTeams() {
+  return gbTeams()
+    .slice()
+    .sort((a, b) => String(a.team || "").localeCompare(String(b.team || ""), "en", { sensitivity: "base" }));
+}
+
+function gbTeamOptions(selected = "") {
+  return gbSortedTeams().map(t => `
+    <option value="${gbEsc(t.team)}" ${t.team === selected ? "selected" : ""}>
+      ${gbEsc(t.flag || "")} ${gbEsc(t.team)}
+    </option>
+  `).join("");
+}
+  
   function gbAdmin() {
     if (!gbSession) {
       return `<div class="gb-admin-note">Sign in using the main Admin button to add goal scorers.</div>`;
