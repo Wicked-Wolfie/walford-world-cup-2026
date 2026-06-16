@@ -472,6 +472,57 @@ function gbExpectedCodes(teamName) {
     `;
   }
 
+function gbTeamName(row) {
+  const raw = String(
+    row?.team ||
+    row?.name ||
+    row?.country ||
+    row?.team_name ||
+    row?.nation ||
+    ""
+  ).trim();
+
+  const parts = raw.split(/\s+/);
+  if (parts.length > 1) {
+    const first = parts[0].toUpperCase();
+    const knownCodes = new Set();
+
+    Object.entries(GB_TEAM_CODE_ALIASES).forEach(([siteCode, fifaCodes]) => {
+      knownCodes.add(siteCode);
+      fifaCodes.forEach(code => knownCodes.add(code));
+    });
+
+    if (knownCodes.has(first)) {
+      return parts.slice(1).join(" ").trim();
+    }
+  }
+
+  return raw;
+}
+
+function gbTeamCodeFromRow(row) {
+  return String(
+    row?.code ||
+    row?.team_code ||
+    row?.country_code ||
+    row?.iso ||
+    ""
+  ).toUpperCase().trim();
+}
+
+function gbTeamFlagFromRow(row) {
+  return String(row?.flag || row?.emoji || "");
+}
+
+function gbTeamOwnerFromRow(row) {
+  return String(row?.owner || row?.manager || row?.player || "");
+}
+
+function gbFindTeamRow(teamName) {
+  const wanted = gbCanonTeam(teamName);
+  return gbTeams().find(t => gbCanonTeam(gbTeamName(t)) === wanted) || null;
+}
+  
 function gbTeams() {
   if (typeof teams !== "undefined" && Array.isArray(teams)) return teams;
   if (typeof window.teams !== "undefined" && Array.isArray(window.teams)) return window.teams;
@@ -482,18 +533,23 @@ function gbTeams() {
   return [];
 }
   
-  function gbSortedTeams() {
+function gbSortedTeams() {
   return gbTeams()
     .slice()
-    .sort((a, b) => String(a.team || "").localeCompare(String(b.team || ""), "en", { sensitivity: "base" }));
+    .filter(t => gbTeamName(t))
+    .sort((a, b) => gbTeamName(a).localeCompare(gbTeamName(b), "en", { sensitivity: "base" }));
 }
 
 function gbTeamOptions(selected = "") {
-  return gbSortedTeams().map(t => `
-    <option value="${gbEsc(t.team)}" ${t.team === selected ? "selected" : ""}>
-      ${gbEsc(t.flag || "")} ${gbEsc(t.team)}
-    </option>
-  `).join("");
+  return gbSortedTeams().map(t => {
+    const name = gbTeamName(t);
+    const flag = gbTeamFlagFromRow(t);
+    return `
+      <option value="${gbEsc(name)}" ${name === selected ? "selected" : ""}>
+        ${gbEsc(flag)} ${gbEsc(name)}
+      </option>
+    `;
+  }).join("");
 }
   
   function gbAdmin() {
@@ -501,7 +557,7 @@ function gbTeamOptions(selected = "") {
       return `<div class="gb-admin-note">Sign in using the main Admin button to add goal scorers.</div>`;
     }
 
-    const defaultTeam = gbSortedTeams()[0]?.team || "";
+   const defaultTeam = gbTeamName(gbSortedTeams()[0]) || "";
 
     return `
       <form id="goldenBootForm" class="gb-form">
