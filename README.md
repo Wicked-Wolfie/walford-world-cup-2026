@@ -1,28 +1,25 @@
-# Walford V5.7.8 USA Player List Fix
+# Walford V5.8.1 Real Column Fix
 
 Upload/replace:
 - index.html
 - golden-boot.js
 - match-scorers-admin.js
 
-What this fixes:
-- United States / USA naming mismatch.
-- If squad_players stores the team as USA but the website dropdown says United States, the player list now still loads.
-- Also adds safe aliases for:
-  South Korea / Korea Republic
-  Türkiye / Turkey
-  Ivory Coast / Cote d'Ivoire
-  DR Congo / Congo DR
-  Curacao / Curaçao
-  Cape Verde / Cabo Verde
-  Czechia / Czech Republic
+Why this patch exists:
+- The squad_players table has team and team_code.
+- It does not have code or country_code.
+- V5.8.0 accidentally selected guessed columns, which could make the player query fail.
+- V5.8.1 selects only real columns:
+  team, team_code, player_name, position, club, squad_number
 
-What to test:
-1. Sign in as Admin.
-2. Go to Golden Boot.
-3. Select United States.
-4. Player dropdown should show USA players.
-5. Go to Match Result + Scorers.
-6. Add scorer row, select United States, check player dropdown.
+Also included:
+- check-squad-player-team-codes.sql now uses only real columns.
+- Algeria mapping includes ALG as shown by your Supabase screenshot.
 
-No Supabase SQL changes needed.
+After upload:
+1. Commit the files.
+2. Wait for GitHub Pages green tick.
+3. Press Ctrl + Shift + R.
+4. Sign in as Admin.
+5. Test United States.
+6. If any team still fails, run check-squad-player-team-codes.sql and send screenshot/results.

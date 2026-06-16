@@ -1,4 +1,4 @@
-// Walford V5.7.8 Golden Boot Direct Player Select - team alias fix
+// Walford V5.8.1 Golden Boot - real squad_players columns only
 // Integrated version: no datalist, no add-on replacement script.
 // Includes leaderboard, add/edit/delete admin tools, and direct squad player dropdowns.
 
@@ -35,38 +35,153 @@
   }
 
 
+
   function gbCanonTeam(value) {
     return String(value || "")
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/&/g, "and")
-      .replace(/\./g, "")
+      .replace(/[^a-zA-Z0-9 ]/g, " ")
+      .replace(/\b(fc|cf|the)\b/g, " ")
       .replace(/\s+/g, " ")
       .trim()
       .toLowerCase();
   }
 
+  const GB_TEAM_CODE_ALIASES = {
+    "MX": ["MEX", "MX"],
+    "KR": ["KOR"],
+    "CZ": ["CZE"],
+    "ZA": ["RSA", "SAF"],
+    "CH": ["SUI"],
+    "CA": ["CAN"],
+    "QA": ["QAT"],
+    "BA": ["BIH"],
+    "GB-SCT": ["SCO"],
+    "MA": ["MAR"],
+    "BR": ["BRA"],
+    "HT": ["HTI"],
+    "US": ["USA", "US"],
+    "AU": ["AUS"],
+    "TR": ["TUR"],
+    "PY": ["PAR"],
+    "DE": ["GER"],
+    "CI": ["CIV", "ICO"],
+    "EC": ["ECU"],
+    "CW": ["CUW"],
+    "SE": ["SWE"],
+    "JP": ["JPN"],
+    "NL": ["NED"],
+    "TN": ["TUN"],
+    "BE": ["BEL"],
+    "EG": ["EGY"],
+    "IR": ["IRI"],
+    "NZ": ["NZL"],
+    "ES": ["ESP"],
+    "CV": ["CPV", "CV"],
+    "SA": ["KSA"],
+    "UY": ["URU"],
+    "FR": ["FRA"],
+    "SN": ["SEN"],
+    "IQ": ["IRQ"],
+    "NO": ["NOR"],
+    "AR": ["ARG"],
+    "DZ": ["DZA", "ALG"],
+    "AT": ["AUT"],
+    "JO": ["JOR"],
+    "PT": ["POR"],
+    "CD": ["COD", "DRC"],
+    "UZ": ["UZB"],
+    "CO": ["COL"],
+    "GB-ENG": ["ENG"],
+    "HR": ["CRO"],
+    "GH": ["GHA"],
+    "PA": ["PAN"]
+  };
+
+  const GB_TEAM_NAME_ALIASES = {
+    "mexico": ["mexico"],
+    "south korea": ["south korea", "korea republic", "republic of korea", "korea"],
+    "czechia": ["czechia", "czech republic"],
+    "south africa": ["south africa"],
+    "switzerland": ["switzerland"],
+    "canada": ["canada"],
+    "qatar": ["qatar"],
+    "bosnia and herzegovina": ["bosnia and herzegovina", "bosnia herzegovina", "bosnia"],
+    "scotland": ["scotland"],
+    "morocco": ["morocco"],
+    "brazil": ["brazil"],
+    "haiti": ["haiti"],
+    "united states": ["united states", "usa", "u s a", "united states of america", "usmnt"],
+    "australia": ["australia"],
+    "turkiye": ["turkiye", "turkey", "türkiye"],
+    "paraguay": ["paraguay"],
+    "germany": ["germany"],
+    "ivory coast": ["ivory coast", "cote d ivoire", "cote divoire", "côte d ivoire"],
+    "ecuador": ["ecuador"],
+    "curacao": ["curacao", "curaçao"],
+    "sweden": ["sweden"],
+    "japan": ["japan"],
+    "netherlands": ["netherlands", "holland"],
+    "tunisia": ["tunisia"],
+    "belgium": ["belgium"],
+    "egypt": ["egypt"],
+    "iran": ["iran", "iran islamic republic"],
+    "new zealand": ["new zealand"],
+    "spain": ["spain"],
+    "cape verde": ["cape verde", "cabo verde"],
+    "saudi arabia": ["saudi arabia", "saudi"],
+    "uruguay": ["uruguay"],
+    "france": ["france"],
+    "senegal": ["senegal"],
+    "iraq": ["iraq"],
+    "norway": ["norway"],
+    "argentina": ["argentina"],
+    "algeria": ["algeria"],
+    "austria": ["austria"],
+    "jordan": ["jordan"],
+    "portugal": ["portugal"],
+    "dr congo": ["dr congo", "d r congo", "congo dr", "democratic republic of congo", "congo democratic republic"],
+    "uzbekistan": ["uzbekistan"],
+    "colombia": ["colombia"],
+    "england": ["england"],
+    "croatia": ["croatia"],
+    "ghana": ["ghana"],
+    "panama": ["panama"]
+  };
+
+  function gbTeamCode(teamName) {
+    const row = gbTeams().find(t => t.team === teamName);
+    const code = String(row?.code || "").toUpperCase();
+    return code;
+  }
+
+  function gbExpectedCodes(teamName) {
+    const allocationCode = gbTeamCode(teamName);
+    const codes = new Set();
+    if (allocationCode) codes.add(allocationCode);
+    (GB_TEAM_CODE_ALIASES[allocationCode] || []).forEach(code => codes.add(code));
+    return Array.from(codes);
+  }
+
   function gbTeamKeys(team) {
     const key = gbCanonTeam(team);
-    const aliases = {
-      "united states": ["united states", "usa", "u s a", "united states of america", "usmnt"],
-      "usa": ["united states", "usa", "u s a", "united states of america", "usmnt"],
-      "south korea": ["south korea", "korea republic", "korea republic of", "republic of korea"],
-      "korea republic": ["south korea", "korea republic", "republic of korea"],
-      "czechia": ["czechia", "czech republic"],
-      "turkiye": ["turkiye", "turkey", "türkiye"],
-      "turkey": ["turkiye", "turkey", "türkiye"],
-      "ivory coast": ["ivory coast", "cote d ivoire", "cote divoire", "côte d’ivoire", "côte d'ivoire"],
-      "cote d ivoire": ["ivory coast", "cote d ivoire", "cote divoire"],
-      "dr congo": ["dr congo", "d r congo", "congo dr", "democratic republic of congo", "congo democratic republic"],
-      "congo dr": ["dr congo", "congo dr", "democratic republic of congo"],
-      "curacao": ["curacao", "curaçao"],
-      "cape verde": ["cape verde", "cabo verde"],
-      "bosnia and herzegovina": ["bosnia and herzegovina", "bosnia herzegovina", "bosnia"],
-      "new zealand": ["new zealand", "newzealand"]
-    };
+    const keys = new Set([key]);
+    (GB_TEAM_NAME_ALIASES[key] || []).forEach(name => keys.add(gbCanonTeam(name)));
 
-    return aliases[key] || [key];
+    // Also map common code-looking team values.
+    const upper = String(team || "").toUpperCase().trim();
+    Object.entries(GB_TEAM_CODE_ALIASES).forEach(([siteCode, fifaCodes]) => {
+      if (upper === siteCode || fifaCodes.includes(upper)) {
+        const siteTeam = gbTeams().find(t => String(t.code || "").toUpperCase() === siteCode);
+        if (siteTeam) {
+          keys.add(gbCanonTeam(siteTeam.team));
+          (GB_TEAM_NAME_ALIASES[gbCanonTeam(siteTeam.team)] || []).forEach(name => keys.add(gbCanonTeam(name)));
+        }
+      }
+    });
+
+    return Array.from(keys);
   }
 
   function gbTeamMatches(a, b) {
@@ -75,28 +190,24 @@
     return aKeys.some(key => bKeys.includes(key));
   }
 
-  function gbTeams() {
-    try {
-      if (Array.isArray(window.teams) && window.teams.length) return window.teams;
-    } catch (e) {}
-    return Array.isArray(window.FALLBACK_TEAMS) ? window.FALLBACK_TEAMS : [];
-  }
+  function gbPlayerMatchesTeam(player, teamName) {
+    const expectedCodes = gbExpectedCodes(teamName);
+    const rawCode = String(player.team_code || "").toUpperCase().trim();
 
-  function gbSortedTeams() {
-    return gbTeams()
-      .slice()
-      .sort((a, b) => String(a.team || "").localeCompare(String(b.team || ""), "en", { sensitivity: "base" }));
-  }
+    if (rawCode && expectedCodes.includes(rawCode)) return true;
 
-  function gbTeamOptions(selected = "") {
-    return gbSortedTeams()
-      .map(t => `<option value="${gbEsc(t.team)}" ${t.team === selected ? "selected" : ""}>${gbEsc(t.flag || "")} ${gbEsc(t.team)} — ${gbEsc(t.owner || "")}</option>`)
-      .join("");
+    const playerTeam = String(player.team || "");
+    if (gbTeamMatches(playerTeam, teamName)) return true;
+
+    // Last-resort: some imports put the code at the start of the team label, e.g. "USA United States".
+    const wantedKeys = gbTeamKeys(teamName);
+    const playerKey = gbCanonTeam(playerTeam.replace(/^[A-Z]{2,3}\s+/, ""));
+    return wantedKeys.includes(playerKey);
   }
 
   function gbPlayersForTeam(team) {
     return gbPlayers
-      .filter(p => gbTeamMatches(p.team, team))
+      .filter(p => gbPlayerMatchesTeam(p, team))
       .slice()
       .sort((a, b) => String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" }));
   }
@@ -106,7 +217,7 @@
     let html = `<option value="">Select player...</option>`;
 
     if (!rows.length) {
-      html += `<option value="">No squad players found for ${gbEsc(team)}</option>`;
+      html += `<option value="">No squad players found for ${gbEsc(team)} (${gbEsc(gbExpectedCodes(team).join(", "))})</option>`;
       return html;
     }
 
@@ -170,7 +281,7 @@
 
     const playerResult = await db
       .from("squad_players")
-      .select("team,player_name,position,club,squad_number")
+      .select("team,team_code,player_name,position,club,squad_number")
       .order("team", { ascending: true })
       .order("player_name", { ascending: true });
 
