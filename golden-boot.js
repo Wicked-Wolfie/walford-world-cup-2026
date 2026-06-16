@@ -362,23 +362,11 @@ if (selectedKey === "spain") {
     nameKey.startsWith(playerTeamKey + " ")
   );
 }
-  function gbPlayersForTeam(team) {
-  const rows = gbPlayers
+ function gbPlayersForTeam(team) {
+  return gbPlayers
     .filter(p => gbPlayerMatchesTeam(p, team))
     .slice()
     .sort((a, b) => String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" }));
-
-  if (gbCanonTeam(team).includes("united states")) {
-    console.log("GB USA DEBUG selected team:", team);
-    console.log("GB USA DEBUG expected codes:", gbExpectedCodes(team));
-    console.log("GB USA DEBUG possible USA rows:", gbPlayers.filter(p => {
-      const blob = JSON.stringify(p).toLowerCase();
-      return blob.includes("usa") || blob.includes("united states") || blob.includes('"us"');
-    }));
-    console.log("GB USA DEBUG matched rows:", rows);
-  }
-
-  return rows;
 }
 
   function gbPlayerOptions(team, selected = "") {
