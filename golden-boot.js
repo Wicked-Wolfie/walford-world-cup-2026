@@ -264,19 +264,36 @@ function gbExpectedCodes(teamName) {
   }
 
   function gbPlayerMatchesTeam(player, teamName) {
-    const expectedCodes = gbExpectedCodes(teamName);
-    const rawCode = String(player.team_code || "").toUpperCase().trim();
+  const expectedCodes = gbExpectedCodes(teamName).map(code =>
+    String(code || "").toUpperCase().trim()
+  );
 
-    if (rawCode && expectedCodes.includes(rawCode)) return true;
+  const rawCode = String(
+    player.team_code ||
+    player.country_code ||
+    player.code ||
+    ""
+  ).toUpperCase().trim();
 
-    const playerTeam = String(player.team || "");
-    if (gbTeamMatches(playerTeam, teamName)) return true;
+  if (rawCode && expectedCodes.includes(rawCode)) return true;
 
-    // Last-resort: some imports put the code at the start of the team label, e.g. "USA United States".
-    const wantedKeys = gbTeamKeys(teamName);
-    const playerKey = gbCanonTeam(playerTeam.replace(/^[A-Z]{2,3}\s+/, ""));
-    return wantedKeys.includes(playerKey);
-  }
+  const playerTeam = String(player.team || player.team_name || player.country || "");
+  if (gbTeamMatches(playerTeam, teamName)) return true;
+
+  const playerTeamUpper = playerTeam.toUpperCase();
+  if (expectedCodes.some(code => playerTeamUpper.includes(code))) return true;
+
+  const wantedNames = gbTeamKeys(teamName);
+  const playerTeamKey = gbCanonTeam(
+    playerTeam
+      .replace(/^[A-Z]{2,3}\s+/, "")
+      .replace(/\([A-Z]{2,3}\)/g, "")
+  );
+
+  if (wantedNames.includes(playerTeamKey)) return true;
+
+  return wantedNames.some(nameKey => playerTeamKey.includes(nameKey) || nameKey.includes(playerTeamKey));
+}
 
   function gbPlayersForTeam(team) {
     return gbPlayers
@@ -354,7 +371,7 @@ function gbExpectedCodes(teamName) {
 
     const playerResult = await db
       .from("squad_players")
-      .select("team,team_code,player_name,position,club,squad_number")
+      .select("*")
       .order("team", { ascending: true })
       .order("player_name", { ascending: true });
 
