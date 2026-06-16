@@ -838,9 +838,32 @@ function gbTeamOptions(selected = "") {
         : "Could not save scorer. Check golden-boot.sql has been run.");
     }
 
-    gbEditingId = null;
-    await gbLoad();
-    gbRender();
+gbEditingId = null;
+
+const keepDate = match_date || "";
+const keepMatchCode = match_code || "";
+const keepTeam = team;
+const keepGoals = goals;
+
+await gbLoad();
+gbRender();
+
+const dateInput = document.getElementById("gbMatchDate");
+const matchInput = document.getElementById("gbMatchCode");
+const teamInput = document.getElementById("gbTeam");
+const playerInput = document.getElementById("gbPlayer");
+const goalsInput = document.getElementById("gbGoals");
+
+if (dateInput) dateInput.value = keepDate;
+if (matchInput) matchInput.value = keepMatchCode;
+if (teamInput) teamInput.value = keepTeam;
+
+if (playerInput) {
+  playerInput.innerHTML = gbPlayerOptions(keepTeam);
+  playerInput.value = "";
+}
+
+if (goalsInput) goalsInput.value = keepGoals;
   }
 
   async function gbDelete(event) {
