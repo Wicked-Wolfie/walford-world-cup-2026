@@ -297,9 +297,17 @@ function gbPlayerMatchesTeam(player, teamName) {
   ).toUpperCase().trim();
 
   if (rawCode && expectedCodes.includes(rawCode)) return true;
+const selectedTeamClean = gbCanonTeam(gbCleanTeamLabel(teamName));
+const playerTeamCleanDirect = gbCanonTeam(gbCleanTeamLabel(player.team || player.team_name || player.country || ""));
 
+if (selectedTeamClean === "united states" && rawCode === "USA") return true;
+if (selectedTeamClean === "spain" && rawCode === "ESP") return true;
+
+if (selectedTeamClean && playerTeamCleanDirect && selectedTeamClean === playerTeamCleanDirect) return true;
+  
   const playerTeam = String(player.team || player.team_name || player.country || "").trim();
   const playerTeamUpper = playerTeam.toUpperCase().trim();
+
 
   if (expectedCodes.some(code =>
     playerTeamUpper === code ||
