@@ -167,6 +167,48 @@ function msFallbackTeams() {
     return code;
   }
 
+function msTeamName(row) {
+  return String(
+    row?.team ||
+    row?.name ||
+    row?.country ||
+    row?.team_name ||
+    row?.nation ||
+    ""
+  ).trim();
+}
+
+function msTeamFlag(row) {
+  return String(row?.flag || row?.emoji || "");
+}
+
+function msSortedTeams() {
+  return msFallbackTeams()
+    .slice()
+    .filter(t => msTeamName(t))
+    .sort((a, b) => msTeamName(a).localeCompare(msTeamName(b), "en", { sensitivity: "base" }));
+}
+
+function msEsc(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function msTeamOptions(selected = "") {
+  return msSortedTeams().map(t => {
+    const name = msTeamName(t);
+    const flag = msTeamFlag(t);
+    return `
+      <option value="${msEsc(name)}" ${name === selected ? "selected" : ""}>
+        ${msEsc(flag)} ${msEsc(name)}
+      </option>
+    `;
+  }).join("");
+}
+  
   function msExpectedCodes(teamName) {
     const allocationCode = msTeamCode(teamName);
     const codes = new Set();
