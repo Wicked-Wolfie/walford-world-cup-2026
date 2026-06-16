@@ -448,18 +448,28 @@ if (selectedKey === "spain") {
       gbRows = scorerResult.data || [];
     }
 
-    const playerResult = await db
-  .from("squad_players")
-  .select("*")
-  .order("team", { ascending: true })
-  .order("player_name", { ascending: true })
-  .range(0, 1999);
+      const playerResultA = await db
+    .from("squad_players")
+      .select("*")
+      .order("team", { ascending: true })
+      .order("player_name", { ascending: true })
+      .range(0, 999);
 
-    if (playerResult.error) {
-      console.warn("Golden Boot could not load squad_players for player dropdown.", playerResult.error);
+    const playerResultB = await db
+      .from("squad_players")
+      .select("*")
+      .order("team", { ascending: true })
+      .order("player_name", { ascending: true })
+      .range(1000, 1999);
+
+    if (playerResultA.error || playerResultB.error) {
+      console.warn("Golden Boot could not load squad_players for player dropdown.", playerResultA.error || playerResultB.error);
       gbPlayers = [];
     } else {
-      gbPlayers = playerResult.data || [];
+      gbPlayers = [
+        ...(playerResultA.data || []),
+        ...(playerResultB.data || [])
+      ];
     }
   }
 
