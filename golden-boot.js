@@ -150,11 +150,11 @@
     "panama": ["panama"]
   };
 
-  function gbTeamCode(teamName) {
-    const row = gbTeams().find(t => t.team === teamName);
-    const code = String(row?.code || "").toUpperCase();
-    return code;
-  }
+ function gbTeamCode(teamName) {
+  const row = gbFindTeamRow(teamName);
+  const code = gbTeamCodeFromRow(row);
+  return code;
+}
 
 function gbExpectedCodes(teamName) {
   const teamKey = gbCanonTeam(teamName);
@@ -590,8 +590,13 @@ function gbTeamOwnerFromRow(row) {
 }
 
 function gbFindTeamRow(teamName) {
-  const wanted = gbCanonTeam(teamName);
-  return gbTeams().find(t => gbCanonTeam(gbTeamName(t)) === wanted) || null;
+  const wanted = gbCanonTeam(gbCleanTeamLabel(teamName));
+
+  return gbTeams().find(t => {
+    const rawName = String(t?.team || t?.name || t?.country || t?.team_name || t?.nation || "");
+    const cleanName = gbTeamName(t);
+    return gbCanonTeam(rawName) === wanted || gbCanonTeam(cleanName) === wanted;
+  }) || null;
 }
   
 function gbTeams() {
