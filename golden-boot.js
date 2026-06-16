@@ -441,10 +441,11 @@ if (selectedKey === "spain") {
     }
 
     const playerResult = await db
-      .from("squad_players")
-      .select("*")
-      .order("team", { ascending: true })
-      .order("player_name", { ascending: true });
+  .from("squad_players")
+  .select("*")
+  .order("team", { ascending: true })
+  .order("player_name", { ascending: true })
+  .range(0, 1999);
 
     if (playerResult.error) {
       console.warn("Golden Boot could not load squad_players for player dropdown.", playerResult.error);
