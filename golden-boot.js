@@ -263,6 +263,27 @@ function gbExpectedCodes(teamName) {
     return aKeys.some(key => bKeys.includes(key));
   }
 
+function gbCleanTeamLabel(value) {
+  const raw = String(value || "").trim();
+  const parts = raw.split(/\s+/);
+
+  if (parts.length > 1) {
+    const first = parts[0].toUpperCase();
+    const knownCodes = new Set();
+
+    Object.entries(GB_TEAM_CODE_ALIASES).forEach(([siteCode, fifaCodes]) => {
+      knownCodes.add(siteCode);
+      fifaCodes.forEach(code => knownCodes.add(code));
+    });
+
+    if (knownCodes.has(first)) {
+      return parts.slice(1).join(" ").trim();
+    }
+  }
+
+  return raw;
+}
+
 function gbPlayerMatchesTeam(player, teamName) {
   const expectedCodes = gbExpectedCodes(teamName).map(code =>
     String(code || "").toUpperCase().trim()
@@ -278,12 +299,8 @@ function gbPlayerMatchesTeam(player, teamName) {
   if (rawCode && expectedCodes.includes(rawCode)) return true;
 
   const playerTeam = String(player.team || player.team_name || player.country || "").trim();
-
-  if (gbTeamMatches(playerTeam, teamName)) return true;
-
   const playerTeamUpper = playerTeam.toUpperCase().trim();
 
-  // Do not use includes(code), because "US" matches inside "Australia".
   if (expectedCodes.some(code =>
     playerTeamUpper === code ||
     playerTeamUpper.startsWith(code + " ") ||
@@ -293,12 +310,13 @@ function gbPlayerMatchesTeam(player, teamName) {
     return true;
   }
 
-  const wantedNames = gbTeamKeys(teamName);
-  const playerTeamKey = gbCanonTeam(
-    playerTeam
-      .replace(/^[A-Z]{2,3}\s+/, "")
-      .replace(/\([A-Z]{2,3}\)/g, "")
-  );
+  const cleanPlayerTeam = gbCleanTeamLabel(playerTeam);
+  const cleanSelectedTeam = gbCleanTeamLabel(teamName);
+
+  if (gbTeamMatches(cleanPlayerTeam, cleanSelectedTeam)) return true;
+
+  const wantedNames = gbTeamKeys(cleanSelectedTeam);
+  const playerTeamKey = gbCanonTeam(cleanPlayerTeam);
 
   if (wantedNames.includes(playerTeamKey)) return true;
 
@@ -308,7 +326,6 @@ function gbPlayerMatchesTeam(player, teamName) {
     nameKey.startsWith(playerTeamKey + " ")
   );
 }
-
   function gbPlayersForTeam(team) {
     return gbPlayers
       .filter(p => gbPlayerMatchesTeam(p, team))
