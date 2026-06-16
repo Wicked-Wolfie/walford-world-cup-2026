@@ -304,18 +304,29 @@ function msTeamOptions(selected = "") {
       String(a.team || "").localeCompare(String(b.team || ""), "en", { sensitivity: "base" })
     );
 
-    const { data, error } = await db
-      .from("squad_players")
-      .select("team,team_code,player_name,shirt_name,position,club,squad_number")
-      .order("team", { ascending: true })
-      .order("player_name", { ascending: true });
+   const playerResultA = await db
+  .from("squad_players")
+  .select("team,team_code,player_name,shirt_name,position,club,squad_number")
+  .order("team", { ascending: true })
+  .order("player_name", { ascending: true })
+  .range(0, 999);
 
-    if (!error && data) {
-      msPlayers = data;
-    } else {
-      msPlayers = [];
-      console.warn("Combined admin could not load squad_players.", error);
-    }
+const playerResultB = await db
+  .from("squad_players")
+  .select("team,team_code,player_name,shirt_name,position,club,squad_number")
+  .order("team", { ascending: true })
+  .order("player_name", { ascending: true })
+  .range(1000, 1999);
+
+if (playerResultA.error || playerResultB.error) {
+  msPlayers = [];
+  console.warn("Combined admin could not load squad_players.", playerResultA.error || playerResultB.error);
+} else {
+  msPlayers = [
+    ...(playerResultA.data || []),
+    ...(playerResultB.data || [])
+  ];
+}
   }
 
   function msInsert() {
