@@ -263,7 +263,7 @@ function gbExpectedCodes(teamName) {
     return aKeys.some(key => bKeys.includes(key));
   }
 
-  function gbPlayerMatchesTeam(player, teamName) {
+function gbPlayerMatchesTeam(player, teamName) {
   const expectedCodes = gbExpectedCodes(teamName).map(code =>
     String(code || "").toUpperCase().trim()
   );
@@ -277,11 +277,21 @@ function gbExpectedCodes(teamName) {
 
   if (rawCode && expectedCodes.includes(rawCode)) return true;
 
-  const playerTeam = String(player.team || player.team_name || player.country || "");
+  const playerTeam = String(player.team || player.team_name || player.country || "").trim();
+
   if (gbTeamMatches(playerTeam, teamName)) return true;
 
-  const playerTeamUpper = playerTeam.toUpperCase();
-  if (expectedCodes.some(code => playerTeamUpper.includes(code))) return true;
+  const playerTeamUpper = playerTeam.toUpperCase().trim();
+
+  // Do not use includes(code), because "US" matches inside "Australia".
+  if (expectedCodes.some(code =>
+    playerTeamUpper === code ||
+    playerTeamUpper.startsWith(code + " ") ||
+    playerTeamUpper.startsWith(code + "-") ||
+    playerTeamUpper.includes("(" + code + ")")
+  )) {
+    return true;
+  }
 
   const wantedNames = gbTeamKeys(teamName);
   const playerTeamKey = gbCanonTeam(
@@ -292,7 +302,11 @@ function gbExpectedCodes(teamName) {
 
   if (wantedNames.includes(playerTeamKey)) return true;
 
-  return wantedNames.some(nameKey => playerTeamKey.includes(nameKey) || nameKey.includes(playerTeamKey));
+  return wantedNames.some(nameKey =>
+    playerTeamKey === nameKey ||
+    playerTeamKey.startsWith(nameKey + " ") ||
+    nameKey.startsWith(playerTeamKey + " ")
+  );
 }
 
   function gbPlayersForTeam(team) {
