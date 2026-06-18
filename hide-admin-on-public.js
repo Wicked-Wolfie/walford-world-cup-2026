@@ -1,0 +1,43 @@
+// Walford Hide Admin On Public
+// Keeps admin-only panels hidden on the public site.
+
+(function () {
+  function haIsAdminMode() {
+    return location.hash === "#admin-dashboard" ||
+      location.hash === "#match-scorers-admin" ||
+      location.hash === "#results-editor-admin" ||
+      document.body.classList.contains("walford-admin-mode");
+  }
+
+  function haApply() {
+    const adminMode = haIsAdminMode();
+
+    const matchScorers = document.getElementById("match-scorers-admin");
+    const resultEditor = document.getElementById("results-editor-admin");
+    const goldenBootAdmins = document.querySelectorAll(".gb-admin");
+
+    if (matchScorers) {
+      matchScorers.style.display = adminMode ? "" : "none";
+    }
+
+    if (resultEditor) {
+      resultEditor.style.display = adminMode ? "" : "none";
+    }
+
+    goldenBootAdmins.forEach(panel => {
+      panel.style.display = adminMode ? "" : "none";
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    haApply();
+    setTimeout(haApply, 1500);
+    setTimeout(haApply, 3500);
+    setInterval(haApply, 1000);
+  });
+
+  window.addEventListener("hashchange", () => {
+    setTimeout(haApply, 100);
+    setTimeout(haApply, 800);
+  });
+})();
