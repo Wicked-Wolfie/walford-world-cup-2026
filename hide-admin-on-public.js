@@ -1,13 +1,7 @@
 // Walford Hide Admin On Public
 // Keeps admin-only panels hidden on the public site.
 
-(function () {
-  function haIsAdminMode() {
-    return location.hash === "#admin-dashboard" ||
-      location.hash === "#match-scorers-admin" ||
-      location.hash === "#results-editor-admin" ||
-      document.body.classList.contains("walford-admin-mode");
-  }
+function haIsAdminMode() {
 
   function haApply() {
     const adminMode = haIsAdminMode();
