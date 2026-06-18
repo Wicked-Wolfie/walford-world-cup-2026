@@ -65,8 +65,12 @@
       body.walford-admin-mode #admin-dashboard,
       body.walford-admin-mode #match-scorers-admin,
       body.walford-admin-mode #results-editor-admin {
-        display: block !important;
-      }
+      display: block !important;
+}
+
+body.walford-admin-login #match-centre {
+  display: block !important;
+}
 
       body.walford-admin-mode #match-scorers-admin.walford-admin-closed,
       body.walford-admin-mode #results-editor-admin.walford-admin-closed {
@@ -158,7 +162,8 @@
     const targetId = adCurrentTargetId();
 
     document.body.classList.toggle("walford-admin-mode", adminMode);
-
+    document.body.classList.toggle("walford-admin-login", adminMode && !adSession);
+    
     const matchScorers = document.getElementById("match-scorers-admin");
     const resultEditor = document.getElementById("results-editor-admin");
 
