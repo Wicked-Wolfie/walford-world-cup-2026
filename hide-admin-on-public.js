@@ -3,10 +3,11 @@
 
 (function () {
   function haIsAdminMode() {
-    return location.hash === "#admin-dashboard" ||
-      location.hash === "#match-scorers-admin" ||
-      location.hash === "#results-editor-admin";
-  }
+  return location.hash === "#admin-dashboard" ||
+    location.hash === "#match-scorers-admin" ||
+    location.hash === "#results-editor-admin" ||
+    location.hash === "#golden-boot";
+}
 
   function haApply() {
     const adminMode = haIsAdminMode();
