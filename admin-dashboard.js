@@ -18,6 +18,12 @@
     return adminHashes.includes(location.hash);
   }
 
+  function adCurrentTargetId() {
+    if (location.hash === "#match-scorers-admin") return "match-scorers-admin";
+    if (location.hash === "#results-editor-admin") return "results-editor-admin";
+    return "";
+  }
+
   function adInsert() {
     let section = document.getElementById("admin-dashboard");
 
@@ -49,9 +55,8 @@
 
       <div class="panel">
         <div class="hero-buttons">
-          <a class="button gold" href="#match-centre">Sign in / Old Admin</a>
-          <a class="button gold" href="#match-scorers-admin">Add Result + Scorers</a>
-          <a class="button dark" href="#results-editor-admin">Edit Existing Result</a>
+          <button class="button gold" type="button" data-admin-open="match-scorers-admin">Add Result + Scorers</button>
+          <button class="button dark" type="button" data-admin-open="results-editor-admin">Edit Existing Result</button>
           <a class="button dark" href="#home">Back to Public Site</a>
         </div>
 
@@ -60,6 +65,8 @@
         </p>
       </div>
     `;
+
+    adWireDashboardButtons();
   }
 
   function adApplyVisibility() {
@@ -67,23 +74,60 @@
     if (!main) return;
 
     const adminOpen = adIsAdminOpen();
+    const targetId = adCurrentTargetId();
 
     Array.from(main.children).forEach(child => {
-      const isAdminSection = adminSectionIds.includes(child.id);
+      const isDashboard = child.id === "admin-dashboard";
+      const isTargetAdminSection = targetId && child.id === targetId;
+      const isAnyAdminSection = adminSectionIds.includes(child.id);
 
       if (adminOpen) {
-        if (isAdminSection) {
+        if (isDashboard || isTargetAdminSection) {
           child.style.display = "";
         } else {
           child.style.display = "none";
         }
       } else {
-        if (isAdminSection) {
+        if (isAnyAdminSection) {
           child.style.display = "none";
         } else {
           child.style.display = "";
         }
       }
+    });
+  }
+
+  function adOpenSection(sectionId) {
+    location.hash = "#" + sectionId;
+
+    setTimeout(() => {
+      adApply();
+
+      const target = document.getElementById(sectionId);
+      if (target) {
+        target.style.display = "";
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+
+    setTimeout(() => {
+      adApply();
+
+      const target = document.getElementById(sectionId);
+      if (target) {
+        target.style.display = "";
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 900);
+  }
+
+  function adWireDashboardButtons() {
+    document.querySelectorAll("[data-admin-open]").forEach(button => {
+      button.addEventListener("click", event => {
+        event.preventDefault();
+        const sectionId = button.getAttribute("data-admin-open");
+        if (sectionId) adOpenSection(sectionId);
+      });
     });
   }
 
