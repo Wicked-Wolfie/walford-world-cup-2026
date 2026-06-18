@@ -225,15 +225,18 @@ body.walford-admin-login #match-centre {
     const button = document.getElementById("adminToggle");
     if (!button) return;
 
-    button.addEventListener("click", event => {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      location.hash = "#admin-dashboard";
-      setTimeout(adApply, 100);
-      setTimeout(adApply, 900);
-    }, true);
+   button.addEventListener("click", event => {
+  if (!adSession) {
+    return;
   }
 
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  location.hash = "#admin-dashboard";
+  setTimeout(adApply, 100);
+  setTimeout(adApply, 900);
+}, true);
+    
   function adWirePublicReturn() {
     window.addEventListener("hashchange", () => {
       if (location.hash === "#home" || location.hash === "") {
