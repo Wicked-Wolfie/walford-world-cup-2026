@@ -58,8 +58,7 @@
     if (
       location.hash === "#admin-dashboard" ||
       location.hash === "#match-scorers-admin" ||
-      location.hash === "#results-editor-admin" ||
-      document.body.classList.contains("walford-admin-mode")
+      location.hash === "#results-editor-admin"
     ) {
       return {
         text: "Admin Mode",
