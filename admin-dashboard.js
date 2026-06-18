@@ -92,10 +92,34 @@
     adApplyVisibility();
   }
 
+  function adWireAdminButton() {
+    const button = document.getElementById("adminToggle");
+    if (!button) return;
+
+    button.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      location.hash = "#admin-dashboard";
+      setTimeout(adApply, 100);
+      setTimeout(adApply, 800);
+    }, true);
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(adApply, 1200);
-    setTimeout(adApply, 4200);
-    setTimeout(adApply, 7000);
+    setTimeout(() => {
+      adWireAdminButton();
+      adApply();
+    }, 1200);
+
+    setTimeout(() => {
+      adWireAdminButton();
+      adApply();
+    }, 4200);
+
+    setTimeout(() => {
+      adWireAdminButton();
+      adApply();
+    }, 7000);
   });
 
   window.addEventListener("hashchange", () => {
