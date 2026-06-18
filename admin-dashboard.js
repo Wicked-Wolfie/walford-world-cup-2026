@@ -47,36 +47,40 @@
     return "";
   }
 
-  function adInstallCss() {
-    if (document.getElementById("walfordAdminModeCss")) return;
+ function adInstallCss() {
+  if (document.getElementById("walfordAdminModeCss")) return;
 
-    const style = document.createElement("style");
-    style.id = "walfordAdminModeCss";
-    style.textContent = `
-      body.walford-admin-mode main > * {
-        display: none !important;
-      }
+  const style = document.createElement("style");
+  style.id = "walfordAdminModeCss";
+  style.textContent = `
+    body.walford-admin-mode > section {
+      display: none !important;
+    }
 
-      body.walford-admin-mode #admin-dashboard,
-      body.walford-admin-mode #match-scorers-admin,
-      body.walford-admin-mode #results-editor-admin {
-        display: block !important;
-      }
+    body.walford-admin-mode main > * {
+      display: none !important;
+    }
 
-      body.walford-admin-mode #match-scorers-admin.walford-admin-closed,
-      body.walford-admin-mode #results-editor-admin.walford-admin-closed {
-        display: none !important;
-      }
+    body.walford-admin-mode #admin-dashboard,
+    body.walford-admin-mode #match-scorers-admin,
+    body.walford-admin-mode #results-editor-admin {
+      display: block !important;
+    }
 
-      body:not(.walford-admin-mode) #admin-dashboard,
-      body:not(.walford-admin-mode) #match-scorers-admin,
-      body:not(.walford-admin-mode) #results-editor-admin {
-        display: none !important;
-      }
-    `;
+    body.walford-admin-mode #match-scorers-admin.walford-admin-closed,
+    body.walford-admin-mode #results-editor-admin.walford-admin-closed {
+      display: none !important;
+    }
 
-    document.head.appendChild(style);
-  }
+    body:not(.walford-admin-mode) #admin-dashboard,
+    body:not(.walford-admin-mode) #match-scorers-admin,
+    body:not(.walford-admin-mode) #results-editor-admin {
+      display: none !important;
+    }
+  `;
+
+  document.head.appendChild(style);
+}
 
   function adInsert() {
     let section = document.getElementById("admin-dashboard");
