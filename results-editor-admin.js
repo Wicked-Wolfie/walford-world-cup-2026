@@ -263,20 +263,26 @@
       return alert("Enter valid scores.");
     }
 
-    const resultUpdate = await db
-      .from("results")
-      .update({
-        match_date: newDate,
-        score_a: scoreA,
-        score_b: scoreB
-      })
-      .eq("id", row.id);
+   const resultUpdate = await db
+  .from("results")
+  .update({
+    match_date: newDate,
+    score_a: scoreA,
+    score_b: scoreB
+  })
+  .eq("id", row.id)
+  .select("id,match_date,score_a,score_b");
 
-    if (resultUpdate.error) {
-      console.error(resultUpdate.error);
-      if (status) status.textContent = "";
-      return alert("Could not update the result.");
-    }
+if (resultUpdate.error) {
+  console.error(resultUpdate.error);
+  if (status) status.textContent = "";
+  return alert("Could not update the result. Supabase may be blocking updates.");
+}
+
+if (!resultUpdate.data || !resultUpdate.data.length) {
+  if (status) status.textContent = "";
+  return alert("The result was not updated. Supabase is probably blocking result edits. We need to add an update policy.");
+}
 
     if (oldDate && oldDate !== newDate) {
       const scorerUpdate = await db
