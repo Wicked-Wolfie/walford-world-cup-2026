@@ -6,6 +6,20 @@
     if (!location.hash) return;
 
     const id = location.hash.replace("#", "");
+
+    if (id === "golden-boot-admin") {
+      const goldenBoot = document.getElementById("golden-boot");
+
+      if (goldenBoot) {
+        goldenBoot.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+
+      return;
+    }
+
     if (!id) return;
 
     const target = document.getElementById(id);
