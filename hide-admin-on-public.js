@@ -2,11 +2,12 @@
 // Keeps admin-only panels hidden on the public site.
 
 (function () {
-  function haIsAdminMode() {
+function haIsAdminMode() {
   return [
     "#admin-dashboard",
     "#match-scorers-admin",
-    "#results-editor-admin"
+    "#results-editor-admin",
+    "#golden-boot-admin"
 
     // Temporarily allow Golden Boot admin on the Golden Boot public page:
     // "#golden-boot"
