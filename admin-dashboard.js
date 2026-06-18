@@ -120,11 +120,12 @@
 
       <div class="panel">
         <div class="hero-buttons">
-          <button class="button gold" type="button" data-admin-open="match-scorers-admin">Add Result + Scorers</button>
-          <button class="button dark" type="button" data-admin-open="results-editor-admin">Edit Existing Result</button>
-          <a class="button dark" href="#home">Public Site / Check Changes</a>
-          <button id="adSignOut" class="button dark" type="button">Sign out</button>
-        </div>
+      <button class="button gold" type="button" data-admin-open="match-scorers-admin">Add Result + Scorers</button>
+      <button class="button dark" type="button" data-admin-open="results-editor-admin">Edit Existing Result</button>
+      <a class="button dark" href="#golden-boot">Golden Boot Page</a>
+      <a class="button dark" href="#home">Public Site / Check Changes</a>
+      <button id="adSignOut" class="button dark" type="button">Sign out</button>
+    </div>
 
         <p class="status">
           Signed in as ${adSession?.user?.email || "admin"}.
