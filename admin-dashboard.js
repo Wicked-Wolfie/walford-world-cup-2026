@@ -73,11 +73,12 @@ function adIsAdminMode() {
       display: none !important;
     }
 
-    body:not(.walford-admin-mode) #admin-dashboard,
-    body:not(.walford-admin-mode) #match-scorers-admin,
-    body:not(.walford-admin-mode) #results-editor-admin {
-      display: none !important;
-    }
+    body.walford-admin-mode #admin-dashboard,
+body.walford-admin-mode #match-scorers-admin,
+body.walford-admin-mode #results-editor-admin,
+body.walford-admin-mode #golden-boot {
+  display: block !important;
+}
   `;
 
   document.head.appendChild(style);
