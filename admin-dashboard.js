@@ -108,6 +108,26 @@
     document.body.classList.remove("walford-admin-mode");
   }
 
+  function adVersionList() {
+  const files = Array.from(document.querySelectorAll("script[src], link[href]"))
+    .map(el => el.getAttribute("src") || el.getAttribute("href"))
+    .filter(src => src && src.includes("?v="))
+    .map(src => {
+      const clean = src.split("/").pop();
+      return `<li>${clean}</li>`;
+    })
+    .join("");
+
+  return `
+    <div class="panel" style="margin-top: 16px;">
+      <h3>Loaded file versions</h3>
+      <p class="status">Temporary check panel. Remove later.</p>
+      <ul style="margin: 0; padding-left: 20px;">
+        ${files}
+      </ul>
+    </div>
+  `;
+}
   function adRenderLoggedIn() {
     const section = adInsert();
 
@@ -130,6 +150,8 @@
           Signed in as ${adSession?.user?.email || "admin"}.
         </p>
       </div>
+
+      ${adVersionList()}
     `;
 
    function adWireDashboardButtons() {
