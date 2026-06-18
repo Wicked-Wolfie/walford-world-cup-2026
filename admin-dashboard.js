@@ -1,7 +1,24 @@
 // Walford Admin Dashboard
-// Keeps admin tools off the public front page unless Admin is opened.
+// Creates a separate admin mode so admin tools are not on the public front page.
 
 (function () {
+  const adminHashes = [
+    "#admin-dashboard",
+    "#match-scorers-admin",
+    "#results-editor-admin",
+    "#golden-boot-admin"
+  ];
+
+  const adminSectionIds = [
+    "admin-dashboard",
+    "match-scorers-admin",
+    "results-editor-admin"
+  ];
+
+  function adIsAdminOpen() {
+    return adminHashes.includes(location.hash);
+  }
+
   function adInsert() {
     let section = document.getElementById("admin-dashboard");
 
@@ -21,27 +38,6 @@
     return section;
   }
 
-  function adIsAdminOpen() {
-    return [
-      "#admin-dashboard",
-      "#match-scorers-admin",
-      "#results-editor-admin",
-      "#golden-boot"
-    ].includes(location.hash);
-  }
-
-  function adApplyVisibility() {
-    const open = adIsAdminOpen();
-
-    const dashboard = document.getElementById("admin-dashboard");
-    const matchScorers = document.getElementById("match-scorers-admin");
-    const resultEditor = document.getElementById("results-editor-admin");
-
-    if (dashboard) dashboard.classList.toggle("hidden", !open);
-    if (matchScorers) matchScorers.classList.toggle("hidden", !open);
-    if (resultEditor) resultEditor.classList.toggle("hidden", !open);
-  }
-
   function adRender() {
     const section = adInsert();
 
@@ -49,7 +45,7 @@
       <div class="section-title">
         <span>Admin HQ</span>
         <h2>Admin Dashboard</h2>
-        <p>Quick shortcuts for running the tournament site.</p>
+        <p>Admin tools are kept separate from the public front page.</p>
       </div>
 
       <div class="panel">
@@ -57,26 +53,55 @@
           <a class="button gold" href="#match-centre">Sign in / Old Admin</a>
           <a class="button gold" href="#match-scorers-admin">Add Result + Scorers</a>
           <a class="button dark" href="#results-editor-admin">Edit Existing Result</a>
-          <a class="button dark" href="#golden-boot">Golden Boot Admin</a>
+          <a class="button dark" href="#golden-boot">Golden Boot Page</a>
+          <a class="button dark" href="#home">Back to Public Site</a>
         </div>
 
         <p class="status">
-          Daily use: sign in first, then use Add Result + Scorers. Use Edit Existing Result if a date or score needs correcting.
+          Use Add Result + Scorers for normal match entry. Use Edit Existing Result only to correct a date or score.
         </p>
       </div>
     `;
+  }
 
-    adApplyVisibility();
+  function adSetPublicVisibility() {
+    const main = document.querySelector("main");
+    if (!main) return;
+
+    const adminOpen = adIsAdminOpen();
+
+    Array.from(main.children).forEach(child => {
+      if (!child.id) return;
+
+      const isAdminSection = adminSectionIds.includes(child.id);
+
+      if (adminOpen) {
+        if (isAdminSection) {
+          child.classList.remove("hidden");
+        } else {
+          child.classList.add("hidden");
+        }
+      } else {
+        if (isAdminSection) {
+          child.classList.add("hidden");
+        } else {
+          child.classList.remove("hidden");
+        }
+      }
+    });
+  }
+
+  function adApply() {
+    adRender();
+    adSetPublicVisibility();
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(() => {
-      adRender();
-      adApplyVisibility();
-    }, 4200);
+    setTimeout(adApply, 4200);
   });
 
   window.addEventListener("hashchange", () => {
-    setTimeout(adApplyVisibility, 100);
+    setTimeout(adApply, 100);
+    setTimeout(adApply, 800);
   });
 })();
