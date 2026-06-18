@@ -8,7 +8,7 @@
     if (!section) {
       section = document.createElement("section");
       section.id = "admin-dashboard";
-      section.className = "section admin-dashboard";
+      section.className = "section admin-dashboard hidden";
 
       const main = document.querySelector("main");
       if (main && main.firstChild) {
@@ -23,7 +23,12 @@
 
   function adRender() {
     const section = adInsert();
-
+    if (location.hash !== "#admin-dashboard") {
+      section.classList.add("hidden");
+    } else {
+      section.classList.remove("hidden");
+    }
+    
     section.innerHTML = `
       <div class="section-title">
         <span>Admin HQ</span>
