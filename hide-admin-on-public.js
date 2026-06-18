@@ -3,10 +3,14 @@
 
 (function () {
   function haIsAdminMode() {
-  return location.hash === "#admin-dashboard" ||
-    location.hash === "#match-scorers-admin" ||
-    location.hash === "#results-editor-admin" ||
-    location.hash === "#golden-boot";
+  return [
+    "#admin-dashboard",
+    "#match-scorers-admin",
+    "#results-editor-admin"
+
+    // Temporarily allow Golden Boot admin on the Golden Boot public page:
+    // "#golden-boot"
+  ].includes(location.hash);
 }
 
   function haApply() {
