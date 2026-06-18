@@ -1,12 +1,11 @@
 // Walford Admin Dashboard
-// Creates a separate admin mode so admin tools are not on the public front page.
+// Creates a separate admin mode so admin tools are not shown on the public front page.
 
 (function () {
   const adminHashes = [
     "#admin-dashboard",
     "#match-scorers-admin",
-    "#results-editor-admin",
-    "#golden-boot-admin"
+    "#results-editor-admin"
   ];
 
   const adminSectionIds = [
@@ -53,7 +52,6 @@
           <a class="button gold" href="#match-centre">Sign in / Old Admin</a>
           <a class="button gold" href="#match-scorers-admin">Add Result + Scorers</a>
           <a class="button dark" href="#results-editor-admin">Edit Existing Result</a>
-          <a class="button dark" href="#golden-boot">Golden Boot Page</a>
           <a class="button dark" href="#home">Back to Public Site</a>
         </div>
 
@@ -64,36 +62,26 @@
     `;
   }
 
-  function adSetPublicVisibility() {
+  function adApplyVisibility() {
     const main = document.querySelector("main");
     if (!main) return;
 
     const adminOpen = adIsAdminOpen();
 
     Array.from(main.children).forEach(child => {
-      if (!child.id) return;
-
       const isAdminSection = adminSectionIds.includes(child.id);
 
       if (adminOpen) {
-        if (isAdminSection) {
-          child.classList.remove("hidden");
-        } else {
-          child.classList.add("hidden");
-        }
+        child.classList.toggle("hidden", !isAdminSection);
       } else {
-        if (isAdminSection) {
-          child.classList.add("hidden");
-        } else {
-          child.classList.remove("hidden");
-        }
+        child.classList.toggle("hidden", isAdminSection);
       }
     });
   }
 
   function adApply() {
     adRender();
-    adSetPublicVisibility();
+    adApplyVisibility();
   }
 
   document.addEventListener("DOMContentLoaded", () => {
