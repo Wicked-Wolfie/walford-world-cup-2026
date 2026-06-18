@@ -132,29 +132,32 @@
       </div>
     `;
 
-    adWireDashboardButtons();
+   function adWireDashboardButtons() {
+  document.querySelectorAll("[data-admin-open]").forEach(button => {
+    button.addEventListener("click", event => {
+      event.preventDefault();
+      const sectionId = button.getAttribute("data-admin-open");
+      if (sectionId) adOpenSection(sectionId);
+    });
+  });
+
+  const signOutButton = document.getElementById("adSignOut");
+  if (signOutButton) {
+    signOutButton.addEventListener("click", async () => {
+      const db = adClient();
+
+      if (db) {
+        await db.auth.signOut();
+      }
+
+      adSession = null;
+      document.body.classList.remove("walford-admin-mode");
+      location.hash = "#home";
+      setTimeout(adApply, 300);
+    });
   }
-
-  function adApplyVisibility() {
-    adInstallCss();
-
-    const adminMode = adIsAdminMode();
-    const targetId = adCurrentTargetId();
-
-    document.body.classList.toggle("walford-admin-mode", adminMode && !!adSession);
-
-    const matchScorers = document.getElementById("match-scorers-admin");
-    const resultEditor = document.getElementById("results-editor-admin");
-
-    if (matchScorers) {
-      matchScorers.classList.toggle("walford-admin-closed", targetId !== "match-scorers-admin");
-    }
-
-    if (resultEditor) {
-      resultEditor.classList.toggle("walford-admin-closed", targetId !== "results-editor-admin");
-    }
-  }
-
+}
+    
   function adOpenSection(sectionId) {
     location.hash = "#" + sectionId;
 
