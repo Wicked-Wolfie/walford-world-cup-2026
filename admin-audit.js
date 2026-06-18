@@ -3,9 +3,11 @@
 
 (function () {
   let aaDb = null;
-  let aaResults = [];
-  let aaScorers = [];
+let aaResults = [];
+let aaScorers = [];
 
+let aaScorerSortField = "match_date";
+let aaScorerSortDirection = "desc";
   function aaClient() {
     if (aaDb) return aaDb;
 
