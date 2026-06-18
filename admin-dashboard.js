@@ -229,18 +229,15 @@ function adWireAdminButton() {
   const button = document.getElementById("adminToggle");
   if (!button) return;
 
-  button.addEventListener("click", async event => {
-    await adLoadSession();
-
-    if (!adSession) {
-      return;
-    }
-
+  button.addEventListener("click", event => {
     event.preventDefault();
     event.stopImmediatePropagation();
+
     location.hash = "#admin-dashboard";
+
     setTimeout(adApply, 100);
     setTimeout(adApply, 900);
+    setTimeout(adApply, 1800);
   }, true);
 }
 
