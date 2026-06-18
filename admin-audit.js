@@ -10,14 +10,13 @@
   let aaScorerSortField = "match_date";
   let aaScorerSortDirection = "desc";
 
-  const aaOwnGoalAllowances = [
-    { match_date: "2026-06-13", team_a: "Qatar", team_b: "Switzerland", own_goals: 1 },
-    { match_date: "2026-06-13", team_a: "United States", team_b: "Paraguay", own_goals: 1 },
-    { match_date: "2026-06-15", team_a: "Belgium", team_b: "Egypt", own_goals: 1 },
-    { match_date: "2026-06-15", team_a: "Ivory Coast", team_b: "Ecuador", own_goals: 1 },
-    { match_date: "2026-06-16", team_a: "France", team_b: "Senegal", own_goals: 1 },
-    { match_date: "2026-06-17", team_a: "Austria", team_b: "Jordan", own_goals: 1 }
-  ];
+ const aaOwnGoalAllowances = [
+  { match_date: "2026-06-13", team_a: "Qatar", team_b: "Switzerland", own_goals: 1 },
+  { match_date: "2026-06-13", team_a: "United States", team_b: "Paraguay", own_goals: 1 },
+  { match_date: "2026-06-15", team_a: "Belgium", team_b: "Egypt", own_goals: 1 },
+  { match_date: "2026-06-16", team_a: "Iraq", team_b: "Norway", own_goals: 1 },
+  { match_date: "2026-06-17", team_a: "Austria", team_b: "Jordan", own_goals: 1 }
+];
 
   function aaClient() {
     if (aaDb) return aaDb;
