@@ -1,5 +1,5 @@
 // Walford Admin Dashboard
-// Creates a separate admin mode so admin tools are not shown on the public front page.
+// Separate admin mode from the public front page.
 
 (function () {
   const adminHashes = [
@@ -24,7 +24,7 @@
     if (!section) {
       section = document.createElement("section");
       section.id = "admin-dashboard";
-      section.className = "section admin-dashboard hidden";
+      section.className = "section admin-dashboard";
 
       const main = document.querySelector("main");
       if (main && main.firstChild) {
@@ -72,9 +72,17 @@
       const isAdminSection = adminSectionIds.includes(child.id);
 
       if (adminOpen) {
-        child.classList.toggle("hidden", !isAdminSection);
+        if (isAdminSection) {
+          child.style.display = "";
+        } else {
+          child.style.display = "none";
+        }
       } else {
-        child.classList.toggle("hidden", isAdminSection);
+        if (isAdminSection) {
+          child.style.display = "none";
+        } else {
+          child.style.display = "";
+        }
       }
     });
   }
@@ -85,7 +93,9 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(adApply, 1200);
     setTimeout(adApply, 4200);
+    setTimeout(adApply, 7000);
   });
 
   window.addEventListener("hashchange", () => {
