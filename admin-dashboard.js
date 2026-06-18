@@ -5,12 +5,6 @@
   let adDb = null;
   let adSession = null;
 
-  const adminSectionIds = [
-    "admin-dashboard",
-    "match-scorers-admin",
-    "results-editor-admin"
-  ];
-
   function adClient() {
     if (adDb) return adDb;
 
@@ -30,6 +24,7 @@
 
   async function adLoadSession() {
     const db = adClient();
+
     if (!db) {
       adSession = null;
       return null;
@@ -92,6 +87,7 @@
       section.className = "section admin-dashboard";
 
       const main = document.querySelector("main");
+
       if (main && main.firstChild) {
         main.insertBefore(section, main.firstChild);
       } else if (main) {
@@ -108,26 +104,6 @@
     document.body.classList.remove("walford-admin-mode");
   }
 
-  function adVersionList() {
-  const files = Array.from(document.querySelectorAll("script[src], link[href]"))
-    .map(el => el.getAttribute("src") || el.getAttribute("href"))
-    .filter(src => src && src.includes("?v="))
-    .map(src => {
-      const clean = src.split("/").pop();
-      return `<li>${clean}</li>`;
-    })
-    .join("");
-
-  return `
-    <div class="panel" style="margin-top: 16px;">
-      <h3>Loaded file versions</h3>
-      <p class="status">Temporary check panel. Remove later.</p>
-      <ul style="margin: 0; padding-left: 20px;">
-        ${files}
-      </ul>
-    </div>
-  `;
-}
   function adRenderLoggedIn() {
     const section = adInsert();
 
@@ -139,47 +115,53 @@
       </div>
 
       <div class="panel">
-    <div class="hero-buttons">
-       <button class="button gold" type="button" data-admin-open="match-scorers-admin">Add Result + Scorers</button>
-       <button class="button dark" type="button" data-admin-open="results-editor-admin">Edit Existing Result</button>
-       <a class="button dark" href="#home">Public Site / Check Changes</a>
-       <button id="adSignOut" class="button dark" type="button">Sign out</button>
-    </div>
+        <div class="hero-buttons">
+          <button class="button gold" type="button" data-admin-open="match-scorers-admin">Add Result + Scorers</button>
+          <button class="button dark" type="button" data-admin-open="results-editor-admin">Edit Existing Result</button>
+          <a class="button dark" href="#home">Public Site / Check Changes</a>
+          <button id="adSignOut" class="button dark" type="button">Sign out</button>
+        </div>
 
         <p class="status">
           Signed in as ${adSession?.user?.email || "admin"}.
         </p>
       </div>
-
-      ${adVersionList()}
     `;
 
-   function adWireDashboardButtons() {
-  document.querySelectorAll("[data-admin-open]").forEach(button => {
-    button.addEventListener("click", event => {
-      event.preventDefault();
-      const sectionId = button.getAttribute("data-admin-open");
-      if (sectionId) adOpenSection(sectionId);
-    });
-  });
-
-  const signOutButton = document.getElementById("adSignOut");
-  if (signOutButton) {
-    signOutButton.addEventListener("click", async () => {
-      const db = adClient();
-
-      if (db) {
-        await db.auth.signOut();
-      }
-
-      adSession = null;
-      document.body.classList.remove("walford-admin-mode");
-      location.hash = "#home";
-      setTimeout(adApply, 300);
-    });
+    adWireDashboardButtons();
   }
-}
-    
+
+  function adApplyVisibility() {
+    adInstallCss();
+
+    const adminMode = adIsAdminMode();
+    const targetId = adCurrentTargetId();
+
+    document.body.classList.toggle("walford-admin-mode", adminMode && !!adSession);
+
+    const matchScorers = document.getElementById("match-scorers-admin");
+    const resultEditor = document.getElementById("results-editor-admin");
+
+    if (matchScorers) {
+      matchScorers.classList.toggle("walford-admin-closed", targetId !== "match-scorers-admin");
+    }
+
+    if (resultEditor) {
+      resultEditor.classList.toggle("walford-admin-closed", targetId !== "results-editor-admin");
+    }
+  }
+
+  async function adApply() {
+    await adLoadSession();
+
+    if (adSession) {
+      adRenderLoggedIn();
+      adApplyVisibility();
+    } else {
+      adRenderLoggedOut();
+    }
+  }
+
   function adOpenSection(sectionId) {
     location.hash = "#" + sectionId;
 
@@ -208,38 +190,29 @@
     document.querySelectorAll("[data-admin-open]").forEach(button => {
       button.addEventListener("click", event => {
         event.preventDefault();
+
         const sectionId = button.getAttribute("data-admin-open");
         if (sectionId) adOpenSection(sectionId);
       });
     });
-  }
 
-  async function adApply() {
-    await adLoadSession();
+    const signOutButton = document.getElementById("adSignOut");
 
-    if (adSession) {
-      adRenderLoggedIn();
-      adApplyVisibility();
-    } else {
-      adRenderLoggedOut();
+    if (signOutButton) {
+      signOutButton.addEventListener("click", async () => {
+        const db = adClient();
+
+        if (db) {
+          await db.auth.signOut();
+        }
+
+        adSession = null;
+        document.body.classList.remove("walford-admin-mode");
+        location.hash = "#home";
+        setTimeout(adApply, 300);
+      });
     }
   }
-
-function adWireAdminButton() {
-  const button = document.getElementById("adminToggle");
-  if (!button) return;
-
-  button.addEventListener("click", event => {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    location.hash = "#admin-dashboard";
-
-    setTimeout(adApply, 100);
-    setTimeout(adApply, 900);
-    setTimeout(adApply, 1800);
-  }, true);
-}
 
   function adWirePublicReturn() {
     window.addEventListener("hashchange", () => {
@@ -255,20 +228,9 @@ function adWireAdminButton() {
   document.addEventListener("DOMContentLoaded", () => {
     adInstallCss();
 
-    setTimeout(() => {
-      adWireAdminButton();
-      adApply();
-    }, 1200);
-
-    setTimeout(() => {
-      adWireAdminButton();
-      adApply();
-    }, 4200);
-
-    setTimeout(() => {
-      adWireAdminButton();
-      adApply();
-    }, 7000);
+    setTimeout(adApply, 1200);
+    setTimeout(adApply, 4200);
+    setTimeout(adApply, 7000);
 
     adWirePublicReturn();
   });
