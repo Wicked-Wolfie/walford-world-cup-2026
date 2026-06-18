@@ -1,5 +1,5 @@
 // Walford Admin Dashboard
-// Shows admin shortcuts near the top of the page.
+// Keeps admin tools off the public front page unless Admin is opened.
 
 (function () {
   function adInsert() {
@@ -21,14 +21,30 @@
     return section;
   }
 
+  function adIsAdminOpen() {
+    return [
+      "#admin-dashboard",
+      "#match-scorers-admin",
+      "#results-editor-admin",
+      "#golden-boot"
+    ].includes(location.hash);
+  }
+
+  function adApplyVisibility() {
+    const open = adIsAdminOpen();
+
+    const dashboard = document.getElementById("admin-dashboard");
+    const matchScorers = document.getElementById("match-scorers-admin");
+    const resultEditor = document.getElementById("results-editor-admin");
+
+    if (dashboard) dashboard.classList.toggle("hidden", !open);
+    if (matchScorers) matchScorers.classList.toggle("hidden", !open);
+    if (resultEditor) resultEditor.classList.toggle("hidden", !open);
+  }
+
   function adRender() {
     const section = adInsert();
-    if (location.hash !== "#admin-dashboard") {
-      section.classList.add("hidden");
-    } else {
-      section.classList.remove("hidden");
-    }
-    
+
     section.innerHTML = `
       <div class="section-title">
         <span>Admin HQ</span>
@@ -49,9 +65,18 @@
         </p>
       </div>
     `;
+
+    adApplyVisibility();
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(adRender, 1200);
+    setTimeout(() => {
+      adRender();
+      adApplyVisibility();
+    }, 4200);
+  });
+
+  window.addEventListener("hashchange", () => {
+    setTimeout(adApplyVisibility, 100);
   });
 })();
