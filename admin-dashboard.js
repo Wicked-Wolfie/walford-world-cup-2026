@@ -65,12 +65,8 @@
       body.walford-admin-mode #admin-dashboard,
       body.walford-admin-mode #match-scorers-admin,
       body.walford-admin-mode #results-editor-admin {
-      display: block !important;
-}
-
-body.walford-admin-login #match-centre {
-  display: block !important;
-}
+        display: block !important;
+      }
 
       body.walford-admin-mode #match-scorers-admin.walford-admin-closed,
       body.walford-admin-mode #results-editor-admin.walford-admin-closed {
@@ -108,24 +104,8 @@ body.walford-admin-login #match-centre {
 
   function adRenderLoggedOut() {
     const section = adInsert();
-
-    section.innerHTML = `
-      <div class="section-title">
-        <span>Admin HQ</span>
-        <h2>Admin Login</h2>
-        <p>Please sign in using the existing admin panel first.</p>
-      </div>
-
-      <div class="panel">
-       <div class="hero-buttons">
-         <a class="button dark" href="#home">Back to Public Site</a>
-      </div>
-
-        <p class="status">
-          Once signed in, click Admin again to open the admin dashboard.
-        </p>
-      </div>
-    `;
+    section.innerHTML = "";
+    document.body.classList.remove("walford-admin-mode");
   }
 
   function adRenderLoggedIn() {
@@ -160,9 +140,8 @@ body.walford-admin-login #match-centre {
     const adminMode = adIsAdminMode();
     const targetId = adCurrentTargetId();
 
-    document.body.classList.toggle("walford-admin-mode", adminMode);
-    document.body.classList.toggle("walford-admin-login", adminMode && !adSession);
-    
+    document.body.classList.toggle("walford-admin-mode", adminMode && !!adSession);
+
     const matchScorers = document.getElementById("match-scorers-admin");
     const resultEditor = document.getElementById("results-editor-admin");
 
@@ -214,29 +193,29 @@ body.walford-admin-login #match-centre {
 
     if (adSession) {
       adRenderLoggedIn();
+      adApplyVisibility();
     } else {
       adRenderLoggedOut();
     }
-
-    adApplyVisibility();
   }
 
   function adWireAdminButton() {
     const button = document.getElementById("adminToggle");
     if (!button) return;
 
-   button.addEventListener("click", event => {
-  if (!adSession) {
-    return;
+    button.addEventListener("click", event => {
+      if (!adSession) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      location.hash = "#admin-dashboard";
+      setTimeout(adApply, 100);
+      setTimeout(adApply, 900);
+    }, true);
   }
 
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  location.hash = "#admin-dashboard";
-  setTimeout(adApply, 100);
-  setTimeout(adApply, 900);
-}, true);
-    
   function adWirePublicReturn() {
     window.addEventListener("hashchange", () => {
       if (location.hash === "#home" || location.hash === "") {
