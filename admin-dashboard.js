@@ -117,10 +117,9 @@ body.walford-admin-login #match-centre {
       </div>
 
       <div class="panel">
-        <div class="hero-buttons">
-          <a class="button gold" href="#match-centre">Go to Admin Login</a>
-          <a class="button dark" href="#home">Back to Public Site</a>
-        </div>
+       <div class="hero-buttons">
+         <a class="button dark" href="#home">Back to Public Site</a>
+      </div>
 
         <p class="status">
           Once signed in, click Admin again to open the admin dashboard.
