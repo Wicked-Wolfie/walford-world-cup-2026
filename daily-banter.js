@@ -1,6 +1,6 @@
-// Walford V5.8.1 Daily Results & Cheeky Banter
+// Walford V5.8.3 Daily Results & Cheeky Banter
 // Public homepage section.
-// Shows latest match results with light-hearted syndicate banter.
+// Shows latest match results with light-hearted owner banter.
 
 (function () {
   let dbBanter = null;
@@ -50,10 +50,50 @@
   function dbOwner(team) {
     try {
       const name = typeof owner === "function" ? owner(team) || "" : "";
-      return name || "Syndicate TBC";
+
+      if (name) {
+        return name;
+      }
+
+      return "Owner TBC";
     } catch (e) {
-      return "Syndicate TBC";
+      return "Owner TBC";
     }
+  }
+
+  function dbPossessive(name) {
+    const clean = String(name || "").trim();
+
+    if (!clean || clean === "Owner TBC") {
+      return "Owner TBC";
+    }
+
+    if (clean.toLowerCase().endsWith("s")) {
+      return `${clean}'`;
+    }
+
+    return `${clean}'s`;
+  }
+
+  function dbSameOwner(ownerA, ownerB) {
+    return (
+      ownerA &&
+      ownerB &&
+      ownerA !== "Owner TBC" &&
+      ownerB !== "Owner TBC" &&
+      ownerA === ownerB
+    );
+  }
+
+  function dbOwnerLine(teamA, teamB) {
+    const ownerA = dbOwner(teamA);
+    const ownerB = dbOwner(teamB);
+
+    if (dbSameOwner(ownerA, ownerB)) {
+      return `${ownerA} owns both teams`;
+    }
+
+    return `${ownerA} v ${ownerB}`;
   }
 
   function dbWinner(result) {
@@ -119,6 +159,19 @@
     const teamB = result.team_b || "Team B";
     const ownerA = dbOwner(teamA);
     const ownerB = dbOwner(teamB);
+    const sameOwner = dbSameOwner(ownerA, ownerB);
+
+    if (sameOwner && scoreA === 0 && scoreB === 0) {
+      return `${ownerA} owned both teams and still couldn't find a goal. That takes a special kind of commitment.`;
+    }
+
+    if (sameOwner && scoreA === scoreB) {
+      return `${ownerA} owned both teams, both teams got a point, and somehow nobody has bragging rights.`;
+    }
+
+    if (sameOwner && winner && loser) {
+      return `${ownerA} wins, ${ownerA} loses. Very efficient. ${dbPossessive(winner.owner)} ${winner.team} did the damage, while ${loser.team} took one for the spreadsheet.`;
+    }
 
     if (scoreA === 0 && scoreB === 0) {
       return `${ownerA} and ${ownerB} have agreed to call that one “tactical”. Everyone else may call it 90 minutes missing from their lives.`;
@@ -129,30 +182,30 @@
     }
 
     if (winner && loser && margin >= 5) {
-      return `${winner.owner}'s ${winner.team} have gone full demolition job. ${loser.owner}'s ${loser.team} may want to check if defending is still allowed.`;
+      return `${dbPossessive(winner.owner)} ${winner.team} have gone full demolition job. ${dbPossessive(loser.owner)} ${loser.team} may want to check if defending is still allowed.`;
     }
 
     if (winner && loser && margin >= 3) {
-      return `${winner.owner}'s ${winner.team} made that look a bit too easy. ${loser.owner}'s ${loser.team} are probably requesting a recount.`;
+      return `${dbPossessive(winner.owner)} ${winner.team} made that look a bit too easy. ${dbPossessive(loser.owner)} ${loser.team} are probably requesting a recount.`;
     }
 
     if (winner && loser && totalGoals >= 5) {
-      return `${winner.owner}'s ${winner.team} win the shootout. ${loser.owner}'s ${loser.team} contributed to the chaos but forgot the happy ending.`;
+      return `${dbPossessive(winner.owner)} ${winner.team} win the shootout. ${dbPossessive(loser.owner)} ${loser.team} contributed to the chaos but forgot the happy ending.`;
     }
 
     if (winner && loser && margin === 1 && totalGoals >= 3) {
-      return `${winner.owner}'s ${winner.team} nick it in a proper nerve-shredder. ${loser.owner}'s ${loser.team} were close enough to be annoying.`;
+      return `${dbPossessive(winner.owner)} ${winner.team} nick it in a proper nerve-shredder. ${dbPossessive(loser.owner)} ${loser.team} were close enough to be annoying.`;
     }
 
     if (winner && loser && margin === 1) {
-      return `${winner.owner}'s ${winner.team} get the job done by the slimmest margin. ${loser.owner}'s ${loser.team} will be filing this under “nearly”.`;
+      return `${dbPossessive(winner.owner)} ${winner.team} get the job done by the slimmest margin. ${dbPossessive(loser.owner)} ${loser.team} will be filing this under “nearly”.`;
     }
 
     if (winner && loser) {
-      return `${winner.owner}'s ${winner.team} take the points. ${loser.owner}'s ${loser.team} take the excuses.`;
+      return `${dbPossessive(winner.owner)} ${winner.team} take the points. ${dbPossessive(loser.owner)} ${loser.team} take the excuses.`;
     }
 
-    return `The result is in. The syndicates can now begin the completely calm and reasonable post-match analysis.`;
+    return `The result is in. The owners can now begin the completely calm and reasonable post-match analysis.`;
   }
 
   async function dbLoadResults() {
@@ -191,7 +244,7 @@
         </div>
 
         <div class="daily-banter-owners">
-          ${dbEsc(dbOwner(teamA))} v ${dbEsc(dbOwner(teamB))}
+          ${dbEsc(dbOwnerLine(teamA, teamB))}
         </div>
 
         <p>${dbEsc(dbBanterLine(result))}</p>
