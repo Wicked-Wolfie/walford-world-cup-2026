@@ -1,10 +1,11 @@
-// Walford V4.8 Homepage Knockout Tracker
+// Walford V5.8.2 Homepage Knockout Tracker
 // Add-on file. Does not replace knockout-auto.js.
-// Shows latest knockout result, next available knockout match, and live road-to-final headline.
+// Shows latest knockout result, next scheduled knockout slot, and road-to-final headline.
+// Group-stage slots stay as placeholders until knockout results are actually saved.
 
 (function () {
   const KNOCKOUT_MATCHES = [
-    ["M73", "Round of 32", "Group A Runner-up", "Group B Runner-up"],
+    ["M73", "Round of 32", "Group A Winner", "Group B Runner-up"],
     ["M74", "Round of 32", "Group E Winner", "Best 3rd Place"],
     ["M75", "Round of 32", "Group F Winner", "Group C Runner-up"],
     ["M76", "Round of 32", "Group C Winner", "Group F Runner-up"],
@@ -63,52 +64,27 @@
       .trim();
   }
 
-  function hGroupStats() {
-    try {
-      return typeof groupStats === "function" ? groupStats() : [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  function hGroupTop(groupLetter, position) {
-    const rows = hGroupStats().filter(t => t.group === groupLetter);
-    return rows[position - 1] || null;
+  function hSlotLabel(slot) {
+    return String(slot || "")
+      .replace(/^Group ([A-L]) Winner$/, "Winner Group $1")
+      .replace(/^Group ([A-L]) Runner-up$/, "Runner-up Group $1");
   }
 
   function hResolveSlot(slot) {
     const winnerRef = String(slot).match(/^Winner (M\d+|FINAL)$/);
+
     if (winnerRef) {
       const result = knockoutResults[winnerRef[1]];
       return result && result.winner ? result.winner : slot;
     }
 
-    const groupWinner = String(slot).match(/^Group ([A-L]) Winner$/);
-    if (groupWinner) {
-      const team = hGroupTop(groupWinner[1], 1);
-      return team ? team.team : slot;
-    }
-
-    const groupRunner = String(slot).match(/^Group ([A-L]) Runner-up$/);
-    if (groupRunner) {
-      const team = hGroupTop(groupRunner[1], 2);
-      return team ? team.team : slot;
-    }
-
-    return slot;
-  }
-
-  function hIsPlaceholder(label) {
-    return /^Winner /.test(label) || /^Group /.test(label) || label === "Best 3rd Place" || label === "TBC";
-  }
-
-  function hIsRealTeam(label) {
-    return !hIsPlaceholder(label);
+    return hSlotLabel(slot);
   }
 
   function hResolvedMatch(match) {
     const teamA = hClean(hResolveSlot(match[2]));
     const teamB = hClean(hResolveSlot(match[3]));
+
     return {
       code: match[0],
       round: match[1],
@@ -161,17 +137,40 @@
   function hNextAvailableMatch() {
     return KNOCKOUT_MATCHES
       .map(hResolvedMatch)
-      .find(m => !m.played && hIsRealTeam(m.teamA) && hIsRealTeam(m.teamB));
+      .find(m => !m.played);
   }
 
   function hBestLiveRoadMatch() {
-    const preferred = ["FINAL", "M101", "M102", "M97", "M98", "M99", "M100", "M89", "M90", "M91", "M92", "M93", "M94", "M95", "M96"];
+    const preferred = [
+      "FINAL",
+      "M101",
+      "M102",
+      "M97",
+      "M98",
+      "M99",
+      "M100",
+      "M89",
+      "M90",
+      "M91",
+      "M92",
+      "M93",
+      "M94",
+      "M95",
+      "M96",
+      "M73"
+    ];
+
     for (const code of preferred) {
       const match = KNOCKOUT_MATCHES.find(m => m[0] === code);
       if (!match) continue;
+
       const resolved = hResolvedMatch(match);
-      if (hIsRealTeam(resolved.teamA) || hIsRealTeam(resolved.teamB)) return resolved;
+
+      if (!resolved.played) {
+        return resolved;
+      }
     }
+
     return hNextAvailableMatch();
   }
 
@@ -199,16 +198,16 @@
     if (!nextMatch) {
       return `
         <article class="home-ko-card">
-          <span>Next Available Knockout Match</span>
-          <strong>Waiting for more qualifiers</strong>
-          <em>More matches unlock as group slots and winners are decided.</em>
+          <span>Next Knockout Slot</span>
+          <strong>Waiting for knockout stage</strong>
+          <em>No knockout slots available yet.</em>
         </article>
       `;
     }
 
     return `
       <article class="home-ko-card">
-        <span>Next Available Knockout Match</span>
+        <span>Next Knockout Slot</span>
         <strong>${nextMatch.code}: ${hFlag(nextMatch.teamA)} ${nextMatch.teamA} v ${hFlag(nextMatch.teamB)} ${nextMatch.teamB}</strong>
         <em>${nextMatch.round}</em>
       </article>
@@ -221,7 +220,7 @@
         <article class="home-ko-card">
           <span>Road to the Final</span>
           <strong>Bracket warming up</strong>
-          <em>Awaiting knockout movement.</em>
+          <em>Awaiting knockout stage.</em>
         </article>
       `;
     }
@@ -237,6 +236,7 @@
 
   function hInsertSection(html) {
     let section = document.getElementById("homeKnockoutTracker");
+
     if (!section) {
       section = document.createElement("section");
       section.id = "homeKnockoutTracker";
@@ -270,8 +270,9 @@
       <div class="section-title home-ko-title">
         <span>Road to Glory</span>
         <h2>Knockout Tracker</h2>
-        <p>Latest knockout result, next available tie, and the live road to the final.</p>
+        <p>Latest knockout result, next scheduled slot, and the road to the final.</p>
       </div>
+
       <div class="home-ko-grid">
         ${hRenderResultCard(latest)}
         ${hRenderNextCard(nextMatch)}
