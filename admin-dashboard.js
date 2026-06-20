@@ -94,9 +94,7 @@ body.walford-admin-mode #golden-boot {
 
       const main = document.querySelector("main");
 
-      if (main && main.firstChild) {
-        main.insertBefore(section, main.firstChild);
-      } else if (main) {
+            if (main) {
         main.appendChild(section);
       }
     }
