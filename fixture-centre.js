@@ -1,6 +1,6 @@
-// Walford V4.2 Fixture Centre Local Date Fix
+// Walford V5.8.2 Fixture Centre Local Date Fix
 // Replaces fixture-centre.js only.
-// Fixes UTC date issue so Future Fixtures starts after the real local date.
+// Fixes UTC date issue and positions Fixture Focus below Road to Glory.
 
 const WALFORD_FIXTURE_DATES = [
   "2026-06-11","2026-06-12","2026-06-13","2026-06-14","2026-06-15",
@@ -54,6 +54,7 @@ function walfordTitle(text) {
 function walfordHideNativeDate() {
   const input = document.getElementById("todayDate");
   const btn = document.getElementById("showTodayBtn");
+
   if (input) input.style.display = "none";
   if (btn) btn.style.display = "none";
 }
@@ -72,10 +73,33 @@ function walfordEnsureDateChooser() {
   return chooser;
 }
 
+function walfordMoveFixtureFocusBelowRoadToGlory() {
+  const fixtureSection =
+    document.getElementById("fixtures") ||
+    document.getElementById("fixture-centre") ||
+    document.getElementById("fixtureCentre") ||
+    document.querySelector(".fixture-centre") ||
+    document.querySelector(".fixtures");
+
+  const knockoutSection = document.getElementById("knockout");
+
+  if (!fixtureSection || !knockoutSection || !knockoutSection.parentNode) return;
+
+  if (fixtureSection.previousElementSibling === knockoutSection) return;
+
+  knockoutSection.parentNode.insertBefore(fixtureSection, knockoutSection.nextSibling);
+}
+
 function walfordRenderViaApp(dateIso) {
   const input = document.getElementById("todayDate");
-  if (input) input.value = dateIso;
-  if (typeof renderToday === "function") renderToday();
+
+  if (input) {
+    input.value = dateIso;
+  }
+
+  if (typeof renderToday === "function") {
+    renderToday();
+  }
 }
 
 function walfordSetTodayMode() {
@@ -83,11 +107,16 @@ function walfordSetTodayMode() {
   walfordHideNativeDate();
 
   const chooser = walfordEnsureDateChooser();
-  if (chooser) chooser.innerHTML = "";
+
+  if (chooser) {
+    chooser.innerHTML = "";
+  }
 
   const today = walfordIsoToday();
+
   walfordTitle(`Today’s Fixtures — ${walfordDisplayDate(today)}`);
   walfordRenderViaApp(today);
+  walfordMoveFixtureFocusBelowRoadToGlory();
 }
 
 function walfordSetFutureMode(selectedDate) {
@@ -101,10 +130,12 @@ function walfordSetFutureMode(selectedDate) {
   walfordRenderViaApp(chosen);
 
   const chooser = walfordEnsureDateChooser();
+
   if (!chooser) return;
 
   chooser.innerHTML = futureDates.map(date => {
     const active = date === chosen ? "active" : "";
+
     return `<button type="button" class="fixture-date-pill ${active}" data-date="${date}">${walfordShortDate(date)}</button>`;
   }).join("");
 
@@ -113,6 +144,8 @@ function walfordSetFutureMode(selectedDate) {
       walfordSetFutureMode(btn.dataset.date);
     });
   });
+
+  walfordMoveFixtureFocusBelowRoadToGlory();
 }
 
 function walfordSetResultsMode() {
@@ -120,7 +153,10 @@ function walfordSetResultsMode() {
   walfordHideNativeDate();
 
   const chooser = walfordEnsureDateChooser();
-  if (chooser) chooser.innerHTML = "";
+
+  if (chooser) {
+    chooser.innerHTML = "";
+  }
 
   walfordTitle("Latest Results");
 
@@ -130,11 +166,16 @@ function walfordSetResultsMode() {
   if (todayGrid && resultsList) {
     todayGrid.innerHTML = resultsList.innerHTML || "<p>No results loaded yet.</p>";
   }
+
+  walfordMoveFixtureFocusBelowRoadToGlory();
 }
 
 function walfordRenameResultsTab() {
   const resultsBtn = document.getElementById("fcResults");
-  if (resultsBtn) resultsBtn.textContent = "Latest Results";
+
+  if (resultsBtn) {
+    resultsBtn.textContent = "Latest Results";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -144,12 +185,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   walfordRenameResultsTab();
 
-  if (todayBtn) todayBtn.addEventListener("click", walfordSetTodayMode);
-  if (futureBtn) futureBtn.addEventListener("click", () => walfordSetFutureMode());
-  if (resultsBtn) resultsBtn.addEventListener("click", walfordSetResultsMode);
+  if (todayBtn) {
+    todayBtn.addEventListener("click", walfordSetTodayMode);
+  }
+
+  if (futureBtn) {
+    futureBtn.addEventListener("click", () => walfordSetFutureMode());
+  }
+
+  if (resultsBtn) {
+    resultsBtn.addEventListener("click", walfordSetResultsMode);
+  }
 
   setTimeout(() => {
     walfordHideNativeDate();
     walfordSetTodayMode();
+    walfordMoveFixtureFocusBelowRoadToGlory();
   }, 1200);
+
+  setTimeout(walfordMoveFixtureFocusBelowRoadToGlory, 2200);
+  setTimeout(walfordMoveFixtureFocusBelowRoadToGlory, 4200);
 });
