@@ -369,10 +369,9 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(aaStart, 1800);
-    setTimeout(aaStart, 4500);
-    setInterval(aaStart, 5000);
-  });
+  setTimeout(aaStart, 1800);
+  setTimeout(aaStart, 4500);
+});
 
   window.addEventListener("hashchange", () => {
     setTimeout(aaStart, 300);
