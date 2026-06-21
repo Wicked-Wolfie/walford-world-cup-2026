@@ -1,11 +1,11 @@
-// Walford V5.8.2 Knockout Phase
+// Walford V5.8.3 Knockout Phase
 // Replaces knockout-auto.js only.
-// Shows group slot placeholders until knockout results are actually saved.
+// Shows confirmed knockout teams where known, while keeping unknown opponents as TBC.
 // Group-stage standings are NOT used to project teams into the bracket.
 
 const WALFORD_KNOCKOUT = {
   r32: [
-    ["M73", "Round of 32", "Group A Winner", "Group B Runner-up"],
+    ["M73", "Round of 32", "Group A Runner-up", "Group B Runner-up"],
     ["M74", "Round of 32", "Group E Winner", "Best 3rd Place"],
     ["M75", "Round of 32", "Group F Winner", "Group C Runner-up"],
     ["M76", "Round of 32", "Group C Winner", "Group F Runner-up"],
@@ -50,6 +50,18 @@ const WALFORD_KNOCKOUT = {
 let wkResults = {};
 let wkDb = null;
 let wkSession = null;
+
+const wkConfirmedSlots = {
+  "Group E Winner": "Germany",
+  "Group A Winner": "Mexico",
+  "Group D Winner": "United States"
+};
+
+const wkMatchSchedule = {
+  M74: { date: "2026-06-29", time: "21:30" },
+  M79: { date: "2026-07-01", time: "02:00" },
+  M81: { date: "2026-07-02", time: "01:00" }
+};
 
 function wkInitDb() {
   if (wkDb) return wkDb;
@@ -105,6 +117,10 @@ function wkSlotLabel(slot) {
 }
 
 function wkResolveSlot(slot) {
+  if (wkConfirmedSlots[slot]) {
+    return wkConfirmedSlots[slot];
+  }
+
   const winnerRef = String(slot).match(/^Winner (M\d+|FINAL)$/);
 
   if (winnerRef) {
@@ -115,6 +131,10 @@ function wkResolveSlot(slot) {
     }
 
     return slot;
+  }
+
+  if (slot === "Best 3rd Place") {
+    return "TBC";
   }
 
   return wkSlotLabel(slot);
@@ -133,6 +153,37 @@ function wkIsPlaceholder(label) {
 
 function wkIsRealTeam(label) {
   return !wkIsPlaceholder(label);
+}
+
+function wkDateLabel(value) {
+  if (!value || value === "TBC") return "Date TBC";
+
+  const parts = String(value).split("-");
+  if (parts.length !== 3) return value;
+
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function wkMatchScheduleLine(code) {
+  const item = wkMatchSchedule[code];
+
+  if (!item) {
+    return "";
+  }
+
+  const dateText = wkDateLabel(item.date);
+  const timeText = item.time && item.time !== "TBC" ? item.time : "Time TBC";
+
+  return `
+    <div style="
+      margin: 4px 0 8px;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.68);
+      font-weight: 800;
+    ">
+      ${dateText} · ${timeText}
+    </div>
+  `;
 }
 
 function wkTeamLine(label, matchResult, side) {
@@ -165,6 +216,7 @@ function wkCard(match) {
   return `
     <article class="wk-match ${result ? "played" : ""}">
       <small>${code}${result ? " • completed" : ""}</small>
+      ${wkMatchScheduleLine(code)}
       ${wkTeamLine(slotA, result, "a")}
       ${wkTeamLine(slotB, result, "b")}
     </article>
@@ -192,12 +244,12 @@ function wkInsertSection() {
     <div class="section-title">
       <span>Road to Glory</span>
       <h2>Knockout Bracket</h2>
-      <p>Round of 32 through to the Final. Teams appear only once knockout places or knockout winners are confirmed.</p>
+      <p>Round of 32 through to the Final. Confirmed teams appear once places are known. Unknown opponents remain TBC.</p>
     </div>
 
     <div class="wk-notice">
-      <strong>Placeholder mode:</strong>
-      Group slots stay as Winner Group, Runner-up Group or Best 3rd Place until qualifiers are confirmed.
+      <strong>Confirmed-slot mode:</strong>
+      Confirmed qualified teams are shown. Unconfirmed opponents remain TBC until their places are known.
     </div>
 
     <div id="wkAdminPanel" class="wk-admin"></div>
@@ -370,7 +422,7 @@ function wkRenderAdmin() {
   if (!availableMatches.length) {
     admin.innerHTML = `
       <div class="wk-admin-note">
-        No knockout matches are available yet. Keep the bracket in placeholder mode until qualifiers are confirmed.
+        No knockout matches are fully available yet. Matches with TBC opponents cannot be entered until both teams are known.
       </div>
     `;
     return;
@@ -416,13 +468,19 @@ async function wkSaveResult(event) {
   const match = wkResolvedMatchTeams(code);
 
   if (!match) return alert("Match not available yet.");
+
   if (!wkIsRealTeam(match.teamA) || !wkIsRealTeam(match.teamB)) {
     return alert("This knockout match is not ready yet.");
   }
-  if (match.teamA === match.teamB) return alert("Invalid match.");
+
+  if (match.teamA === match.teamB) {
+    return alert("Invalid match.");
+  }
+
   if (scoreA === scoreB) {
     return alert("Knockout matches need a winner. Enter the post-penalty winner score.");
   }
+
   if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB)) {
     return alert("Enter valid scores.");
   }
