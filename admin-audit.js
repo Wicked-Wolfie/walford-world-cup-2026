@@ -358,13 +358,14 @@
   }
 
   async function aaStart() {
-    if (
-      location.hash !== "#admin-dashboard" &&
-      location.hash !== "#match-scorers-admin" &&
-      location.hash !== "#results-editor-admin"
-    ) {
-      return;
-    }
+ if (
+  location.hash !== "#admin-dashboard" &&
+  location.hash !== "#match-scorers-admin" &&
+  location.hash !== "#results-editor-admin" &&
+  location.hash !== "#golden-boot-admin"
+) {
+  return;
+}
 
     await aaLoad();
     aaRender();
@@ -373,6 +374,8 @@
   document.addEventListener("DOMContentLoaded", () => {
   setTimeout(aaStart, 1800);
   setTimeout(aaStart, 4500);
+  setTimeout(aaStart, 8000);
+  setTimeout(aaStart, 12000);
 });
 
   window.addEventListener("hashchange", () => {
