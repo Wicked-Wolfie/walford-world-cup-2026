@@ -398,14 +398,19 @@ if (playerResultA.error || playerResultB.error) {
             </label>
 
             <label>
-              Score B
+  Score B
               <input id="msScoreB" type="number" min="0" value="0" required>
-            </label>
+             </label>
 
             <label>
-              Team B
-              <select id="msTeamB" required>${msTeamOptions(secondTeam)}</select>
-            </label>
+             Own goals
+             <input id="msOwnGoals" type="number" min="0" value="0" required>
+          </label>
+
+          <label>
+            Team B
+            <select id="msTeamB" required>${msTeamOptions(secondTeam)}</select>
+          </label>
           </div>
 
           <div class="ms-scorer-head">
@@ -493,6 +498,7 @@ if (playerResultA.error || playerResultB.error) {
     const team_b = document.getElementById("msTeamB").value;
     const score_a = Number(document.getElementById("msScoreA").value);
     const score_b = Number(document.getElementById("msScoreB").value);
+    const own_goals = Number(document.getElementById("msOwnGoals").value || 0);
     const scorers = msCollectedScorers();
 
     if (!match_date || !team_a || !team_b || team_a === team_b) {
@@ -500,10 +506,22 @@ if (playerResultA.error || playerResultB.error) {
       return alert("Choose a date and two different teams.");
     }
 
-    if (!Number.isInteger(score_a) || !Number.isInteger(score_b) || score_a < 0 || score_b < 0) {
+    if (
+      !Number.isInteger(score_a) ||
+      !Number.isInteger(score_b) ||
+      !Number.isInteger(own_goals) ||
+      score_a < 0 ||
+      score_b < 0 ||
+      own_goals < 0
+    ) {
       status.textContent = "";
-      return alert("Enter valid scores.");
+      return alert("Enter valid scores and own goals.");
     }
+
+if (own_goals > score_a + score_b) {
+  status.textContent = "";
+  return alert("Own goals cannot be more than the total goals in the match.");
+}
 
     const totalScorerGoals = scorers.reduce((sum, s) => sum + Number(s.goals || 0), 0);
     const totalMatchGoals = score_a + score_b;
