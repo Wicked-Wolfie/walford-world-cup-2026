@@ -156,14 +156,15 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(pfApply, 1500);
-    setTimeout(pfApply, 3000);
-    setTimeout(pfApply, 5000);
-    setInterval(pfApply, 4000);
-  });
+  setTimeout(pfApply, 1500);
+  setTimeout(pfApply, 3000);
+  setTimeout(pfApply, 5000);
+  setTimeout(pfApply, 8000);
+});
 
-  window.addEventListener("hashchange", () => {
-    setTimeout(pfApply, 500);
-    setTimeout(pfApply, 1500);
-  });
+window.addEventListener("hashchange", () => {
+  setTimeout(pfApply, 500);
+  setTimeout(pfApply, 1500);
+  setTimeout(pfApply, 3000);
+});
 })();
