@@ -155,11 +155,37 @@
       });
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+  let pfTimer = null;
+
+function pfScheduleApply() {
+  clearTimeout(pfTimer);
+
+  pfTimer = setTimeout(() => {
+    pfApply();
+  }, 250);
+}
+
+function pfWatchForTableChanges() {
+  const target = document.body;
+
+  if (!target) return;
+
+  const observer = new MutationObserver(() => {
+    pfScheduleApply();
+  });
+
+  observer.observe(target, {
+    childList: true,
+    subtree: true
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
   setTimeout(pfApply, 1500);
   setTimeout(pfApply, 3000);
   setTimeout(pfApply, 5000);
-  setTimeout(pfApply, 8000);
+
+  pfWatchForTableChanges();
 });
 
 window.addEventListener("hashchange", () => {
