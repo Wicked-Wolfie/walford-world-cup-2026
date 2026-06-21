@@ -74,22 +74,37 @@ function walfordEnsureDateChooser() {
 }
 
 function walfordMoveFixtureFocusBelowRoadToGlory() {
-  const fixtureSection =
+  const knockoutSection = document.getElementById("knockout");
+
+  if (!knockoutSection || !knockoutSection.parentNode) return;
+
+  let fixtureSection =
     document.getElementById("fixtures") ||
     document.getElementById("fixture-centre") ||
     document.getElementById("fixtureCentre") ||
     document.querySelector(".fixture-centre") ||
     document.querySelector(".fixtures");
 
-  const knockoutSection = document.getElementById("knockout");
+  if (!fixtureSection) {
+    const sections = Array.from(document.querySelectorAll("section"));
 
-  if (!fixtureSection || !knockoutSection || !knockoutSection.parentNode) return;
+    fixtureSection = sections.find(section => {
+      const text = section.textContent || "";
+      return (
+        text.includes("Fixture Focus") ||
+        text.includes("Today’s Fixtures") ||
+        text.includes("Today's Fixtures") ||
+        text.includes("Future Fixtures") ||
+        text.includes("Latest Results")
+      );
+    });
+  }
 
-  if (fixtureSection.previousElementSibling === knockoutSection) return;
+  if (!fixtureSection) return;
+  if (fixtureSection === knockoutSection) return;
 
   knockoutSection.parentNode.insertBefore(fixtureSection, knockoutSection.nextSibling);
 }
-
 function walfordRenderViaApp(dateIso) {
   const input = document.getElementById("todayDate");
 
@@ -203,6 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
     walfordMoveFixtureFocusBelowRoadToGlory();
   }, 1200);
 
-  setTimeout(walfordMoveFixtureFocusBelowRoadToGlory, 2200);
+   setTimeout(walfordMoveFixtureFocusBelowRoadToGlory, 2200);
   setTimeout(walfordMoveFixtureFocusBelowRoadToGlory, 4200);
+  setTimeout(walfordMoveFixtureFocusBelowRoadToGlory, 7000);
 });
