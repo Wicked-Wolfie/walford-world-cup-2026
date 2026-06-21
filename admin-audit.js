@@ -371,15 +371,40 @@
     aaRender();
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+ let aaStartTimer = null;
+
+function aaScheduleStart() {
+  clearTimeout(aaStartTimer);
+
+  aaStartTimer = setTimeout(() => {
+    aaStart();
+  }, 500);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
   setTimeout(aaStart, 1800);
   setTimeout(aaStart, 4500);
   setTimeout(aaStart, 8000);
   setTimeout(aaStart, 12000);
+
+  const observer = new MutationObserver(() => {
+    const dashboard = document.getElementById("admin-dashboard");
+    const auditPanel = document.getElementById("adminAuditPanel");
+
+    if (dashboard && !auditPanel) {
+      aaScheduleStart();
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 });
 
-  window.addEventListener("hashchange", () => {
-    setTimeout(aaStart, 300);
-    setTimeout(aaStart, 1200);
-  });
+window.addEventListener("hashchange", () => {
+  setTimeout(aaStart, 300);
+  setTimeout(aaStart, 1200);
+  setTimeout(aaStart, 2500);
+});
 })();
