@@ -76,7 +76,7 @@
 
     const { data, error } = await db
       .from("results")
-      .select("id,match_date,team_a,team_b,score_a,score_b")
+      .select("id,match_date,team_a,team_b,score_a,score_b,own_goals")
       .order("match_date", { ascending: false })
       .limit(80);
 
@@ -141,6 +141,11 @@
             <label>
               Score B
               <input id="reScoreB" type="number" min="0" value="${Number(row.score_b || 0)}" required>
+            </label>
+
+            <label>
+              Own goals
+              <input id="reOwnGoals" type="number" min="0" value="${Number(row.own_goals || 0)}" required>
             </label>
 
             <label>
@@ -252,26 +257,40 @@
     const newDate = document.getElementById("reMatchDate").value;
     const scoreA = Number(document.getElementById("reScoreA").value);
     const scoreB = Number(document.getElementById("reScoreB").value);
+    const ownGoals = Number(document.getElementById("reOwnGoals").value || 0);
 
     if (!newDate) {
       if (status) status.textContent = "";
       return alert("Choose a match date.");
     }
 
-    if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB) || scoreA < 0 || scoreB < 0) {
+    if (
+      !Number.isInteger(scoreA) ||
+      !Number.isInteger(scoreB) ||
+      !Number.isInteger(ownGoals) ||
+      scoreA < 0 ||
+      scoreB < 0 ||
+      ownGoals < 0
+    ) {
       if (status) status.textContent = "";
-      return alert("Enter valid scores.");
+      return alert("Enter valid scores and own goals.");
+    }
+
+      if (ownGoals > scoreA + scoreB) {
+      if (status) status.textContent = "";
+      return alert("Own goals cannot be more than the total goals in the match.");
     }
 
    const resultUpdate = await db
   .from("results")
   .update({
-    match_date: newDate,
-    score_a: scoreA,
-    score_b: scoreB
-  })
+  match_date: newDate,
+  score_a: scoreA,
+  score_b: scoreB,
+  own_goals: ownGoals
+})
   .eq("id", row.id)
-  .select("id,match_date,score_a,score_b");
+  .select("id,match_date,score_a,score_b,own_goals");
 
 if (resultUpdate.error) {
   console.error(resultUpdate.error);
