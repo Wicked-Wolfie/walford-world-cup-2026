@@ -10,15 +10,17 @@
   let aaScorerSortField = "match_date";
   let aaScorerSortDirection = "desc";
 
- const aaOwnGoalAllowances = [
-  { match_date: "2026-06-13", team_a: "Qatar", team_b: "Switzerland", own_goals: 1 },
-  { match_date: "2026-06-13", team_a: "United States", team_b: "Paraguay", own_goals: 1 },
-  { match_date: "2026-06-15", team_a: "Belgium", team_b: "Egypt", own_goals: 1 },
-  { match_date: "2026-06-16", team_a: "Iraq", team_b: "Norway", own_goals: 1 },
-  { match_date: "2026-06-17", team_a: "Austria", team_b: "Jordan", own_goals: 1 }
-  { match_date: "2026-06-18", team_a: "Canada", team_b: "Qatar", own_goals: 1 },
-  { match_date: "2026-06-19", team_a: "United States", team_b: "Australia", own_goals: 1 },
-];
+  const aaOwnGoalAllowances = [
+    { match_date: "2026-06-13", team_a: "Qatar", team_b: "Switzerland", own_goals: 1 },
+    { match_date: "2026-06-13", team_a: "United States", team_b: "Paraguay", own_goals: 1 },
+    { match_date: "2026-06-15", team_a: "Belgium", team_b: "Egypt", own_goals: 1 },
+    { match_date: "2026-06-16", team_a: "Iraq", team_b: "Norway", own_goals: 1 },
+    { match_date: "2026-06-17", team_a: "Austria", team_b: "Jordan", own_goals: 1 },
+    { match_date: "2026-06-18", team_a: "Canada", team_b: "Qatar", own_goals: 1 },
+    { match_date: "2026-06-19", team_a: "United States", team_b: "Australia", own_goals: 1 }
+  ];
+
+  let aaStartTimer = null;
 
   function aaClient() {
     if (aaDb) return aaDb;
@@ -47,13 +49,17 @@
 
   function aaDateLabel(value) {
     if (!value) return "No date";
+
     const parts = String(value).split("-");
+
     if (parts.length !== 3) return value;
+
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
 
   async function aaIsSignedIn() {
     const db = aaClient();
+
     if (!db) return false;
 
     const result = await db.auth.getSession();
@@ -62,9 +68,11 @@
 
   async function aaLoad() {
     const db = aaClient();
+
     if (!db) return;
 
     const signedIn = await aaIsSignedIn();
+
     if (!signedIn) {
       aaResults = [];
       aaScorers = [];
@@ -81,7 +89,7 @@
       .from("goal_scorers")
       .select("*")
       .order("match_date", { ascending: false })
-      .limit(500);
+      .limit(800);
 
     if (resultsQuery.error) {
       console.warn("Admin audit could not load results.", resultsQuery.error);
@@ -127,6 +135,7 @@
   function aaScorersForResult(result) {
     return aaScorers.filter(row => {
       const sameDate = String(row.match_date || "") === String(result.match_date || "");
+
       const sameTeam =
         String(row.team || "") === String(result.team_a || "") ||
         String(row.team || "") === String(result.team_b || "");
@@ -142,6 +151,7 @@
   function aaExpectedGbGoals(result) {
     const resultGoals = aaResultGoalTotal(result);
     const ownGoals = aaOwnGoalsForResult(result);
+
     return Math.max(0, resultGoals - ownGoals);
   }
 
@@ -174,6 +184,7 @@
     if (field === "team") return String(row.team || "").toLowerCase();
     if (field === "player") return String(aaPlayerName(row) || "").toLowerCase();
     if (field === "goals") return Number(row.goals || 0);
+
     return "";
   }
 
@@ -332,6 +343,7 @@
 
   function aaRender() {
     const dashboard = document.getElementById("admin-dashboard");
+
     if (!dashboard) return;
 
     let panel = document.getElementById("adminAuditPanel");
@@ -355,56 +367,58 @@
     `;
 
     aaWireSortButtons();
+
+    if (typeof window.walfordPlayerFacesApply === "function") {
+      window.walfordPlayerFacesApply();
+    }
   }
 
   async function aaStart() {
- if (
-  location.hash !== "#admin-dashboard" &&
-  location.hash !== "#match-scorers-admin" &&
-  location.hash !== "#results-editor-admin" &&
-  location.hash !== "#golden-boot-admin"
-) {
-  return;
-}
+    if (
+      location.hash !== "#admin-dashboard" &&
+      location.hash !== "#match-scorers-admin" &&
+      location.hash !== "#results-editor-admin" &&
+      location.hash !== "#golden-boot-admin"
+    ) {
+      return;
+    }
 
     await aaLoad();
     aaRender();
   }
 
- let aaStartTimer = null;
+  function aaScheduleStart() {
+    clearTimeout(aaStartTimer);
 
-function aaScheduleStart() {
-  clearTimeout(aaStartTimer);
+    aaStartTimer = setTimeout(() => {
+      aaStart();
+    }, 500);
+  }
 
-  aaStartTimer = setTimeout(() => {
-    aaStart();
-  }, 500);
-}
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(aaStart, 1800);
+    setTimeout(aaStart, 4500);
+    setTimeout(aaStart, 8000);
+    setTimeout(aaStart, 12000);
 
-document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(aaStart, 1800);
-  setTimeout(aaStart, 4500);
-  setTimeout(aaStart, 8000);
-  setTimeout(aaStart, 12000);
+    const observer = new MutationObserver(() => {
+      const dashboard = document.getElementById("admin-dashboard");
+      const auditPanel = document.getElementById("adminAuditPanel");
 
-  const observer = new MutationObserver(() => {
-    const dashboard = document.getElementById("admin-dashboard");
-    const auditPanel = document.getElementById("adminAuditPanel");
+      if (dashboard && !auditPanel) {
+        aaScheduleStart();
+      }
+    });
 
-    if (dashboard && !auditPanel) {
-      aaScheduleStart();
-    }
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
   });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
+  window.addEventListener("hashchange", () => {
+    setTimeout(aaStart, 300);
+    setTimeout(aaStart, 1200);
+    setTimeout(aaStart, 2500);
   });
-});
-
-window.addEventListener("hashchange", () => {
-  setTimeout(aaStart, 300);
-  setTimeout(aaStart, 1200);
-  setTimeout(aaStart, 2500);
-});
 })();
