@@ -16,6 +16,8 @@
   { match_date: "2026-06-15", team_a: "Belgium", team_b: "Egypt", own_goals: 1 },
   { match_date: "2026-06-16", team_a: "Iraq", team_b: "Norway", own_goals: 1 },
   { match_date: "2026-06-17", team_a: "Austria", team_b: "Jordan", own_goals: 1 }
+  { match_date: "2026-06-18", team_a: "Canada", team_b: "Qatar", own_goals: 1 },
+  { match_date: "2026-06-19", team_a: "United States", team_b: "Australia", own_goals: 1 },
 ];
 
   function aaClient() {
