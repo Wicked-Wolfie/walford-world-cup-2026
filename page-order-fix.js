@@ -1,5 +1,5 @@
-// Walford V5.8.1 Page Order Fix
-// Forces public homepage sections into the preferred order after dynamic sections load.
+// Walford V5.8.3 Page Order Fix
+// Forces public homepage sections into the preferred group-stage order.
 
 (function () {
   function pofSectionByHeading(words) {
@@ -18,6 +18,13 @@
     afterSection.parentNode.insertBefore(section, afterSection.nextSibling);
   }
 
+  function pofMoveBefore(section, beforeSection) {
+    if (!section || !beforeSection || !beforeSection.parentNode) return;
+    if (section === beforeSection) return;
+
+    beforeSection.parentNode.insertBefore(section, beforeSection);
+  }
+
   function pofMoveToBottom(section) {
     const main = document.querySelector("main");
     if (!main || !section) return;
@@ -26,6 +33,7 @@
   }
 
   function pofApply() {
+    const goldenBoot = document.getElementById("golden-boot");
     const knockoutTracker = document.getElementById("homeKnockoutTracker");
     const knockoutBracket = document.getElementById("knockout");
     const dailyBanter = document.getElementById("daily-banter");
@@ -39,18 +47,24 @@
       document.querySelector(".fixtures") ||
       pofSectionByHeading(["fixture", "focus"]);
 
-    if (knockoutTracker && knockoutBracket) {
-      pofMoveAfter(knockoutBracket, knockoutTracker);
-    }
-
-    if (fixtureFocus && knockoutBracket) {
-      pofMoveAfter(fixtureFocus, knockoutBracket);
+    if (fixtureFocus && goldenBoot) {
+      pofMoveBefore(fixtureFocus, goldenBoot);
     }
 
     if (dailyBanter && fixtureFocus) {
       pofMoveAfter(dailyBanter, fixtureFocus);
-    } else if (dailyBanter && knockoutBracket) {
-      pofMoveAfter(dailyBanter, knockoutBracket);
+    }
+
+    if (goldenBoot && dailyBanter) {
+      pofMoveAfter(goldenBoot, dailyBanter);
+    }
+
+    if (knockoutTracker && goldenBoot) {
+      pofMoveAfter(knockoutTracker, goldenBoot);
+    }
+
+    if (knockoutBracket && knockoutTracker) {
+      pofMoveAfter(knockoutBracket, knockoutTracker);
     }
 
     if (adminDashboard) {
