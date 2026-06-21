@@ -524,15 +524,6 @@ if (own_goals > score_a + score_b) {
 }
 
     const totalScorerGoals = scorers.reduce((sum, s) => sum + Number(s.goals || 0), 0);
-    const totalMatchGoals = score_a + score_b;
-
-    if (scorers.length && totalScorerGoals !== totalMatchGoals) {
-      const ok = confirm(`The scorers total ${totalScorerGoals} goals, but the match score totals ${totalMatchGoals} goals.\n\nSave anyway?`);
-      if (!ok) {
-        status.textContent = "";
-        return;
-      }
-    }
 
     const { data: existing, error: findError } = await db
       .from("results")
@@ -550,13 +541,13 @@ if (own_goals > score_a + score_b) {
     if (existing && existing.length) {
       const update = await db
         .from("results")
-        .update({ match_date, team_a, team_b, score_a, score_b })
+        .update({ match_date, team_a, team_b, score_a, score_b, own_goals })
         .eq("id", existing[0].id);
       resultError = update.error;
     } else {
       const insert = await db
         .from("results")
-        .insert({ match_date, team_a, team_b, score_a, score_b });
+        .insert({ match_date, team_a, team_b, score_a, score_b, own_goals });
       resultError = insert.error;
     }
 
