@@ -1,4 +1,4 @@
-// Walford V5.8.3 Page Order Fix
+// Walford V5.8.4 Page Order Fix
 // Forces public homepage sections into the preferred group-stage order.
 
 (function () {
@@ -33,13 +33,8 @@
   }
 
   function pofApply() {
-    const goldenBoot = document.getElementById("golden-boot");
-    const knockoutTracker = document.getElementById("homeKnockoutTracker");
-    const knockoutBracket = document.getElementById("knockout");
-    const dailyBanter = document.getElementById("daily-banter");
-    const adminDashboard = document.getElementById("admin-dashboard");
-
     const fixtureFocus =
+      document.getElementById("today") ||
       document.getElementById("fixtures") ||
       document.getElementById("fixture-centre") ||
       document.getElementById("fixtureCentre") ||
@@ -47,24 +42,49 @@
       document.querySelector(".fixtures") ||
       pofSectionByHeading(["fixture", "focus"]);
 
-    if (fixtureFocus && goldenBoot) {
-      pofMoveBefore(fixtureFocus, goldenBoot);
-    }
+    const dailyBanter = document.getElementById("daily-banter");
+    const syndicateStandings = document.getElementById("standings");
+    const goldenBoot = document.getElementById("golden-boot");
+    const officialVideo = document.getElementById("walford-tv");
+    const knockoutTracker = document.getElementById("homeKnockoutTracker");
+    const knockoutBracket = document.getElementById("knockout");
+    const adminDashboard = document.getElementById("admin-dashboard");
 
-    if (dailyBanter && fixtureFocus) {
+    if (fixtureFocus && dailyBanter) {
       pofMoveAfter(dailyBanter, fixtureFocus);
     }
 
-    if (goldenBoot && dailyBanter) {
+    if (syndicateStandings && dailyBanter) {
+      pofMoveAfter(syndicateStandings, dailyBanter);
+    }
+
+    if (goldenBoot && syndicateStandings) {
+      pofMoveAfter(goldenBoot, syndicateStandings);
+    } else if (goldenBoot && dailyBanter) {
       pofMoveAfter(goldenBoot, dailyBanter);
     }
 
-    if (knockoutTracker && goldenBoot) {
+    if (officialVideo && goldenBoot) {
+      pofMoveAfter(officialVideo, goldenBoot);
+    }
+
+    if (knockoutTracker && officialVideo) {
+      pofMoveAfter(knockoutTracker, officialVideo);
+    } else if (knockoutTracker && goldenBoot) {
       pofMoveAfter(knockoutTracker, goldenBoot);
     }
 
     if (knockoutBracket && knockoutTracker) {
       pofMoveAfter(knockoutBracket, knockoutTracker);
+    }
+
+    if (fixtureFocus) {
+      const main = document.querySelector("main");
+      const firstSection = main ? main.querySelector("section") : null;
+
+      if (firstSection && firstSection !== fixtureFocus) {
+        pofMoveBefore(fixtureFocus, firstSection);
+      }
     }
 
     if (adminDashboard) {
