@@ -81,7 +81,7 @@
 
     const resultsQuery = await db
       .from("results")
-      .select("id,match_date,team_a,team_b,score_a,score_b")
+      .select("id,match_date,team_a,team_b,score_a,score_b,own_goals")
       .order("match_date", { ascending: false })
       .limit(300);
 
@@ -115,23 +115,8 @@
   }
 
   function aaOwnGoalsForResult(result) {
-    const row = aaOwnGoalAllowances.find(item => {
-      const sameDate = String(item.match_date || "") === String(result.match_date || "");
-
-      const sameOrder =
-        String(item.team_a || "") === String(result.team_a || "") &&
-        String(item.team_b || "") === String(result.team_b || "");
-
-      const reverseOrder =
-        String(item.team_a || "") === String(result.team_b || "") &&
-        String(item.team_b || "") === String(result.team_a || "");
-
-      return sameDate && (sameOrder || reverseOrder);
-    });
-
-    return Number(row?.own_goals || 0);
-  }
-
+  return Number(result.own_goals || 0);
+}
   function aaScorersForResult(result) {
     return aaScorers.filter(row => {
       const sameDate = String(row.match_date || "") === String(result.match_date || "");
