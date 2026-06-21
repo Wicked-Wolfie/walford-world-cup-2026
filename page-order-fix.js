@@ -1,4 +1,4 @@
-// Walford V5.8.4 Page Order Fix
+// Walford V5.8.5 Page Order Fix
 // Forces public homepage sections into the preferred group-stage order.
 
 (function () {
@@ -11,85 +11,64 @@
     });
   }
 
-  function pofMoveAfter(section, afterSection) {
-    if (!section || !afterSection || !afterSection.parentNode) return;
-    if (section === afterSection) return;
-
-    afterSection.parentNode.insertBefore(section, afterSection.nextSibling);
-  }
-
-  function pofMoveBefore(section, beforeSection) {
-    if (!section || !beforeSection || !beforeSection.parentNode) return;
-    if (section === beforeSection) return;
-
-    beforeSection.parentNode.insertBefore(section, beforeSection);
-  }
-
-  function pofMoveToBottom(section) {
-    const main = document.querySelector("main");
-    if (!main || !section) return;
-
-    main.appendChild(section);
-  }
-
-  function pofApply() {
-    const fixtureFocus =
+  function pofFindFixtureFocus() {
+    return (
       document.getElementById("today") ||
       document.getElementById("fixtures") ||
       document.getElementById("fixture-centre") ||
       document.getElementById("fixtureCentre") ||
       document.querySelector(".fixture-centre") ||
       document.querySelector(".fixtures") ||
-      pofSectionByHeading(["fixture", "focus"]);
+      pofSectionByHeading(["fixture", "focus"])
+    );
+  }
 
+  function pofMoveToMainInOrder(sections) {
+    const main = document.querySelector("main");
+    if (!main) return;
+
+    sections.forEach(section => {
+      if (section && section.parentNode) {
+        main.appendChild(section);
+      }
+    });
+  }
+
+  function pofApply() {
+    const fixtureFocus = pofFindFixtureFocus();
     const dailyBanter = document.getElementById("daily-banter");
     const syndicateStandings = document.getElementById("standings");
     const goldenBoot = document.getElementById("golden-boot");
     const officialVideo = document.getElementById("walford-tv");
     const knockoutTracker = document.getElementById("homeKnockoutTracker");
     const knockoutBracket = document.getElementById("knockout");
+
+    const groups = document.getElementById("groups");
+    const allTable = document.getElementById("all-table");
+    const squadHub = document.getElementById("squad-hub");
+    const teamTracker = document.getElementById("teams");
+    const sweepstakeDraw = document.getElementById("draw");
+    const matchCentre = document.getElementById("match-centre");
+    const banterCentre = document.getElementById("banter");
     const adminDashboard = document.getElementById("admin-dashboard");
 
-    if (fixtureFocus && dailyBanter) {
-      pofMoveAfter(dailyBanter, fixtureFocus);
-    }
-
-    if (syndicateStandings && dailyBanter) {
-      pofMoveAfter(syndicateStandings, dailyBanter);
-    }
-
-    if (goldenBoot && syndicateStandings) {
-      pofMoveAfter(goldenBoot, syndicateStandings);
-    } else if (goldenBoot && dailyBanter) {
-      pofMoveAfter(goldenBoot, dailyBanter);
-    }
-
-    if (officialVideo && goldenBoot) {
-      pofMoveAfter(officialVideo, goldenBoot);
-    }
-
-    if (knockoutTracker && officialVideo) {
-      pofMoveAfter(knockoutTracker, officialVideo);
-    } else if (knockoutTracker && goldenBoot) {
-      pofMoveAfter(knockoutTracker, goldenBoot);
-    }
-
-    if (knockoutBracket && knockoutTracker) {
-      pofMoveAfter(knockoutBracket, knockoutTracker);
-    }
-
-    if (fixtureFocus) {
-      const main = document.querySelector("main");
-      const firstSection = main ? main.querySelector("section") : null;
-
-      if (firstSection && firstSection !== fixtureFocus) {
-        pofMoveBefore(fixtureFocus, firstSection);
-      }
-    }
-
-    if (adminDashboard) {
-      pofMoveToBottom(adminDashboard);
-    }
+    pofMoveToMainInOrder([
+      fixtureFocus,
+      dailyBanter,
+      syndicateStandings,
+      goldenBoot,
+      officialVideo,
+      knockoutTracker,
+      knockoutBracket,
+      groups,
+      allTable,
+      squadHub,
+      teamTracker,
+      sweepstakeDraw,
+      matchCentre,
+      banterCentre,
+      adminDashboard
+    ]);
   }
 
   document.addEventListener("DOMContentLoaded", () => {
