@@ -608,4 +608,21 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* V5.8.7 Force remove old hero rectangle */
+
+.hero::before,
+.hero::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.hero {
+  overflow: visible !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
 ```
