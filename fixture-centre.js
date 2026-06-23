@@ -56,11 +56,19 @@ month: "short"
 }
 
 function walfordFutureFixtureDates() {
-const today = walfordIsoToday();
+  const currentShownDate = walfordFixtureChosenDate || walfordIsoToday();
 
-return WALFORD_FIXTURE_DATES.filter(function(date) {
-return date > today;
-});
+  const future = WALFORD_FIXTURE_DATES.filter(function(date) {
+    return date > currentShownDate;
+  });
+
+  if (future.length) {
+    return future;
+  }
+
+  return WALFORD_FIXTURE_DATES.filter(function(date) {
+    return date >= walfordIsoToday();
+  });
 }
 
 function walfordTitle(text) {
@@ -286,9 +294,10 @@ return;
 }
 
 if (target.id === "fcFuture") {
-event.preventDefault();
-walfordSetFutureMode();
-return;
+  event.preventDefault();
+  event.stopPropagation();
+  walfordSetFutureMode();
+  return;
 }
 
 if (target.id === "fcResults") {
