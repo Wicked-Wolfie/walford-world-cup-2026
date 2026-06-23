@@ -1,6 +1,6 @@
-// Walford V5.8.6 Fixture Centre No-Template Fix
+// Walford V5.8.7 Fixture Centre Safe DOM Fix
 // Replaces fixture-centre.js only.
-// Fixes broken buttons and avoids template-string paste errors.
+// No template strings. No risky inline HTML status strings.
 
 const WALFORD_FIXTURE_DATES = [
 "2026-06-11",
@@ -51,6 +51,7 @@ month: "short"
 
 function walfordFutureFixtureDates() {
 const today = walfordIsoToday();
+
 return WALFORD_FIXTURE_DATES.filter(function(date) {
 return date > today;
 });
@@ -130,6 +131,20 @@ walfordMakeButton("fcResults", "Latest Results", activeMode === "results")
 );
 }
 
+function walfordSetStatusMessage(message) {
+const todayMatches = document.getElementById("todayMatches");
+
+if (!todayMatches) return;
+
+todayMatches.innerHTML = "";
+
+const p = document.createElement("p");
+p.className = "status";
+p.textContent = message;
+
+todayMatches.appendChild(p);
+}
+
 function walfordSetDateAndRender(dateIso) {
 let input = document.getElementById("todayDate");
 
@@ -193,14 +208,17 @@ button.type = "button";
 button.className = "fixture-date-pill" + (date === chosen ? " active" : "");
 button.dataset.date = date;
 button.textContent = walfordShortDate(date);
+
+```
 chooser.appendChild(button);
+```
+
 });
 }
 
 function walfordSetFutureMode(selectedDate) {
 const futureDates = walfordFutureFixtureDates();
 const chooser = walfordDateChooserHost();
-const todayMatches = document.getElementById("todayMatches");
 
 walfordRenderButtons("future");
 
@@ -212,11 +230,7 @@ if (chooser) {
   chooser.innerHTML = "";
 }
 
-if (todayMatches) {
-  todayMatches.innerHTML =
-    "<p class=\"status\">No future group fixtures left. Use the Knockout Tracker for the next stage.</p>";
-}
-
+walfordSetStatusMessage("No future group fixtures left. Use the Knockout Tracker for the next stage.");
 walfordRestoreButtons("future");
 return;
 ```
@@ -251,11 +265,10 @@ chooser.innerHTML = "";
 
 walfordTitle("Latest Results");
 
-if (todayMatches && resultsList) {
-todayMatches.innerHTML =
-resultsList.innerHTML || "<p class="status">No results loaded yet.</p>";
-} else if (todayMatches) {
-todayMatches.innerHTML = "<p class="status">No results loaded yet.</p>";
+if (todayMatches && resultsList && resultsList.innerHTML.trim()) {
+todayMatches.innerHTML = resultsList.innerHTML;
+} else {
+walfordSetStatusMessage("No results loaded yet.");
 }
 
 walfordRestoreButtons("results");
