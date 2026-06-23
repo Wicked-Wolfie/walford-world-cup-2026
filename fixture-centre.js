@@ -1,6 +1,6 @@
-// Walford V5.8.8 Fixture Centre Clean Controls
+// Walford V5.8.9 Fixture Centre Simple Stable Fix
 // Replaces fixture-centre.js only.
-// Fixes duplicate buttons and makes Future Fixtures clickable.
+// Fixes duplicated controls and Future Fixtures click issue.
 
 const WALFORD_FIXTURE_DATES = [
 "2026-06-11",
@@ -30,22 +30,18 @@ const d = new Date();
 const yyyy = d.getFullYear();
 const mm = String(d.getMonth() + 1).padStart(2, "0");
 const dd = String(d.getDate()).padStart(2, "0");
-
 return yyyy + "-" + mm + "-" + dd;
 }
 
 function walfordDisplayDate(iso) {
 if (!iso || !iso.includes("-")) return iso || "";
-
 const parts = iso.split("-");
 return parts[2] + "/" + parts[1] + "/" + parts[0];
 }
 
 function walfordShortDate(iso) {
 if (!iso || !iso.includes("-")) return iso || "";
-
 const d = new Date(iso + "T12:00:00");
-
 return d.toLocaleDateString("en-GB", {
 day: "2-digit",
 month: "short"
@@ -54,13 +50,12 @@ month: "short"
 
 function walfordFutureFixtureDates() {
 const today = walfordIsoToday();
-
 return WALFORD_FIXTURE_DATES.filter(function(date) {
 return date > today;
 });
 }
 
-function walfordFixturePanel() {
+function walfordPanel() {
 const todayMatches = document.getElementById("todayMatches");
 
 if (todayMatches && todayMatches.parentNode) {
@@ -79,16 +74,11 @@ control.style.display = "none";
 }
 });
 
-const todayDate = document.getElementById("todayDate");
-const showTodayBtn = document.getElementById("showTodayBtn");
+const oldDate = document.getElementById("todayDate");
+const oldButton = document.getElementById("showTodayBtn");
 
-if (todayDate) {
-todayDate.style.display = "none";
-}
-
-if (showTodayBtn) {
-showTodayBtn.style.display = "none";
-}
+if (oldDate) oldDate.style.display = "none";
+if (oldButton) oldButton.style.display = "none";
 }
 
 function walfordTitle(text) {
@@ -99,22 +89,9 @@ title.textContent = text;
 }
 }
 
-function walfordMakeTab(id, text, mode) {
-const button = document.createElement("button");
-button.id = id;
-button.type = "button";
-button.textContent = text;
-
-if (walfordFixtureMode === mode) {
-button.className = "active";
-}
-
-return button;
-}
-
 function walfordEnsureTabs() {
 let tabs = document.getElementById("walfordFixtureTabs");
-const panel = walfordFixturePanel();
+const panel = walfordPanel();
 const todayMatches = document.getElementById("todayMatches");
 
 if (!tabs) {
@@ -125,19 +102,27 @@ tabs.className = "today-controls";
 ```
 if (todayMatches && todayMatches.parentNode) {
   todayMatches.parentNode.insertBefore(tabs, todayMatches);
-} else if (panel) {
-  panel.appendChild(tabs);
+} else {
+  panel.insertBefore(tabs, panel.firstChild);
 }
 ```
 
 }
 
 tabs.style.display = "flex";
-tabs.innerHTML = "";
 
-tabs.appendChild(walfordMakeTab("fcToday", "Today’s Fixtures", "today"));
-tabs.appendChild(walfordMakeTab("fcFuture", "Future Fixtures", "future"));
-tabs.appendChild(walfordMakeTab("fcResults", "Latest Results", "results"));
+let todayClass = "";
+let futureClass = "";
+let resultsClass = "";
+
+if (walfordFixtureMode === "today") todayClass = "active";
+if (walfordFixtureMode === "future") futureClass = "active";
+if (walfordFixtureMode === "results") resultsClass = "active";
+
+tabs.innerHTML =
+"<button id="fcToday" type="button" class="" + todayClass + "">Today’s Fixtures</button>" +
+"<button id="fcFuture" type="button" class="" + futureClass + "">Future Fixtures</button>" +
+"<button id="fcResults" type="button" class="" + resultsClass + "">Latest Results</button>";
 
 return tabs;
 }
@@ -167,13 +152,7 @@ const todayMatches = document.getElementById("todayMatches");
 
 if (!todayMatches) return;
 
-todayMatches.innerHTML = "";
-
-const p = document.createElement("p");
-p.className = "status";
-p.textContent = message;
-
-todayMatches.appendChild(p);
+todayMatches.innerHTML = "<p class="status">" + message + "</p>";
 }
 
 function walfordSetDateAndRender(dateIso) {
@@ -193,13 +172,7 @@ if (typeof renderToday === "function") {
 renderToday();
 } else {
 const showButton = document.getElementById("showTodayBtn");
-
-```
-if (showButton) {
-  showButton.click();
-}
-```
-
+if (showButton) showButton.click();
 }
 
 setTimeout(function() {
@@ -212,7 +185,7 @@ if (walfordFixtureMode === "future") {
 }
 ```
 
-}, 80);
+}, 100);
 
 setTimeout(function() {
 walfordHideOldControls();
@@ -224,7 +197,7 @@ if (walfordFixtureMode === "future") {
 }
 ```
 
-}, 250);
+}, 300);
 }
 
 function walfordBuildFutureDateButtons() {
@@ -239,19 +212,21 @@ if (walfordFixtureMode !== "future") {
 return;
 }
 
+let html = "";
+
 futureDates.forEach(function(date) {
-const button = document.createElement("button");
-button.type = "button";
-button.className =
-"fixture-date-pill" + (date === walfordFixtureChosenDate ? " active" : "");
-button.dataset.date = date;
-button.textContent = walfordShortDate(date);
+const active = date === walfordFixtureChosenDate ? " active" : "";
 
 ```
-chooser.appendChild(button);
+html +=
+  "<button type=\"button\" class=\"fixture-date-pill" + active + "\" data-date=\"" + date + "\">" +
+  walfordShortDate(date) +
+  "</button>";
 ```
 
 });
+
+chooser.innerHTML = html;
 }
 
 function walfordSetTodayMode() {
@@ -288,10 +263,11 @@ walfordSetStatusMessage("No future group fixtures left. Use the Knockout Tracker
 return;
 }
 
-walfordFixtureChosenDate =
-selectedDate && futureDates.includes(selectedDate)
-? selectedDate
-: futureDates[0];
+if (selectedDate && futureDates.includes(selectedDate)) {
+walfordFixtureChosenDate = selectedDate;
+} else {
+walfordFixtureChosenDate = futureDates[0];
+}
 
 walfordTitle("Future Fixtures — " + walfordDisplayDate(walfordFixtureChosenDate));
 walfordBuildFutureDateButtons();
