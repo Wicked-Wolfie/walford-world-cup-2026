@@ -1,9 +1,10 @@
 ```js
-// Walford V5.8.4 Fixture Centre Stable Tabs
+// Walford V5.8.5 Fixture Centre Button Fix
 // Replaces fixture-centre.js only.
 // Fixes:
-// 1. Future Fixtures showing past fixtures
-// 2. Buttons disappearing after selecting a mode/date
+// - Fixture Centre buttons not responding
+// - Future Fixtures showing old/past dates
+// - Old date box taking over the controls
 
 const WALFORD_FIXTURE_DATES = [
   "2026-06-11",
@@ -45,6 +46,7 @@ function walfordShortDate(iso) {
   if (!iso || !iso.includes("-")) return iso || "";
 
   const d = new Date(`${iso}T12:00:00`);
+
   return d.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short"
@@ -54,47 +56,28 @@ function walfordShortDate(iso) {
 function walfordFutureFixtureDates() {
   const today = walfordIsoToday();
 
-  // Important:
-  // Do NOT fall back to the last 3 dates.
-  // That was why Future Fixtures could show past fixtures.
   return WALFORD_FIXTURE_DATES.filter(date => date > today);
 }
 
-function walfordTitle(text) {
-  const title = document.getElementById("fixtureModeTitle");
-
-  if (title) {
-    title.textContent = text;
-  }
-}
-
-function walfordTodayGrid() {
-  return document.getElementById("todayMatches");
-}
-
-function walfordEnsureControls() {
+function walfordControlsHost() {
   let controls = document.querySelector(".today-controls");
 
   if (!controls) {
-    const todayGrid = walfordTodayGrid();
-
+    const todayMatches = document.getElementById("todayMatches");
     controls = document.createElement("div");
     controls.className = "today-controls";
 
-    if (todayGrid && todayGrid.parentNode) {
-      todayGrid.parentNode.insertBefore(controls, todayGrid);
-    } else {
-      const todaySection = document.getElementById("today");
-      if (todaySection) todaySection.appendChild(controls);
+    if (todayMatches && todayMatches.parentNode) {
+      todayMatches.parentNode.insertBefore(controls, todayMatches);
     }
   }
 
   return controls;
 }
 
-function walfordEnsureDateChooser() {
+function walfordDateChooserHost() {
   let chooser = document.getElementById("fixtureDateChooser");
-  const controls = walfordEnsureControls();
+  const controls = walfordControlsHost();
 
   if (!chooser && controls && controls.parentNode) {
     chooser = document.createElement("div");
@@ -106,8 +89,16 @@ function walfordEnsureDateChooser() {
   return chooser;
 }
 
-function walfordRenderControls(activeMode) {
-  const controls = walfordEnsureControls();
+function walfordTitle(text) {
+  const title = document.getElementById("fixtureModeTitle");
+
+  if (title) {
+    title.textContent = text;
+  }
+}
+
+function walfordRenderButtons(activeMode) {
+  const controls = walfordControlsHost();
 
   if (!controls) return;
 
@@ -115,79 +106,88 @@ function walfordRenderControls(activeMode) {
     <button id="fcToday" type="button" class="${activeMode === "today" ? "active" : ""}">
       Today’s Fixtures
     </button>
-
     <button id="fcFuture" type="button" class="${activeMode === "future" ? "active" : ""}">
       Future Fixtures
     </button>
-
     <button id="fcResults" type="button" class="${activeMode === "results" ? "active" : ""}">
       Latest Results
     </button>
-
-    <input id="todayDate" type="date" style="display: none;">
-    <button id="showTodayBtn" type="button" style="display: none;">Show</button>
   `;
-
-  document.getElementById("fcToday")?.addEventListener("click", walfordSetTodayMode);
-  document.getElementById("fcFuture")?.addEventListener("click", () => walfordSetFutureMode());
-  document.getElementById("fcResults")?.addEventListener("click", walfordSetResultsMode);
 }
 
-function walfordRenderViaApp(dateIso) {
-  const input = document.getElementById("todayDate");
+function walfordSetDateAndRender(dateIso) {
+  let input = document.getElementById("todayDate");
 
-  if (input) {
-    input.value = dateIso;
+  if (!input) {
+    input = document.createElement("input");
+    input.id = "todayDate";
+    input.type = "date";
+    input.style.display = "none";
+    document.body.appendChild(input);
   }
+
+  input.value = dateIso;
 
   if (typeof renderToday === "function") {
     renderToday();
+    return;
+  }
+
+  const showButton = document.getElementById("showTodayBtn");
+
+  if (showButton) {
+    showButton.click();
   }
 }
 
+function walfordRestoreButtons(activeMode) {
+  setTimeout(() => {
+    walfordRenderButtons(activeMode);
+  }, 80);
+
+  setTimeout(() => {
+    walfordRenderButtons(activeMode);
+  }, 250);
+}
+
 function walfordSetTodayMode() {
-  walfordRenderControls("today");
-
-  const chooser = walfordEnsureDateChooser();
-  if (chooser) chooser.innerHTML = "";
-
   const today = walfordIsoToday();
+  const chooser = walfordDateChooserHost();
+
+  walfordRenderButtons("today");
+
+  if (chooser) {
+    chooser.innerHTML = "";
+  }
 
   walfordTitle(`Today’s Fixtures — ${walfordDisplayDate(today)}`);
-  walfordRenderViaApp(today);
-
-  // Rebuild the buttons once more after app rendering,
-  // in case the original render function changes the controls.
-  setTimeout(() => {
-    walfordRenderControls("today");
-    const newChooser = walfordEnsureDateChooser();
-    if (newChooser) newChooser.innerHTML = "";
-  }, 50);
+  walfordSetDateAndRender(today);
+  walfordRestoreButtons("today");
 }
 
 function walfordSetFutureMode(selectedDate) {
-  walfordRenderControls("future");
-
   const futureDates = walfordFutureFixtureDates();
-  const chooser = walfordEnsureDateChooser();
-  const todayGrid = walfordTodayGrid();
+  const chooser = walfordDateChooserHost();
+  const todayMatches = document.getElementById("todayMatches");
 
-  walfordTitle("Future Fixtures");
+  walfordRenderButtons("future");
 
   if (!futureDates.length) {
+    walfordTitle("Future Fixtures");
+
     if (chooser) {
       chooser.innerHTML = "";
     }
 
-    if (todayGrid) {
-      todayGrid.innerHTML = `
+    if (todayMatches) {
+      todayMatches.innerHTML = `
         <p class="status">
-          No future group fixtures left. Check the Knockout Tracker for the next stage.
+          No future group fixtures left. Use the Knockout Tracker for the next stage.
         </p>
       `;
     }
 
-    setTimeout(() => walfordRenderControls("future"), 50);
+    walfordRestoreButtons("future");
     return;
   }
 
@@ -195,91 +195,92 @@ function walfordSetFutureMode(selectedDate) {
     ? selectedDate
     : futureDates[0];
 
+  walfordTitle(`Future Fixtures — ${walfordDisplayDate(chosen)}`);
+
   if (chooser) {
     chooser.innerHTML = futureDates.map(date => {
       const active = date === chosen ? "active" : "";
 
       return `
-        <button
-          type="button"
-          class="fixture-date-pill ${active}"
-          data-date="${date}"
-        >
+        <button type="button" class="fixture-date-pill ${active}" data-date="${date}">
           ${walfordShortDate(date)}
         </button>
       `;
     }).join("");
-
-    chooser.querySelectorAll(".fixture-date-pill").forEach(button => {
-      button.addEventListener("click", () => {
-        walfordSetFutureMode(button.dataset.date);
-      });
-    });
   }
 
-  walfordTitle(`Future Fixtures — ${walfordDisplayDate(chosen)}`);
-  walfordRenderViaApp(chosen);
+  walfordSetDateAndRender(chosen);
 
-  // Rebuild buttons after app rendering, then restore date chooser.
   setTimeout(() => {
-    walfordRenderControls("future");
+    walfordRenderButtons("future");
 
-    const newChooser = walfordEnsureDateChooser();
+    const freshChooser = walfordDateChooserHost();
 
-    if (newChooser) {
-      newChooser.innerHTML = futureDates.map(date => {
+    if (freshChooser) {
+      freshChooser.innerHTML = futureDates.map(date => {
         const active = date === chosen ? "active" : "";
 
         return `
-          <button
-            type="button"
-            class="fixture-date-pill ${active}"
-            data-date="${date}"
-          >
+          <button type="button" class="fixture-date-pill ${active}" data-date="${date}">
             ${walfordShortDate(date)}
           </button>
         `;
       }).join("");
-
-      newChooser.querySelectorAll(".fixture-date-pill").forEach(button => {
-        button.addEventListener("click", () => {
-          walfordSetFutureMode(button.dataset.date);
-        });
-      });
     }
-  }, 50);
+  }, 100);
 }
 
 function walfordSetResultsMode() {
-  walfordRenderControls("results");
+  const chooser = walfordDateChooserHost();
+  const todayMatches = document.getElementById("todayMatches");
+  const resultsList = document.getElementById("resultsList");
 
-  const chooser = walfordEnsureDateChooser();
-  if (chooser) chooser.innerHTML = "";
+  walfordRenderButtons("results");
+
+  if (chooser) {
+    chooser.innerHTML = "";
+  }
 
   walfordTitle("Latest Results");
 
-  const todayGrid = walfordTodayGrid();
-  const resultsList = document.getElementById("resultsList");
-
-  if (todayGrid && resultsList) {
-    todayGrid.innerHTML = resultsList.innerHTML || "<p class=\"status\">No results loaded yet.</p>";
-  } else if (todayGrid) {
-    todayGrid.innerHTML = "<p class=\"status\">No results loaded yet.</p>";
+  if (todayMatches && resultsList) {
+    todayMatches.innerHTML = resultsList.innerHTML || `<p class="status">No results loaded yet.</p>`;
+  } else if (todayMatches) {
+    todayMatches.innerHTML = `<p class="status">No results loaded yet.</p>`;
   }
 
-  setTimeout(() => {
-    walfordRenderControls("results");
-    const newChooser = walfordEnsureDateChooser();
-    if (newChooser) newChooser.innerHTML = "";
-  }, 50);
+  walfordRestoreButtons("results");
 }
+
+document.addEventListener("click", event => {
+  const target = event.target;
+
+  if (!target) return;
+
+  if (target.id === "fcToday") {
+    event.preventDefault();
+    walfordSetTodayMode();
+  }
+
+  if (target.id === "fcFuture") {
+    event.preventDefault();
+    walfordSetFutureMode();
+  }
+
+  if (target.id === "fcResults") {
+    event.preventDefault();
+    walfordSetResultsMode();
+  }
+
+  if (target.classList && target.classList.contains("fixture-date-pill")) {
+    event.preventDefault();
+    walfordSetFutureMode(target.dataset.date);
+  }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
-    walfordRenderControls("today");
     walfordSetTodayMode();
   }, 1200);
-
-  setTimeout(() => walfordRenderControls("today"), 2200);
 });
 ```
