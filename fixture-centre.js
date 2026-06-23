@@ -1,6 +1,6 @@
-// Walford V5.8.10 Fixture Centre DOM Only Fix
-// Replaces fixture-centre.js only.
-// No template strings. No button HTML strings.
+// Walford V5.8.11 Fixture Centre Existing Buttons Fix
+// Uses the buttons already in index.html.
+// Does not rebuild the button bar.
 
 const WALFORD_FIXTURE_DATES = [
 "2026-06-11",
@@ -30,7 +30,6 @@ const d = new Date();
 const yyyy = d.getFullYear();
 const mm = String(d.getMonth() + 1).padStart(2, "0");
 const dd = String(d.getDate()).padStart(2, "0");
-
 return yyyy + "-" + mm + "-" + dd;
 }
 
@@ -64,47 +63,6 @@ return date > today;
 });
 }
 
-function walfordPanel() {
-const todayMatches = document.getElementById("todayMatches");
-
-if (todayMatches && todayMatches.parentNode) {
-return todayMatches.parentNode;
-}
-
-return document.getElementById("today") || document.body;
-}
-
-function walfordClearElement(element) {
-if (!element) {
-return;
-}
-
-while (element.firstChild) {
-element.removeChild(element.firstChild);
-}
-}
-
-function walfordHideOldControls() {
-const controls = document.querySelectorAll(".today-controls");
-
-controls.forEach(function(control) {
-if (control.id !== "walfordFixtureTabs") {
-control.style.display = "none";
-}
-});
-
-const oldDate = document.getElementById("todayDate");
-const oldButton = document.getElementById("showTodayBtn");
-
-if (oldDate) {
-oldDate.style.display = "none";
-}
-
-if (oldButton) {
-oldButton.style.display = "none";
-}
-}
-
 function walfordTitle(text) {
 const title = document.getElementById("fixtureModeTitle");
 
@@ -113,76 +71,75 @@ title.textContent = text;
 }
 }
 
-function walfordMakeButton(id, text, active) {
-const button = document.createElement("button");
+function walfordSetActiveButton(mode) {
+const todayButton = document.getElementById("fcToday");
+const futureButton = document.getElementById("fcFuture");
+const resultsButton = document.getElementById("fcResults");
 
-button.id = id;
-button.type = "button";
-button.textContent = text;
-
-if (active) {
-button.className = "active";
+if (todayButton) {
+todayButton.classList.remove("active");
 }
 
-return button;
+if (futureButton) {
+futureButton.classList.remove("active");
 }
 
-function walfordEnsureTabs() {
-let tabs = document.getElementById("walfordFixtureTabs");
-const panel = walfordPanel();
+if (resultsButton) {
+resultsButton.classList.remove("active");
+}
+
+if (mode === "today" && todayButton) {
+todayButton.classList.add("active");
+}
+
+if (mode === "future" && futureButton) {
+futureButton.classList.add("active");
+}
+
+if (mode === "results" && resultsButton) {
+resultsButton.classList.add("active");
+}
+}
+
+function walfordHideDateBox() {
+const todayDate = document.getElementById("todayDate");
+const showTodayBtn = document.getElementById("showTodayBtn");
+
+if (todayDate) {
+todayDate.style.display = "none";
+}
+
+if (showTodayBtn) {
+showTodayBtn.style.display = "none";
+}
+}
+
+function walfordChooserHost() {
+let chooser = document.getElementById("walfordFixtureDateChooser");
+
+if (chooser) {
+return chooser;
+}
+
 const todayMatches = document.getElementById("todayMatches");
 
-if (!tabs) {
-tabs = document.createElement("div");
-tabs.id = "walfordFixtureTabs";
-tabs.className = "today-controls";
-
-```
-if (todayMatches && todayMatches.parentNode) {
-  todayMatches.parentNode.insertBefore(tabs, todayMatches);
-} else if (panel) {
-  panel.insertBefore(tabs, panel.firstChild);
-}
-```
-
-}
-
-tabs.style.display = "flex";
-walfordClearElement(tabs);
-
-tabs.appendChild(
-walfordMakeButton("fcToday", "Today’s Fixtures", walfordFixtureMode === "today")
-);
-
-tabs.appendChild(
-walfordMakeButton("fcFuture", "Future Fixtures", walfordFixtureMode === "future")
-);
-
-tabs.appendChild(
-walfordMakeButton("fcResults", "Latest Results", walfordFixtureMode === "results")
-);
-
-return tabs;
-}
-
-function walfordEnsureChooser() {
-let chooser = document.getElementById("walfordFixtureDateChooser");
-const tabs = walfordEnsureTabs();
-
-if (!chooser) {
 chooser = document.createElement("div");
 chooser.id = "walfordFixtureDateChooser";
 chooser.className = "fixture-date-chooser";
 
-```
-if (tabs && tabs.parentNode) {
-  tabs.parentNode.insertBefore(chooser, tabs.nextSibling);
-}
-```
-
+if (todayMatches && todayMatches.parentNode) {
+todayMatches.parentNode.insertBefore(chooser, todayMatches);
 }
 
 return chooser;
+}
+
+function walfordClearChooser() {
+const chooser = walfordChooserHost();
+
+if (chooser) {
+chooser.innerHTML = "";
+}
 }
 
 function walfordSetStatusMessage(message) {
@@ -192,7 +149,7 @@ if (!todayMatches) {
 return;
 }
 
-walfordClearElement(todayMatches);
+todayMatches.innerHTML = "";
 
 const p = document.createElement("p");
 p.className = "status";
@@ -202,77 +159,51 @@ todayMatches.appendChild(p);
 }
 
 function walfordSetDateAndRender(dateIso) {
-let input = document.getElementById("todayDate");
+const todayDate = document.getElementById("todayDate");
 
-if (!input) {
-input = document.createElement("input");
-input.id = "todayDate";
-input.type = "date";
-input.style.display = "none";
-document.body.appendChild(input);
+if (todayDate) {
+todayDate.value = dateIso;
 }
-
-input.value = dateIso;
 
 if (typeof renderToday === "function") {
 renderToday();
 } else {
-const showButton = document.getElementById("showTodayBtn");
+const showTodayBtn = document.getElementById("showTodayBtn");
 
 ```
-if (showButton) {
-  showButton.click();
+if (showTodayBtn) {
+  showTodayBtn.click();
 }
 ```
 
 }
 
-setTimeout(function() {
-walfordHideOldControls();
-walfordEnsureTabs();
-
-```
-if (walfordFixtureMode === "future") {
-  walfordBuildFutureDateButtons();
-}
-```
-
-}, 100);
-
-setTimeout(function() {
-walfordHideOldControls();
-walfordEnsureTabs();
-
-```
-if (walfordFixtureMode === "future") {
-  walfordBuildFutureDateButtons();
-}
-```
-
-}, 300);
+setTimeout(walfordHideDateBox, 50);
+setTimeout(walfordHideDateBox, 250);
 }
 
 function walfordBuildFutureDateButtons() {
 const futureDates = walfordFutureFixtureDates();
-const chooser = walfordEnsureChooser();
+const chooser = walfordChooserHost();
 
 if (!chooser) {
 return;
 }
 
-walfordClearElement(chooser);
-
-if (walfordFixtureMode !== "future") {
-return;
-}
+chooser.innerHTML = "";
 
 futureDates.forEach(function(date) {
 const button = document.createElement("button");
 
 ```
 button.type = "button";
-button.className = "fixture-date-pill" + (date === walfordFixtureChosenDate ? " active" : "");
-button.dataset.date = date;
+button.className = "fixture-date-pill";
+
+if (date === walfordFixtureChosenDate) {
+  button.className = "fixture-date-pill active";
+}
+
+button.setAttribute("data-date", date);
 button.textContent = walfordShortDate(date);
 
 chooser.appendChild(button);
@@ -283,17 +214,13 @@ chooser.appendChild(button);
 
 function walfordSetTodayMode() {
 const today = walfordIsoToday();
-const chooser = walfordEnsureChooser();
 
 walfordFixtureMode = "today";
 walfordFixtureChosenDate = today;
 
-walfordHideOldControls();
-walfordEnsureTabs();
-
-if (chooser) {
-walfordClearElement(chooser);
-}
+walfordSetActiveButton("today");
+walfordClearChooser();
+walfordHideDateBox();
 
 walfordTitle("Today’s Fixtures — " + walfordDisplayDate(today));
 walfordSetDateAndRender(today);
@@ -303,14 +230,13 @@ function walfordSetFutureMode(selectedDate) {
 const futureDates = walfordFutureFixtureDates();
 
 walfordFixtureMode = "future";
-
-walfordHideOldControls();
-walfordEnsureTabs();
+walfordSetActiveButton("future");
+walfordHideDateBox();
 
 if (!futureDates.length) {
 walfordFixtureChosenDate = "";
+walfordClearChooser();
 walfordTitle("Future Fixtures");
-walfordBuildFutureDateButtons();
 walfordSetStatusMessage("No future group fixtures left. Use the Knockout Tracker for the next stage.");
 return;
 }
@@ -327,19 +253,15 @@ walfordSetDateAndRender(walfordFixtureChosenDate);
 }
 
 function walfordSetResultsMode() {
-const chooser = walfordEnsureChooser();
 const todayMatches = document.getElementById("todayMatches");
 const resultsList = document.getElementById("resultsList");
 
 walfordFixtureMode = "results";
 walfordFixtureChosenDate = "";
 
-walfordHideOldControls();
-walfordEnsureTabs();
-
-if (chooser) {
-walfordClearElement(chooser);
-}
+walfordSetActiveButton("results");
+walfordClearChooser();
+walfordHideDateBox();
 
 walfordTitle("Latest Results");
 
@@ -377,17 +299,13 @@ return;
 
 if (target.classList && target.classList.contains("fixture-date-pill")) {
 event.preventDefault();
-walfordSetFutureMode(target.dataset.date);
+walfordSetFutureMode(target.getAttribute("data-date"));
 }
 });
 
 document.addEventListener("DOMContentLoaded", function() {
 setTimeout(function() {
+walfordHideDateBox();
 walfordSetTodayMode();
 }, 1200);
-
-setTimeout(function() {
-walfordHideOldControls();
-walfordEnsureTabs();
-}, 2200);
 });
