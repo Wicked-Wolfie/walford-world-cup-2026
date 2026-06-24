@@ -639,8 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   el("logoutBtn").onclick = async () => {
     if (db) await db.auth.signOut();
-    await loadData();
-    await loadTeamOdds();
+  loadData().then(loadTeamOdds);
   };
 
   el("resultForm").onsubmit = async e => {
