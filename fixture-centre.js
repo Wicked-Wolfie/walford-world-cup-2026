@@ -173,16 +173,13 @@ document.body.appendChild(todayDate);
 todayDate.value = dateIso;
 
 if (typeof renderToday === "function") {
-renderToday();
+  renderToday();
 } else {
-const showTodayBtn = document.getElementById("showTodayBtn");
+  const showTodayBtn = document.getElementById("showTodayBtn");
 
-```
-if (showTodayBtn) {
-  showTodayBtn.click();
-}
-```
-
+  if (showTodayBtn) {
+    showTodayBtn.click();
+  }
 }
 
 setTimeout(walfordHideDateBox, 50);
@@ -190,35 +187,34 @@ setTimeout(walfordHideDateBox, 250);
 }
 
 function walfordBuildFutureDateButtons() {
-const futureDates = walfordFutureFixtureDates();
-const chooser = walfordChooserHost();
+  const futureDates = walfordFutureFixtureDates();
+  const chooser = walfordChooserHost();
 
-if (!chooser) {
-return;
+  if (!chooser) {
+    return;
+  }
+
+  while (chooser.firstChild) {
+    chooser.removeChild(chooser.firstChild);
+  }
+
+  for (let i = 0; i < futureDates.length; i++) {
+    const date = futureDates[i];
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "fixture-date-pill";
+
+    if (date === walfordFixtureChosenDate) {
+      button.className = "fixture-date-pill active";
+    }
+
+    button.setAttribute("data-date", date);
+    button.textContent = walfordShortDate(date);
+
+    chooser.appendChild(button);
+  }
 }
-
-chooser.innerHTML = "";
-
-futureDates.forEach(function(date) {
-const button = document.createElement("button");
-
-```
-button.type = "button";
-button.className = "fixture-date-pill";
-
-if (date === walfordFixtureChosenDate) {
-  button.className = "fixture-date-pill active";
-}
-
-button.setAttribute("data-date", date);
-button.textContent = walfordShortDate(date);
-
-chooser.appendChild(button);
-```
-
-});
-}
-
 function walfordSetTodayMode() {
 const today = walfordIsoToday();
 
