@@ -120,9 +120,9 @@ if (walfordFixtureMode === "future") futureClass = "active";
 if (walfordFixtureMode === "results") resultsClass = "active";
 
 tabs.innerHTML =
-"<button id="fcToday" type="button" class="" + todayClass + "">Today’s Fixtures</button>" +
-"<button id="fcFuture" type="button" class="" + futureClass + "">Future Fixtures</button>" +
-"<button id="fcResults" type="button" class="" + resultsClass + "">Latest Results</button>";
+  '<button id="fcToday" type="button" class="' + todayClass + '">Today’s Fixtures</button>' +
+  '<button id="fcFuture" type="button" class="' + futureClass + '">Future Fixtures</button>' +
+  '<button id="fcResults" type="button" class="' + resultsClass + '">Latest Results</button>';
 
 return tabs;
 }
