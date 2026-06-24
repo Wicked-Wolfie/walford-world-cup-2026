@@ -534,48 +534,66 @@ async function loadTeamOdds() {
   statusEl.classList.remove("is-error");
   gridEl.innerHTML = "";
 
-  const { data, error } = await client
+  const { data: oddsData, error: oddsError } = await client
     .from("team_odds")
     .select(`
       id,
+      team_id,
       odds_fractional,
       odds_decimal,
       implied_probability,
       market,
       source,
-      updated_at,
-      teams (
-        id,
-        team
-      )
+      updated_at
     `)
     .eq("is_active", true)
     .eq("market", "winner")
     .order("odds_decimal", { ascending: true, nullsFirst: false });
 
-  if (error) {
-    console.error("Error loading team odds:", error);
+  if (oddsError) {
+    console.error("Error loading team odds:", oddsError);
     statusEl.textContent = "Could not load team odds.";
     statusEl.classList.add("is-error");
     return;
   }
 
-  if (!data || data.length === 0) {
+  if (!oddsData || oddsData.length === 0) {
     statusEl.textContent = "No team odds added yet.";
     return;
   }
 
+  const teamIds = [...new Set(oddsData.map(row => row.team_id).filter(Boolean))];
+
+  const { data: teamsData, error: teamsError } = await client
+    .from("teams")
+    .select("id, team, flag")
+    .in("id", teamIds);
+
+  if (teamsError) {
+    console.error("Error loading teams for odds:", teamsError);
+    statusEl.textContent = "Could not load team names for odds.";
+    statusEl.classList.add("is-error");
+    return;
+  }
+
+  const teamsById = {};
+  (teamsData || []).forEach(team => {
+    teamsById[team.id] = team;
+  });
+
   statusEl.textContent = "";
 
-  gridEl.innerHTML = data.map(function (row) {
-    const teamName = row.teams && row.teams.team ? row.teams.team : "Unknown team";
+  gridEl.innerHTML = oddsData.map(function (row) {
+    const team = teamsById[row.team_id] || {};
+    const teamName = team.team || "Unknown team";
+    const teamFlag = team.flag || "";
     const decimal = row.odds_decimal ? Number(row.odds_decimal).toFixed(2) : "";
     const probability = row.implied_probability ? Number(row.implied_probability).toFixed(2) : "";
     const updated = formatOddsUpdatedAt(row.updated_at);
 
     return `
       <article class="team-odds-card">
-        <div class="team-odds-team">${escapeHtml(teamName)}</div>
+        <div class="team-odds-team">${escapeHtml(teamFlag)} ${escapeHtml(teamName)}</div>
 
         <div class="team-odds-main">
           <span class="team-odds-fractional">${escapeHtml(row.odds_fractional)}</span>
