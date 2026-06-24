@@ -57,7 +57,7 @@ async function loadData() {
       .from("teams")
       .select("*")
       .order("id");
-
+    
     if (td?.length) {
       teams = td.map(t => {
         const fb = fallbackForTeam(t.team) || {};
