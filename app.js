@@ -576,12 +576,11 @@ async function loadTeamOdds() {
   statusEl.textContent = "";
 
   gridEl.innerHTML = oddsData.map(function (row) {
-    const team = teamsById[row.team_id] || {};
+   const team = teamsById[row.team_id] || {};
     const teamName = team.team || "Unknown team";
-    const teamFlag = team.flag || "";
+    const fallbackTeam = fallbackForTeam(teamName) || {};
+    const teamFlag = fallbackTeam.flag || team.flag || "";
     const decimal = row.odds_decimal ? Number(row.odds_decimal).toFixed(2) : "";
-    const probability = row.implied_probability ? Number(row.implied_probability).toFixed(2) : "";
-    const updated = formatOddsUpdatedAt(row.updated_at);
 
     return `
       <article class="team-odds-card">
