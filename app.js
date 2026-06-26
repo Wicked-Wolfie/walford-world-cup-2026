@@ -620,6 +620,8 @@ async function loadTeamOdds() {
       </article>
     `;
   }).join("");
+
+  applyEmojiFlags();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
