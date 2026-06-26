@@ -577,19 +577,33 @@ async function loadTeamOdds() {
     return;
   }
 
-  const teamIds = [...new Set(oddsData.map(row => row.team_id).filter(Boolean))];
-
   const { data: teamsData, error: teamsError } = await client
-    .from("teams")
-    .select("id, team, flag, owner")
-    .in("id", teamIds);
+  .from("teams")
+  .select("id, team, flag, owner")
+  .order("team", { ascending: true });
 
-  if (teamsError) {
-    console.error("Error loading teams for odds:", teamsError);
-    statusEl.textContent = "Could not load team names for odds.";
-    statusEl.classList.add("is-error");
-    return;
-  }
+if (teamsError) {
+  console.error("Error loading teams for odds:", teamsError);
+  statusEl.textContent = "Could not load team names for odds.";
+  statusEl.classList.add("is-error");
+  return;
+}
+
+const oddsByTeamId = {};
+(oddsData || []).forEach(row => {
+  oddsByTeamId[row.team_id] = row;
+});
+
+const allOddsRows = (teamsData || []).map(team => {
+  return {
+    teamData: team,
+    oddsData: oddsByTeamId[team.id] || null
+  };
+}).sort((a, b) => {
+  const ao = a.oddsData?.odds_decimal ? Number(a.oddsData.odds_decimal) : 9999;
+  const bo = b.oddsData?.odds_decimal ? Number(b.oddsData.odds_decimal) : 9999;
+  return ao - bo || a.teamData.team.localeCompare(b.teamData.team);
+});
 
   const teamsById = {};
   (teamsData || []).forEach(team => {
@@ -598,30 +612,34 @@ async function loadTeamOdds() {
 
   statusEl.textContent = "";
 
-  gridEl.innerHTML = oddsData.map(function (row) {
-     const team = teamsById[row.team_id] || {};
-    const teamName = team.team || "Unknown team";
-    const fallbackTeam = fallbackForTeam(teamName, team.flag) || {};
-    const teamFlag = team.flag || fallbackTeam.flag || "";
-    const teamOwner = renameOwner(team.owner || fallbackTeam.owner || "");
-    const decimal = row.odds_decimal ? Number(row.odds_decimal).toFixed(2) : "";
-    const probability = row.implied_probability ? Number(row.implied_probability).toFixed(2) : "";
-    const updated = formatOddsUpdatedAt(row.updated_at);
-    return `
-      <article class="team-odds-card">
-        <div class="team-odds-team">${escapeHtml(teamFlag)} ${escapeHtml(teamName)}</div>
-        ${teamOwner ? `<div class="team-odds-owner">${escapeHtml(teamOwner)}</div>` : ""}
+  gridEl.innerHTML = allOddsRows.map(function (item) {
+  const team = item.teamData || {};
+  const row = item.oddsData || {};
+  const teamName = team.team || "Unknown team";
+  const fallbackTeam = fallbackForTeam(teamName, team.flag) || {};
+  const teamFlag = team.flag || fallbackTeam.flag || "";
+  const teamOwner = renameOwner(team.owner || fallbackTeam.owner || "");
 
-        <div class="team-odds-main">
-          <span class="team-odds-fractional">${escapeHtml(row.odds_fractional)}</span>
-          ${decimal ? `<span class="team-odds-decimal">Decimal ${escapeHtml(decimal)}</span>` : ""}
-        </div>
+  const hasOdds = !!row.odds_fractional;
+  const decimal = row.odds_decimal ? Number(row.odds_decimal).toFixed(2) : "";
+  const probability = row.implied_probability ? Number(row.implied_probability).toFixed(2) : "";
+  const updated = formatOddsUpdatedAt(row.updated_at);
 
-        ${probability ? `<div class="team-odds-probability">Implied chance: ${escapeHtml(probability)}%</div>` : ""}
-        ${updated ? `<div class="team-odds-updated">Updated ${escapeHtml(updated)}</div>` : ""}
-      </article>
-    `;
-  }).join("");
+  return `
+    <article class="team-odds-card ${hasOdds ? "" : "team-odds-card-tbc"}">
+      <div class="team-odds-team">${escapeHtml(teamFlag)} ${escapeHtml(teamName)}</div>
+      ${teamOwner ? `<div class="team-odds-owner">${escapeHtml(teamOwner)}</div>` : ""}
+
+      <div class="team-odds-main">
+        <span class="team-odds-fractional">${hasOdds ? escapeHtml(row.odds_fractional) : "Odds TBC"}</span>
+        ${decimal ? `<span class="team-odds-decimal">Decimal ${escapeHtml(decimal)}</span>` : ""}
+      </div>
+
+      ${probability ? `<div class="team-odds-probability">Implied chance: ${escapeHtml(probability)}%</div>` : ""}
+      ${updated ? `<div class="team-odds-updated">Updated ${escapeHtml(updated)}</div>` : ""}
+    </article>
+  `;
+}).join("");
 
   applyEmojiFlags();
 }
