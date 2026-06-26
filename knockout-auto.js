@@ -51,11 +51,7 @@ let wkResults = {};
 let wkDb = null;
 let wkSession = null;
 
-const wkConfirmedSlots = {
-  "Group E Winner": "Germany",
-  "Group A Winner": "Mexico",
-  "Group D Winner": "United States"
-};
+const wkConfirmedSlots = {};
 
 const wkMatchSchedule = {
   M73: { date: "2026-06-28", time: "20:00" },
