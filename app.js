@@ -65,6 +65,15 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function applyEmojiFlags() {
+  if (window.twemoji) {
+    twemoji.parse(document.body, {
+      folder: "svg",
+      ext: ".svg"
+    });
+  }
+}
+
 async function loadData() {
   if (db) {
     const { data: td } = await db
@@ -78,7 +87,7 @@ async function loadData() {
     return {
       id: t.id,
       code: fb.code || t.flag || "",
-      flag: fb.flag || "",
+      flag: t.flag || fb.flag || "",
       team: t.team,
       owner: renameOwner(t.owner || fb.owner || ""),
       stage: t.stage || "Group Stage",
@@ -285,6 +294,7 @@ function render() {
   renderDraw();
   renderBanter(lb, totals, todayGames);
   renderAdmin();
+  applyEmojiFlags();
 }
 
 function tableMarkup(rows) {
