@@ -51,7 +51,7 @@ let wkResults = {};
 let wkDb = null;
 let wkSession = null;
 
-cconst wkConfirmedSlots = {
+const wkConfirmedSlots = {
   "Group A Winner": "Mexico",
   "Group A Runner-up": "South Africa",
   "Group A Third": "South Korea",
