@@ -51,7 +51,31 @@ let wkResults = {};
 let wkDb = null;
 let wkSession = null;
 
-const wkConfirmedSlots = {};
+cconst wkConfirmedSlots = {
+  "Group A Winner": "Mexico",
+  "Group A Runner-up": "South Africa",
+  "Group A Third": "South Korea",
+
+  "Group B Winner": "Switzerland",
+  "Group B Runner-up": "Canada",
+  "Group B Third": "Bosnia and Herzegovina",
+
+  "Group C Winner": "Brazil",
+  "Group C Runner-up": "Morocco",
+  "Group C Third": "Scotland",
+
+  "Group D Winner": "United States",
+  "Group D Runner-up": "Australia",
+  "Group D Third": "Paraguay",
+
+  "Group E Winner": "Germany",
+  "Group E Runner-up": "Ivory Coast",
+  "Group E Third": "Ecuador",
+
+  "Group F Winner": "Netherlands",
+  "Group F Runner-up": "Japan",
+  "Group F Third": "Sweden"
+};
 
 const wkMatchSchedule = {
   M73: { date: "2026-06-28", time: "20:00" },
