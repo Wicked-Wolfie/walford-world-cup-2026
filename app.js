@@ -59,22 +59,21 @@ async function loadData() {
       .order("id");
     
     if (td?.length) {
-      teams = td.map(t => {
-        const fb = fallbackForTeam(t.team) || {};
-        return {
-          id: t.id,
-         return {
-            id: t.id,
-            code: fb.code || t.flag || "",
-            flag: fb.flag || "",
-            team: t.team,
-            owner: renameOwner(t.owner || fb.owner || ""),
-            stage: t.stage || "Group Stage",
-            group: fb.group || "?"
-          };
-      });
-    }
-
+  teams = td.map(t => {
+    const fb = fallbackForTeam(t.team) || {};
+    return {
+      id: t.id,
+     return {
+        id: t.id,
+        code: fb.code || t.flag || "",
+        flag: fb.flag || "",
+        team: t.team,
+        owner: renameOwner(t.owner || fb.owner || ""),
+        stage: t.stage || "Group Stage",
+        group: fb.group || "?"
+      };
+  });
+}
     const { data: md, error: me } = await db
       .from("results")
       .select("*")
