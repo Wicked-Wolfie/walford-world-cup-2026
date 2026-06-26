@@ -35,8 +35,22 @@ function renameOwner(o) {
   return o === "Debbie" ? "Dubs" : o === "Charlotte" ? "Lottie" : o;
 }
 
-function fallbackForTeam(n) {
-  return (window.FALLBACK_TEAMS || []).find(t => t.team === n);
+function normaliseTeamName(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "")
+    .trim();
+}
+
+function fallbackForTeam(n, code) {
+  const nameKey = normaliseTeamName(n);
+  const codeKey = String(code || "").toUpperCase();
+
+  return (window.FALLBACK_TEAMS || []).find(t =>
+    normaliseTeamName(t.team) === nameKey ||
+    String(t.code || "").toUpperCase() === codeKey
+  );
 }
 
 function flag(n) {
@@ -60,7 +74,7 @@ async function loadData() {
     
     if (td?.length) {
   teams = td.map(t => {
-    const fb = fallbackForTeam(t.team) || {};
+    const fb = fallbackForTeam(t.team, t.flag) || {};
     return {
       id: t.id,
       code: fb.code || t.flag || "",
