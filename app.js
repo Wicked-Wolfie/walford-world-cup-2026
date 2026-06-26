@@ -602,7 +602,7 @@ async function loadTeamOdds() {
      const team = teamsById[row.team_id] || {};
     const teamName = team.team || "Unknown team";
     const fallbackTeam = fallbackForTeam(teamName, team.flag) || {};
-    const teamFlag = fallbackTeam.flag || team.flag || "";
+    const teamFlag = team.flag || fallbackTeam.flag || "";
     const decimal = row.odds_decimal ? Number(row.odds_decimal).toFixed(2) : "";
     const probability = row.implied_probability ? Number(row.implied_probability).toFixed(2) : "";
     const updated = formatOddsUpdatedAt(row.updated_at);
