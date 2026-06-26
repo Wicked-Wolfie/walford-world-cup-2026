@@ -63,13 +63,15 @@ async function loadData() {
         const fb = fallbackForTeam(t.team) || {};
         return {
           id: t.id,
-          code: t.flag || fb.code || "",
-          flag: fb.flag || t.flag || "",
-          team: t.team,
-          owner: renameOwner(t.owner || fb.owner || ""),
-          stage: t.stage || "Group Stage",
-          group: fb.group || "?"
-        };
+         return {
+            id: t.id,
+            code: fb.code || t.flag || "",
+            flag: fb.flag || "",
+            team: t.team,
+            owner: renameOwner(t.owner || fb.owner || ""),
+            stage: t.stage || "Group Stage",
+            group: fb.group || "?"
+          };
       });
     }
 
