@@ -720,4 +720,13 @@ img.emoji {
   margin-right: 0.45em !important;
   vertical-align: -0.22em !important;
 }
+/* Team Odds owner name - v5.8.30 */
+
+.team-odds-owner {
+  margin-top: 0.25rem;
+  color: var(--gold2);
+  font-size: 0.8rem;
+  font-weight: 900;
+  opacity: 0.9;
+}
 ```
