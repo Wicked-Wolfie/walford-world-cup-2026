@@ -581,7 +581,7 @@ async function loadTeamOdds() {
 
   const { data: teamsData, error: teamsError } = await client
     .from("teams")
-    .select("id, team, flag")
+    .select("id, team, flag, owner")
     .in("id", teamIds);
 
   if (teamsError) {
@@ -603,12 +603,14 @@ async function loadTeamOdds() {
     const teamName = team.team || "Unknown team";
     const fallbackTeam = fallbackForTeam(teamName, team.flag) || {};
     const teamFlag = team.flag || fallbackTeam.flag || "";
+    const teamOwner = renameOwner(team.owner || fallbackTeam.owner || "");
     const decimal = row.odds_decimal ? Number(row.odds_decimal).toFixed(2) : "";
     const probability = row.implied_probability ? Number(row.implied_probability).toFixed(2) : "";
     const updated = formatOddsUpdatedAt(row.updated_at);
     return `
       <article class="team-odds-card">
         <div class="team-odds-team">${escapeHtml(teamFlag)} ${escapeHtml(teamName)}</div>
+        ${teamOwner ? `<div class="team-odds-owner">${escapeHtml(teamOwner)}</div>` : ""}
 
         <div class="team-odds-main">
           <span class="team-odds-fractional">${escapeHtml(row.odds_fractional)}</span>
