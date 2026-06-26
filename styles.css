@@ -729,4 +729,14 @@ img.emoji {
   font-weight: 900;
   opacity: 0.9;
 }
+/* Team Odds TBC cards - v5.8.31 */
+
+.team-odds-card-tbc {
+  opacity: 0.72;
+}
+
+.team-odds-card-tbc .team-odds-fractional {
+  font-size: 1.25rem;
+  color: var(--muted);
+}
 ```
