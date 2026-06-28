@@ -52,25 +52,8 @@ function makeEmojiFlag(code) {
   );
 }
 
-const ENGLAND_FLAG = String.fromCodePoint(
-  0x1F3F4,
-  0xE0067,
-  0xE0062,
-  0xE0065,
-  0xE006E,
-  0xE0067,
-  0xE007F
-);
-
-const SCOTLAND_FLAG = String.fromCodePoint(
-  0x1F3F4,
-  0xE0067,
-  0xE0062,
-  0xE0073,
-  0xE0063,
-  0xE0074,
-  0xE007F
-);
+const ENGLAND_FLAG = '<img class="team-flag-img" src="https://flagcdn.com/24x18/gb-eng.png" alt="England">';
+const SCOTLAND_FLAG = '<img class="team-flag-img" src="https://flagcdn.com/24x18/gb-sct.png" alt="Scotland">';
 
 const WALFORD_FLAG_CODES = {
   "Mexico": "MX",
@@ -743,7 +726,7 @@ const allOddsRows = (teamsData || []).map(team => {
 
   return `
     <article class="team-odds-card ${hasOdds ? "" : "team-odds-card-tbc"}">
-      <div class="team-odds-team">${escapeHtml(teamFlag)} ${escapeHtml(teamName)}</div>
+     <div class="team-odds-team">${teamFlag} ${escapeHtml(teamName)}</div>
       ${teamOwner ? `<div class="team-odds-owner">${escapeHtml(teamOwner)}</div>` : ""}
 
       <div class="team-odds-main">
