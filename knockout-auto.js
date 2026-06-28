@@ -469,6 +469,13 @@ function wkRenderAdmin() {
 
   if (!admin) return;
 
+  const isAdminPage = window.location.hash === "#admin-dashboard";
+
+  if (!isAdminPage) {
+    admin.innerHTML = "";
+    return;
+  }
+
   if (!wkSession) {
     admin.innerHTML = `
       <div class="wk-admin-note">
