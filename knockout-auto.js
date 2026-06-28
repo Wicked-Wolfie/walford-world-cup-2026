@@ -329,6 +329,10 @@ function wkRenderBracket() {
   wkRenderChampion();
   wkRenderHistory();
   wkRenderAdmin();
+
+  if (typeof applyEmojiFlags === "function") {
+    applyEmojiFlags();
+  }
 }
 
 function wkRenderChampion() {
