@@ -140,8 +140,23 @@ function wkAllMatches() {
 }
 
 function wkFlag(teamName) {
+  const cleanName = wkCleanTeamName(teamName);
+
   try {
-    if (typeof flag === "function") return flag(teamName) || "";
+    if (typeof flag === "function") {
+      const fromFunction = flag(cleanName);
+      if (fromFunction) return fromFunction;
+    }
+  } catch (e) {}
+
+  try {
+    const teams = window.FALLBACK_TEAMS || window.teams || window.TEAMS || [];
+    const found = teams.find(t =>
+      wkCleanTeamName(t.team) === cleanName ||
+      wkCleanTeamName(t.name) === cleanName
+    );
+
+    if (found && found.flag) return found.flag;
   } catch (e) {}
 
   return "";
