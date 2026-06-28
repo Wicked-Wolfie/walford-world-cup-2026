@@ -1,75 +1,99 @@
-// Walford global flag fix v5.8.12
+// Walford global flag fix v5.8.14
 // Fixes flags across Fixture Centre, Daily Results, Knockout, Groups and tables.
+// England and Scotland are built from code points to avoid hidden Unicode paste problems.
 
 (function () {
-  const ENGLAND_FLAG = "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
-  const SCOTLAND_FLAG = "🏴󠁧󠁢󠁳󠁣󠁴󠁿";
+  function makeFlag(code) {
+    return String.fromCodePoint(
+      ...code.toUpperCase().split("").map(char => 127397 + char.charCodeAt(0))
+    );
+  }
 
-  const FLAG_MAP = {
-    "Mexico": "🇲🇽",
-    "South Africa": "🇿🇦",
-    "South Korea": "🇰🇷",
-    "Korea Republic": "🇰🇷",
-    "Czechia": "🇨🇿",
+  const ENGLAND_FLAG = String.fromCodePoint(
+    0x1F3F4,
+    0xE0067,
+    0xE0062,
+    0xE0065,
+    0xE006E,
+    0xE0067,
+    0xE007F
+  );
 
-    "Canada": "🇨🇦",
-    "Bosnia and Herzegovina": "🇧🇦",
-    "Qatar": "🇶🇦",
-    "Switzerland": "🇨🇭",
+  const SCOTLAND_FLAG = String.fromCodePoint(
+    0x1F3F4,
+    0xE0067,
+    0xE0062,
+    0xE0073,
+    0xE0063,
+    0xE0074,
+    0xE007F
+  );
 
-    "Brazil": "🇧🇷",
-    "Morocco": "🇲🇦",
-    "Haiti": "🇭🇹",
-    "Scotland": SCOTLAND_FLAG,
+  const FLAG_CODES = {
+    "Mexico": "MX",
+    "South Africa": "ZA",
+    "South Korea": "KR",
+    "Korea Republic": "KR",
+    "Czechia": "CZ",
 
-    "United States": "🇺🇸",
-    "USA": "🇺🇸",
-    "Paraguay": "🇵🇾",
-    "Australia": "🇦🇺",
-    "Turkey": "🇹🇷",
-    "Türkiye": "🇹🇷",
+    "Canada": "CA",
+    "Bosnia and Herzegovina": "BA",
+    "Qatar": "QA",
+    "Switzerland": "CH",
 
-    "Germany": "🇩🇪",
-    "Curacao": "🇨🇼",
-    "Curaçao": "🇨🇼",
-    "Ivory Coast": "🇨🇮",
-    "Ecuador": "🇪🇨",
+    "Brazil": "BR",
+    "Morocco": "MA",
+    "Haiti": "HT",
+    "Scotland": "SCOTLAND",
 
-    "Netherlands": "🇳🇱",
-    "Japan": "🇯🇵",
-    "Sweden": "🇸🇪",
-    "Tunisia": "🇹🇳",
+    "United States": "US",
+    "USA": "US",
+    "Paraguay": "PY",
+    "Australia": "AU",
+    "Turkey": "TR",
+    "Türkiye": "TR",
 
-    "Belgium": "🇧🇪",
-    "Egypt": "🇪🇬",
-    "Iran": "🇮🇷",
-    "New Zealand": "🇳🇿",
+    "Germany": "DE",
+    "Curacao": "CW",
+    "Curaçao": "CW",
+    "Ivory Coast": "CI",
+    "Ecuador": "EC",
 
-    "Spain": "🇪🇸",
-    "Cape Verde": "🇨🇻",
-    "Saudi Arabia": "🇸🇦",
-    "Uruguay": "🇺🇾",
+    "Netherlands": "NL",
+    "Japan": "JP",
+    "Sweden": "SE",
+    "Tunisia": "TN",
 
-    "France": "🇫🇷",
-    "Senegal": "🇸🇳",
-    "Iraq": "🇮🇶",
-    "Norway": "🇳🇴",
+    "Belgium": "BE",
+    "Egypt": "EG",
+    "Iran": "IR",
+    "New Zealand": "NZ",
 
-    "Argentina": "🇦🇷",
-    "Algeria": "🇩🇿",
-    "Austria": "🇦🇹",
-    "Jordan": "🇯🇴",
+    "Spain": "ES",
+    "Cape Verde": "CV",
+    "Saudi Arabia": "SA",
+    "Uruguay": "UY",
 
-    "Portugal": "🇵🇹",
-    "DR Congo": "🇨🇩",
-    "Congo DR": "🇨🇩",
-    "Uzbekistan": "🇺🇿",
-    "Colombia": "🇨🇴",
+    "France": "FR",
+    "Senegal": "SN",
+    "Iraq": "IQ",
+    "Norway": "NO",
 
-    "England": ENGLAND_FLAG,
-    "Croatia": "🇭🇷",
-    "Ghana": "🇬🇭",
-    "Panama": "🇵🇦"
+    "Argentina": "AR",
+    "Algeria": "DZ",
+    "Austria": "AT",
+    "Jordan": "JO",
+
+    "Portugal": "PT",
+    "DR Congo": "CD",
+    "Congo DR": "CD",
+    "Uzbekistan": "UZ",
+    "Colombia": "CO",
+
+    "England": "ENGLAND",
+    "Croatia": "HR",
+    "Ghana": "GH",
+    "Panama": "PA"
   };
 
   function cleanTeamName(value) {
@@ -81,10 +105,11 @@
 
   function walfordFlag(teamName) {
     const clean = cleanTeamName(teamName);
+    const code = FLAG_CODES[clean];
 
-    if (FLAG_MAP[clean]) {
-      return FLAG_MAP[clean];
-    }
+    if (code === "ENGLAND") return ENGLAND_FLAG;
+    if (code === "SCOTLAND") return SCOTLAND_FLAG;
+    if (code) return makeFlag(code);
 
     const teams = window.FALLBACK_TEAMS || window.teams || window.TEAMS || [];
     const found = teams.find(t =>
