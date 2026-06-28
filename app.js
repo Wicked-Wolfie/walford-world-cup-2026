@@ -43,6 +43,102 @@ function normaliseTeamName(value) {
     .trim();
 }
 
+function makeEmojiFlag(code) {
+  return String.fromCodePoint(
+    ...String(code || "")
+      .toUpperCase()
+      .split("")
+      .map(char => 127397 + char.charCodeAt(0))
+  );
+}
+
+const ENGLAND_FLAG = String.fromCodePoint(
+  0x1F3F4,
+  0xE0067,
+  0xE0062,
+  0xE0065,
+  0xE006E,
+  0xE0067,
+  0xE007F
+);
+
+const SCOTLAND_FLAG = String.fromCodePoint(
+  0x1F3F4,
+  0xE0067,
+  0xE0062,
+  0xE0073,
+  0xE0063,
+  0xE0074,
+  0xE007F
+);
+
+const WALFORD_FLAG_CODES = {
+  "Mexico": "MX",
+  "South Africa": "ZA",
+  "South Korea": "KR",
+  "Korea Republic": "KR",
+  "Czechia": "CZ",
+
+  "Canada": "CA",
+  "Bosnia and Herzegovina": "BA",
+  "Qatar": "QA",
+  "Switzerland": "CH",
+
+  "Brazil": "BR",
+  "Morocco": "MA",
+  "Haiti": "HT",
+  "Scotland": "SCOTLAND",
+
+  "United States": "US",
+  "USA": "US",
+  "Paraguay": "PY",
+  "Australia": "AU",
+  "Turkey": "TR",
+  "Türkiye": "TR",
+
+  "Germany": "DE",
+  "Curacao": "CW",
+  "Curaçao": "CW",
+  "Ivory Coast": "CI",
+  "Ecuador": "EC",
+
+  "Netherlands": "NL",
+  "Japan": "JP",
+  "Sweden": "SE",
+  "Tunisia": "TN",
+
+  "Belgium": "BE",
+  "Egypt": "EG",
+  "Iran": "IR",
+  "New Zealand": "NZ",
+
+  "Spain": "ES",
+  "Cape Verde": "CV",
+  "Saudi Arabia": "SA",
+  "Uruguay": "UY",
+
+  "France": "FR",
+  "Senegal": "SN",
+  "Iraq": "IQ",
+  "Norway": "NO",
+
+  "Argentina": "AR",
+  "Algeria": "DZ",
+  "Austria": "AT",
+  "Jordan": "JO",
+
+  "Portugal": "PT",
+  "DR Congo": "CD",
+  "Congo DR": "CD",
+  "Uzbekistan": "UZ",
+  "Colombia": "CO",
+
+  "England": "ENGLAND",
+  "Croatia": "HR",
+  "Ghana": "GH",
+  "Panama": "PA"
+};
+
 function fallbackForTeam(n, code) {
   const nameKey = normaliseTeamName(n);
   const codeKey = String(code || "").toUpperCase();
@@ -54,7 +150,27 @@ function fallbackForTeam(n, code) {
 }
 
 function flag(n) {
-  return teams.find(x => x.team === n)?.flag || fallbackForTeam(n)?.flag || "";
+  const teamName = String(n || "").trim();
+  const code = WALFORD_FLAG_CODES[teamName];
+
+  if (code === "ENGLAND") return ENGLAND_FLAG;
+  if (code === "SCOTLAND") return SCOTLAND_FLAG;
+  if (code) return makeEmojiFlag(code);
+
+  const fallback = fallbackForTeam(teamName);
+  const fallbackCode = fallback?.code;
+
+  if (fallbackCode === "GB-ENG") return ENGLAND_FLAG;
+  if (fallbackCode === "GB-SCT") return SCOTLAND_FLAG;
+  if (fallbackCode && /^[A-Z]{2}$/.test(fallbackCode)) return makeEmojiFlag(fallbackCode);
+
+  const storedFlag = teams.find(x => x.team === teamName)?.flag || fallback?.flag || "";
+
+  if (storedFlag && storedFlag !== "🏴" && !/^[A-Z]{2,3}$/.test(storedFlag)) {
+    return storedFlag;
+  }
+
+  return "";
 }
 
 function owner(n) {
@@ -87,7 +203,7 @@ async function loadData() {
     return {
       id: t.id,
       code: fb.code || t.flag || "",
-      flag: t.flag || fb.flag || "",
+      flag: flag(t.team) || t.flag || fb.flag || "",
       team: t.team,
       owner: renameOwner(t.owner || fb.owner || ""),
       stage: t.stage || "Group Stage",
@@ -617,7 +733,7 @@ const allOddsRows = (teamsData || []).map(team => {
   const row = item.oddsData || {};
   const teamName = team.team || "Unknown team";
   const fallbackTeam = fallbackForTeam(teamName, team.flag) || {};
-  const teamFlag = team.flag || fallbackTeam.flag || "";
+  const teamFlag = flag(teamName) || team.flag || fallbackTeam.flag || "";
   const teamOwner = renameOwner(team.owner || fallbackTeam.owner || "");
 
   const hasOdds = !!row.odds_fractional;
