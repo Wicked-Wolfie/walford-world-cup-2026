@@ -49,13 +49,47 @@
     return row ? row.owner || "" : "";
   }
 
-  function shFlag(team) {
-    try {
-      if (typeof flag === "function") return flag(team) || "";
-    } catch (e) {}
-    const row = shFallbackTeams().find(t => t.team === team);
-    return row ? row.flag || "" : "";
+  function shEmojiFlag(code) {
+  const clean = String(code || "").toUpperCase().trim();
+
+  if (clean === "GB-ENG") {
+    return '<img class="team-flag-img" src="https://flagcdn.com/24x18/gb-eng.png" alt="England">';
   }
+
+  if (clean === "GB-SCT") {
+    return '<img class="team-flag-img" src="https://flagcdn.com/24x18/gb-sct.png" alt="Scotland">';
+  }
+
+  if (!/^[A-Z]{2}$/.test(clean)) return "";
+
+  return String.fromCodePoint(
+    ...clean.split("").map(char => 127397 + char.charCodeAt(0))
+  );
+}
+
+function shFlag(team) {
+  try {
+    if (typeof flag === "function") {
+      const mainFlag = flag(team) || "";
+
+      if (mainFlag && !/^[A-Z]{2,3}$/.test(mainFlag)) {
+        return mainFlag;
+      }
+
+      if (/^[A-Z]{2}$/.test(mainFlag)) {
+        return shEmojiFlag(mainFlag);
+      }
+    }
+  } catch (e) {}
+
+  const row = shFallbackTeams().find(t => t.team === team);
+  const code = row ? row.code || row.flag || "" : "";
+
+  if (team === "England") return shEmojiFlag("GB-ENG");
+  if (team === "Scotland") return shEmojiFlag("GB-SCT");
+
+  return shEmojiFlag(code) || "";
+}
 
   function shTeamList() {
     const fromPlayers = [...new Set(shPlayers.map(p => p.team))];
@@ -204,6 +238,7 @@
       } else {
         document.querySelector("main")?.appendChild(section);
       }
+    
     }
 
     const team = shSelectedTeam || "Brazil";
@@ -295,8 +330,11 @@
         if (target) target.innerHTML = shDetail(player);
       });
     });
+  
+if (typeof applyEmojiFlags === "function") {
+      applyEmojiFlags();
+    }
   }
-
   function shUpgradeGoldenBoot() {
     const teamSelect = document.getElementById("gbTeam");
     const playerInput = document.getElementById("gbPlayer");
