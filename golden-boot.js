@@ -417,7 +417,6 @@ try {
 if (typeof flag === "function") {
 const mainFlag = flag(teamName) || "";
 
-```
   if (mainFlag && !/^[A-Z]{2,3}$/.test(mainFlag)) {
     return mainFlag;
   }
@@ -426,7 +425,6 @@ const mainFlag = flag(teamName) || "";
     return gbEmojiFlag(mainFlag);
   }
 }
-```
 
 } catch (e) {}
 
