@@ -739,4 +739,14 @@ img.emoji {
   font-size: 1.25rem;
   color: var(--muted);
 }
+
+.team-flag-img {
+  width: 1.15em;
+  height: 0.85em;
+  object-fit: cover;
+  display: inline-block;
+  vertical-align: -0.08em;
+  margin-right: 0.2em;
+  border-radius: 2px;
+}
 ```
