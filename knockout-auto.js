@@ -126,10 +126,6 @@ function wkCleanTeamName(label) {
 
 function wkFlag(teamName) {
   try {
-    if (typeof window.walfordFlag === "function") {
-      return window.walfordFlag(teamName) || "";
-    }
-
     if (typeof flag === "function") {
       return flag(teamName) || "";
     }
