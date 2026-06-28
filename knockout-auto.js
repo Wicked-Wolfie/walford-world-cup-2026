@@ -139,24 +139,15 @@ function wkAllMatches() {
   ];
 }
 
-function wkFlag(teamName) {
-  const cleanName = wkCleanTeamName(teamName);
-
+ffunction wkFlag(teamName) {
   try {
-    if (typeof flag === "function") {
-      const fromFunction = flag(cleanName);
-      if (fromFunction) return fromFunction;
+    if (typeof window.walfordFlag === "function") {
+      return window.walfordFlag(teamName) || "";
     }
-  } catch (e) {}
 
-  try {
-    const teams = window.FALLBACK_TEAMS || window.teams || window.TEAMS || [];
-    const found = teams.find(t =>
-      wkCleanTeamName(t.team) === cleanName ||
-      wkCleanTeamName(t.name) === cleanName
-    );
-
-    if (found && found.flag) return found.flag;
+    if (typeof flag === "function") {
+      return flag(teamName) || "";
+    }
   } catch (e) {}
 
   return "";
