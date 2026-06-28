@@ -139,15 +139,20 @@ played
   }
 
   function hLatestResult(rows) {
-    if (!rows.length) return null;
-    return [...rows].sort((a, b) => Number(b.id || 0) - Number(a.id || 0))[0];
-  }
+const completed = (rows || []).filter(row =>
+row &&
+row.winner &&
+row.score_a !== null &&
+row.score_b !== null
+);
 
-  function hNextAvailableMatch() {
-    return KNOCKOUT_MATCHES
-      .map(hResolvedMatch)
-      .find(m => !m.played);
-  }
+if (!completed.length) return null;
+
+return completed
+.slice()
+.sort((a, b) => Number(b.id || 0) - Number(a.id || 0))[0];
+}
+
 
   function hBestLiveRoadMatch() {
     const preferred = [
