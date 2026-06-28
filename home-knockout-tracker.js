@@ -153,6 +153,11 @@ return completed
 .sort((a, b) => Number(b.id || 0) - Number(a.id || 0))[0];
 }
 
+function hNextAvailableMatch() {
+return KNOCKOUT_MATCHES
+.map(hResolvedMatch)
+.find(m => !m.played);
+}
 
   function hBestLiveRoadMatch() {
     const preferred = [
