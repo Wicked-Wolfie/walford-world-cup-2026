@@ -242,13 +242,16 @@ function wkTeamLine(label, matchResult, side) {
   const resolved = wkResolveSlot(label);
   const clean = wkCleanTeamName(resolved);
   const real = wkIsRealTeam(clean);
-  const resultScore = matchResult
+
+  const completed = !!(matchResult && matchResult.winner);
+
+  const resultScore = completed
     ? side === "a"
       ? matchResult.score_a
       : matchResult.score_b
     : null;
 
-  const isWinner = matchResult && matchResult.winner === clean;
+  const isWinner = completed && matchResult.winner === clean;
   const ownerText = real ? wkOwner(clean) : "TBC";
   const icon = real ? wkFlag(clean) : "";
   const waitingClass = real ? "" : "waiting";
@@ -264,13 +267,17 @@ function wkTeamLine(label, matchResult, side) {
 function wkCard(match) {
   const [code, round, slotA, slotB] = match;
   const result = wkResults[code];
+  const completed = !!(result && result.winner);
+
+  const teamA = result && result.team_a ? result.team_a : slotA;
+  const teamB = result && result.team_b ? result.team_b : slotB;
 
   return `
-    <article class="wk-match ${result ? "played" : ""}">
-      <small>${code}${result ? " • completed" : ""}</small>
+    <article class="wk-match ${completed ? "played" : ""}">
+      <small>${code}${completed ? " • completed" : ""}</small>
       ${wkMatchScheduleLine(code)}
-      ${wkTeamLine(slotA, result, "a")}
-      ${wkTeamLine(slotB, result, "b")}
+      ${wkTeamLine(teamA, result, "a")}
+      ${wkTeamLine(teamB, result, "b")}
     </article>
   `;
 }
@@ -374,11 +381,13 @@ function wkRenderHistory() {
 
   if (!target) return;
 
-  const rows = Object.values(wkResults).sort((a, b) =>
-    String(a.match_code).localeCompare(String(b.match_code), undefined, {
-      numeric: true
-    })
-  );
+  const rows = Object.values(wkResults)
+    .filter(r => r && r.winner)
+    .sort((a, b) =>
+      String(a.match_code).localeCompare(String(b.match_code), undefined, {
+        numeric: true
+      })
+    );
 
   if (!rows.length) {
     target.innerHTML = `
@@ -410,8 +419,38 @@ function wkRenderHistory() {
     </div>
   `;
 }
+  target.innerHTML = `
+    <div class="wk-history-box">
+      <h3>Knockout Results History</h3>
+      <div class="wk-history-list">
+        ${rows
+          .map(
+            r => `
+          <div class="wk-history-row">
+            <strong>${r.match_code}</strong>
+            <span>${wkFlag(r.team_a)} ${r.team_a} ${r.score_a}–${r.score_b} ${wkFlag(r.team_b)} ${r.team_b}</span>
+            <em>Winner: ${wkFlag(r.winner)} ${r.winner} (${wkOwner(r.winner) || "Owner TBC"})</em>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+}
 
 function wkResolvedMatchTeams(code) {
+  const dbRow = wkResults[code];
+
+  if (dbRow && dbRow.team_a && dbRow.team_b) {
+    return {
+      code: dbRow.match_code,
+      round: dbRow.round,
+      teamA: wkCleanTeamName(dbRow.team_a),
+      teamB: wkCleanTeamName(dbRow.team_b)
+    };
+  }
+
   const match = wkAllMatches().find(m => m[0] === code);
 
   if (!match) return null;
@@ -426,7 +465,6 @@ function wkResolvedMatchTeams(code) {
     teamB
   };
 }
-
 async function wkLoadResults() {
   const db = wkInitDb();
 
