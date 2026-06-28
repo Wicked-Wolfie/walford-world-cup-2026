@@ -228,29 +228,30 @@
   }
 
   function dbResultCard(result) {
-    const teamA = result.team_a || "";
-    const teamB = result.team_b || "";
-    const scoreA = Number(result.score_a || 0);
-    const scoreB = Number(result.score_b || 0);
+const teamA = result.team_a || "";
+const teamB = result.team_b || "";
+const scoreA = Number(result.score_a || 0);
+const scoreB = Number(result.score_b || 0);
+const flagA = dbFlag(teamA);
+const flagB = dbFlag(teamB);
 
-    return `
-      <article class="daily-banter-card">
-        <div class="daily-banter-date">${dbEsc(dbDateLabel(result.match_date))}</div>
+return ` <article class="daily-banter-card"> <div class="daily-banter-date">${dbEsc(dbDateLabel(result.match_date))}</div>
 
-        <div class="daily-banter-score">
-          <strong>${dbEsc(dbFlag(teamA))} ${dbEsc(teamA)}</strong>
-          <span>${scoreA}–${scoreB}</span>
-          <strong>${dbEsc(dbFlag(teamB))} ${dbEsc(teamB)}</strong>
-        </div>
+  <div class="daily-banter-score">
+    <strong>${flagA} ${dbEsc(teamA)}</strong>
+    <span>${scoreA}–${scoreB}</span>
+    <strong>${flagB} ${dbEsc(teamB)}</strong>
+  </div>
 
-        <div class="daily-banter-owners">
-          ${dbEsc(dbOwnerLine(teamA, teamB))}
-        </div>
+  <div class="daily-banter-owners">
+    ${dbEsc(dbOwnerLine(teamA, teamB))}
+  </div>
 
-        <p>${dbEsc(dbBanterLine(result))}</p>
-      </article>
-    `;
-  }
+  <p>${dbEsc(dbBanterLine(result))}</p>
+</article>
+
+`;
+}
 
   function dbInstallCss() {
     if (document.getElementById("dailyBanterCss")) return;
@@ -365,8 +366,9 @@
         ${results.map(dbResultCard).join("")}
       </div>
     `;
+    if (typeof applyEmojiFlags === "function") { applyEmojiFlags();
   }
-
+  }
   async function dbStart() {
     const results = await dbLoadResults();
     dbInsertSection(results);
