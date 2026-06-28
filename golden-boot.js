@@ -394,13 +394,50 @@ if (selectedKey === "spain") {
     return html;
   }
 
-  function gbFlag(teamName) {
-    try {
-      if (typeof flag === "function") return flag(teamName) || "";
-    } catch (e) {}
-    const row = gbTeams().find(t => t.team === teamName);
-    return row ? row.flag || "" : "";
+  function gbEmojiFlag(code) {
+const clean = String(code || "").toUpperCase().trim();
+
+if (clean === "GB-ENG") {
+return '<img class="team-flag-img" src="https://flagcdn.com/24x18/gb-eng.png" alt="England">';
+}
+
+if (clean === "GB-SCT") {
+return '<img class="team-flag-img" src="https://flagcdn.com/24x18/gb-sct.png" alt="Scotland">';
+}
+
+if (!/^[A-Z]{2}$/.test(clean)) return "";
+
+return String.fromCodePoint(
+...clean.split("").map(char => 127397 + char.charCodeAt(0))
+);
+}
+
+function gbFlag(teamName) {
+try {
+if (typeof flag === "function") {
+const mainFlag = flag(teamName) || "";
+
+```
+  if (mainFlag && !/^[A-Z]{2,3}$/.test(mainFlag)) {
+    return mainFlag;
   }
+
+  if (/^[A-Z]{2}$/.test(mainFlag)) {
+    return gbEmojiFlag(mainFlag);
+  }
+}
+```
+
+} catch (e) {}
+
+const row = gbFindTeamRow(teamName);
+const code = gbTeamCodeFromRow(row) || gbTeamFlagFromRow(row);
+
+if (gbCanonTeam(teamName) === "england") return gbEmojiFlag("GB-ENG");
+if (gbCanonTeam(teamName) === "scotland") return gbEmojiFlag("GB-SCT");
+
+return gbEmojiFlag(code) || "";
+}
 
   function gbOwner(teamName) {
     try {
@@ -626,7 +663,7 @@ function gbSortedTeams() {
 function gbTeamOptions(selected = "") {
   return gbSortedTeams().map(t => {
     const name = gbTeamName(t);
-    const flag = gbTeamFlagFromRow(t);
+    const flag = gbFlag(name);
     return `
       <option value="${gbEsc(name)}" ${name === selected ? "selected" : ""}>
         ${gbEsc(flag)} ${gbEsc(name)}
@@ -713,10 +750,16 @@ function gbTeamOptions(selected = "") {
       </div>
     `;
 
-    gbWireForm();
-  }
+gbWireForm();
 
-  function gbWireForm() {
+if (typeof applyEmojiFlags === "function") {
+  applyEmojiFlags();
+}
+    
+}
+    
+function gbWireForm() {
+
     const form = document.getElementById("goldenBootForm");
     const teamSelect = document.getElementById("gbTeam");
     const playerSelect = document.getElementById("gbPlayer");
