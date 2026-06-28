@@ -82,17 +82,26 @@
   }
 
   function hResolvedMatch(match) {
-    const teamA = hClean(hResolveSlot(match[2]));
-    const teamB = hClean(hResolveSlot(match[3]));
+const row = knockoutResults[match[0]];
+const teamA = row && row.team_a ? hClean(row.team_a) : hClean(hResolveSlot(match[2]));
+const teamB = row && row.team_b ? hClean(row.team_b) : hClean(hResolveSlot(match[3]));
 
-    return {
-      code: match[0],
-      round: match[1],
-      teamA,
-      teamB,
-      played: Boolean(knockoutResults[match[0]])
-    };
-  }
+const played = Boolean(
+row &&
+row.winner &&
+row.score_a !== null &&
+row.score_b !== null
+);
+
+return {
+code: match[0],
+round: match[1],
+teamA,
+teamB,
+played
+};
+}
+
 
   function hCreateClient() {
     if (db) return db;
