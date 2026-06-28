@@ -286,12 +286,22 @@ walfordHideDateBox();
 
 walfordTitle("Latest Results");
 
+if (typeof renderResults === "function") {
+renderResults();
+}
+
 if (todayMatches && resultsList && resultsList.innerHTML.trim()) {
 todayMatches.innerHTML = resultsList.innerHTML;
+
+if (typeof applyEmojiFlags === "function") {
+  applyEmojiFlags();
+}
+
 } else {
 walfordSetStatusMessage("No results loaded yet.");
 }
 }
+
 
 document.addEventListener("click", function(event) {
 const target = event.target;
