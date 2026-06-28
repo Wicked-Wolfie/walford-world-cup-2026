@@ -419,25 +419,6 @@ function wkRenderHistory() {
     </div>
   `;
 }
-  target.innerHTML = `
-    <div class="wk-history-box">
-      <h3>Knockout Results History</h3>
-      <div class="wk-history-list">
-        ${rows
-          .map(
-            r => `
-          <div class="wk-history-row">
-            <strong>${r.match_code}</strong>
-            <span>${wkFlag(r.team_a)} ${r.team_a} ${r.score_a}–${r.score_b} ${wkFlag(r.team_b)} ${r.team_b}</span>
-            <em>Winner: ${wkFlag(r.winner)} ${r.winner} (${wkOwner(r.winner) || "Owner TBC"})</em>
-          </div>
-        `
-          )
-          .join("")}
-      </div>
-    </div>
-  `;
-}
 
 function wkResolvedMatchTeams(code) {
   const dbRow = wkResults[code];
