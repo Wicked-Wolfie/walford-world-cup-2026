@@ -20,6 +20,7 @@ const WALFORD_FIXTURE_DATES = [
 "2026-06-25",
 "2026-06-26",
 "2026-06-27"
+"2026-06-28"
 ];
 
 let walfordFixtureMode = "today";
