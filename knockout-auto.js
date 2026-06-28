@@ -1,7 +1,7 @@
-// Walford V5.8.3 Knockout Phase
+// Walford V5.8.13 Knockout Phase
 // Replaces knockout-auto.js only.
-// Shows confirmed knockout teams where known, while keeping unknown opponents as TBC.
-// Group-stage standings are NOT used to project teams into the bracket.
+// Reads Round of 32 teams/results from Supabase knockout_results.
+// Uses global walfordFlag() from flag-fix.js where available.
 
 const WALFORD_KNOCKOUT = {
   r32: [
@@ -22,6 +22,7 @@ const WALFORD_KNOCKOUT = {
     ["M87", "Round of 32", "Group K Winner", "Best 3rd Place"],
     ["M88", "Round of 32", "Group D Runner-up", "Group G Runner-up"]
   ],
+
   r16: [
     ["M89", "Round of 16", "Winner M74", "Winner M77"],
     ["M90", "Round of 16", "Winner M73", "Winner M75"],
@@ -32,16 +33,19 @@ const WALFORD_KNOCKOUT = {
     ["M95", "Round of 16", "Winner M86", "Winner M88"],
     ["M96", "Round of 16", "Winner M85", "Winner M87"]
   ],
+
   qf: [
     ["M97", "Quarter-final", "Winner M89", "Winner M90"],
     ["M98", "Quarter-final", "Winner M93", "Winner M94"],
     ["M99", "Quarter-final", "Winner M91", "Winner M92"],
     ["M100", "Quarter-final", "Winner M95", "Winner M96"]
   ],
+
   sf: [
     ["M101", "Semi-final", "Winner M97", "Winner M98"],
     ["M102", "Semi-final", "Winner M99", "Winner M100"]
   ],
+
   final: [
     ["FINAL", "Final", "Winner M101", "Winner M102"]
   ]
@@ -50,32 +54,6 @@ const WALFORD_KNOCKOUT = {
 let wkResults = {};
 let wkDb = null;
 let wkSession = null;
-
-const wkConfirmedSlots = {
-  "Group A Winner": "Mexico",
-  "Group A Runner-up": "South Africa",
-  "Group A Third": "South Korea",
-
-  "Group B Winner": "Switzerland",
-  "Group B Runner-up": "Canada",
-  "Group B Third": "Bosnia and Herzegovina",
-
-  "Group C Winner": "Brazil",
-  "Group C Runner-up": "Morocco",
-  "Group C Third": "Scotland",
-
-  "Group D Winner": "United States",
-  "Group D Runner-up": "Australia",
-  "Group D Third": "Paraguay",
-
-  "Group E Winner": "Germany",
-  "Group E Runner-up": "Ivory Coast",
-  "Group E Third": "Ecuador",
-
-  "Group F Winner": "Netherlands",
-  "Group F Runner-up": "Japan",
-  "Group F Third": "Sweden"
-};
 
 const wkMatchSchedule = {
   M73: { date: "2026-06-28", time: "20:00" },
@@ -139,7 +117,14 @@ function wkAllMatches() {
   ];
 }
 
-ffunction wkFlag(teamName) {
+function wkCleanTeamName(label) {
+  return String(label || "")
+    .replace(/^[^\wA-ZÀ-ž]+/u, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function wkFlag(teamName) {
   try {
     if (typeof window.walfordFlag === "function") {
       return window.walfordFlag(teamName) || "";
@@ -158,14 +143,18 @@ function wkOwner(teamName) {
     if (typeof owner === "function") return owner(teamName) || "";
   } catch (e) {}
 
-  return "";
-}
+  try {
+    const cleanName = wkCleanTeamName(teamName);
+    const teams = window.FALLBACK_TEAMS || window.teams || window.TEAMS || [];
+    const found = teams.find(t =>
+      wkCleanTeamName(t.team) === cleanName ||
+      wkCleanTeamName(t.name) === cleanName
+    );
 
-function wkCleanTeamName(label) {
-  return String(label || "")
-    .replace(/^[^\wA-ZÀ-ž]+/u, "")
-    .replace(/\s+/g, " ")
-    .trim();
+    if (found && found.owner) return found.owner;
+  } catch (e) {}
+
+  return "";
 }
 
 function wkSlotLabel(slot) {
@@ -175,11 +164,7 @@ function wkSlotLabel(slot) {
 }
 
 function wkResolveSlot(slot) {
-  if (wkConfirmedSlots[slot]) {
-    return wkConfirmedSlots[slot];
-  }
-
-  const winnerRef = String(slot).match(/^Winner (M\d+|FINAL)$/);
+  const winnerRef = String(slot || "").match(/^Winner (M\d+|FINAL)$/);
 
   if (winnerRef) {
     const result = wkResults[winnerRef[1]];
@@ -225,9 +210,7 @@ function wkDateLabel(value) {
 function wkMatchScheduleLine(code) {
   const item = wkMatchSchedule[code];
 
-  if (!item) {
-    return "";
-  }
+  if (!item) return "";
 
   const dateText = wkDateLabel(item.date);
   const timeText = item.time && item.time !== "TBC" ? item.time : "Time TBC";
@@ -264,7 +247,7 @@ function wkTeamLine(label, matchResult, side) {
 
   return `
     <div class="wk-team ${isWinner ? "winner" : ""} ${waitingClass}">
-      <span>${icon} ${clean}</span>
+      <span>${icon ? icon + " " : ""}${clean}</span>
       <em>${resultScore !== null && resultScore !== undefined ? resultScore : ownerText}</em>
     </div>
   `;
@@ -309,12 +292,12 @@ function wkInsertSection() {
     <div class="section-title">
       <span>Road to Glory</span>
       <h2>Knockout Bracket</h2>
-      <p>Round of 32 through to the Final. Confirmed teams appear once places are known. Unknown opponents remain TBC.</p>
+      <p>Round of 32 through to the Final. Results will move winners forward automatically.</p>
     </div>
 
     <div class="wk-notice">
-      <strong>Confirmed-slot mode:</strong>
-      Confirmed qualified teams are shown. Unconfirmed opponents remain TBC until their places are known.
+      <strong>Live knockout mode:</strong>
+      Round of 32 teams are loaded from Supabase. Winners move forward when knockout results are saved.
     </div>
 
     <div id="wkAdminPanel" class="wk-admin"></div>
@@ -452,6 +435,7 @@ function wkResolvedMatchTeams(code) {
     teamB
   };
 }
+
 async function wkLoadResults() {
   const db = wkInitDb();
 
@@ -466,7 +450,7 @@ async function wkLoadResults() {
     .order("id", { ascending: true });
 
   if (error) {
-    console.warn("Knockout results not loaded. Have you run knockout_results_table.sql?", error);
+    console.warn("Knockout results not loaded.", error);
     wkResults = {};
     return;
   }
@@ -499,7 +483,7 @@ function wkRenderAdmin() {
   if (!availableMatches.length) {
     admin.innerHTML = `
       <div class="wk-admin-note">
-        No knockout matches are fully available yet. Matches with TBC opponents cannot be entered until both teams are known.
+        No knockout matches are fully available yet.
       </div>
     `;
     return;
@@ -554,12 +538,12 @@ async function wkSaveResult(event) {
     return alert("Invalid match.");
   }
 
-  if (scoreA === scoreB) {
-    return alert("Knockout matches need a winner. Enter the post-penalty winner score.");
-  }
-
   if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB)) {
     return alert("Enter valid scores.");
+  }
+
+  if (scoreA === scoreB) {
+    return alert("Knockout matches need a winner. Enter the post-penalty winner score.");
   }
 
   const winner = scoreA > scoreB ? match.teamA : match.teamB;
