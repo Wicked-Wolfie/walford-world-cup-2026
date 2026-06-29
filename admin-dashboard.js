@@ -50,7 +50,8 @@ function adIsAdminMode() {
   }
 
  function adInstallCss() {
-  if (document.getElementById("walfordAdminModeCss")) return;
+  const existing = document.getElementById("walfordAdminModeCss");
+  if (existing) existing.remove();
 
   const style = document.createElement("style");
   style.id = "walfordAdminModeCss";
@@ -65,26 +66,21 @@ function adIsAdminMode() {
 
     body.walford-admin-mode #admin-dashboard,
     body.walford-admin-mode #match-scorers-admin,
-    body.walford-admin-mode #results-editor-admin {
+    body.walford-admin-mode #results-editor-admin,
+    body.walford-admin-mode #golden-boot,
+    body.walford-admin-mode #knockout-admin {
       display: block !important;
     }
 
     body.walford-admin-mode #match-scorers-admin.walford-admin-closed,
-    body.walford-admin-mode #results-editor-admin.walford-admin-closed {
+    body.walford-admin-mode #results-editor-admin.walford-admin-closed,
+    body.walford-admin-mode #knockout-admin.walford-admin-closed {
       display: none !important;
     }
-
-    body.walford-admin-mode #admin-dashboard,
-body.walford-admin-mode #match-scorers-admin,
-body.walford-admin-mode #results-editor-admin,
-body.walford-admin-mode #golden-boot {
-  display: block !important;
-}
   `;
 
   document.head.appendChild(style);
 }
-
   function adInsert() {
     let section = document.getElementById("admin-dashboard");
 
