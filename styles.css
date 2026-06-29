@@ -885,4 +885,91 @@ img.emoji {
 .team-odds-card-tbc .team-odds-probability {
   display: none;
 }
+/* Knockout Banter - v1.0.0 */
+
+.knockout-banter-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.knockout-banter-card,
+.sent-home-card {
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  padding: 22px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035)),
+    radial-gradient(circle at 50% 0%, rgba(215,173,71,0.10), transparent 48%);
+  box-shadow:
+    0 20px 54px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.knockout-banter-card span,
+.sent-home-card span {
+  display: inline-block;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 950;
+  margin-bottom: 10px;
+}
+
+.knockout-banter-card h3,
+.sent-home-list h3 {
+  margin: 0 0 10px;
+  color: var(--gold2);
+}
+
+.knockout-banter-card strong,
+.sent-home-card strong {
+  display: block;
+  font-size: 1.25rem;
+  margin: 8px 0;
+}
+
+.knockout-banter-card p,
+.sent-home-card p {
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.knockout-banter-card.featured {
+  border-color: rgba(215, 173, 71, 0.42);
+}
+
+.knockout-banter-card.packing {
+  border-color: rgba(255, 110, 110, 0.32);
+}
+
+.sent-home-list {
+  margin-top: 24px;
+}
+
+.sent-home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.sent-home-card {
+  padding: 18px;
+}
+
+.sent-home-card em {
+  display: block;
+  color: var(--gold2);
+  font-style: normal;
+  font-weight: 900;
+}
+
+@media (max-width: 760px) {
+  .knockout-banter-grid {
+    grid-template-columns: 1fr;
+  }
+}
 ```
