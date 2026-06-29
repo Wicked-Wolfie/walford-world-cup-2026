@@ -865,4 +865,24 @@ img.emoji {
     font-size: 1.45rem;
   }
 }
+/* Team Odds TBC spacing fix - v5.8.34 */
+
+.team-odds-card-tbc {
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.team-odds-card-tbc .team-odds-main {
+  margin-top: auto;
+}
+
+.team-odds-card-tbc .team-odds-owner {
+  margin-top: 0.45rem;
+}
+
+.team-odds-card-tbc .team-odds-updated,
+.team-odds-card-tbc .team-odds-decimal,
+.team-odds-card-tbc .team-odds-probability {
+  display: none;
+}
 ```
