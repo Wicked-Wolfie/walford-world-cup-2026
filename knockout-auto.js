@@ -469,22 +469,24 @@ function wkRenderAdmin() {
 
   if (!admin) return;
 
-  const isAdminPage = window.location.hash === "#admin-dashboard";
+  const isAdminPage =
+  window.location.hash === "#admin-dashboard" ||
+  window.location.hash === "#knockout-admin" ||
+  document.body.classList.contains("walford-admin-mode");
 
-  if (!isAdminPage) {
-    admin.innerHTML = "";
-    return;
-  }
+if (!isAdminPage) {
+  admin.innerHTML = "";
+  return;
+}
 
-  if (!wkSession) {
-    admin.innerHTML = `
-      <div class="wk-admin-note">
-        Sign in using the main Admin button to enter knockout results.
-      </div>
-    `;
-    return;
-  }
-
+if (!wkSession) {
+  admin.innerHTML = `
+    <div class="wk-admin-note">
+      Sign in using the main Admin button to enter knockout results.
+    </div>
+  `;
+  return;
+}
   const availableMatches = wkAvailableMatches();
 
   if (!availableMatches.length) {
