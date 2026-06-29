@@ -124,7 +124,7 @@ body.walford-admin-mode #golden-boot {
       <button class="button gold" type="button" data-admin-open="match-scorers-admin">Add Result + Scorers</button>
       <button class="button dark" type="button" data-admin-open="results-editor-admin">Edit Existing Result</button>
       <a class="button dark" href="#golden-boot-admin">Golden Boot Admin</a>
-      <button class="button dark" type="button" data-admin-open="knockout">Knockout Result Entry</button>
+      <button class="button dark" type="button" data-admin-open="knockout-admin">Knockout Result Entry</button>
       <a class="button dark" href="#home">Public Site / Check Changes</a>
       <button id="adSignOut" class="button dark" type="button">Sign out</button>
     </div>
@@ -170,28 +170,52 @@ body.walford-admin-mode #golden-boot {
   }
 
   function adOpenSection(sectionId) {
-    location.hash = "#" + sectionId;
+  if (sectionId === "knockout-admin") {
+    location.hash = "#knockout-admin";
 
     setTimeout(() => {
       adApply();
 
-      const target = document.getElementById(sectionId);
-      if (target) {
-        target.classList.remove("walford-admin-closed");
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      const knockout = document.getElementById("knockout");
+      if (knockout) {
+        knockout.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-    }, 150);
+    }, 300);
 
     setTimeout(() => {
       adApply();
 
-      const target = document.getElementById(sectionId);
-      if (target) {
-        target.classList.remove("walford-admin-closed");
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      const knockout = document.getElementById("knockout");
+      if (knockout) {
+        knockout.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-    }, 900);
+    }, 1200);
+
+    return;
   }
+
+  location.hash = "#" + sectionId;
+
+  setTimeout(() => {
+    adApply();
+
+    const target = document.getElementById(sectionId);
+    if (target) {
+      target.classList.remove("walford-admin-closed");
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, 150);
+
+  setTimeout(() => {
+    adApply();
+
+    const target = document.getElementById(sectionId);
+    if (target) {
+      target.classList.remove("walford-admin-closed");
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, 900);
+}
 
   function adWireDashboardButtons() {
     document.querySelectorAll("[data-admin-open]").forEach(button => {
