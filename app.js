@@ -332,7 +332,7 @@ function fillSelects() {
     .map(t => `<option value="${t.team}">${t.flag} ${t.team}</option>`)
     .join("");
 
-  ["teamA", "teamB", "fixtureTeamA", "fixtureTeamB"].forEach(id => {
+  ["teamA", "teamB", "fixtureTeamA", "fixtureTeamB", "knockoutTeamA", "knockoutTeamB"].forEach(id => {
     const s = el(id);
     if (s && s.innerHTML !== opts) s.innerHTML = opts;
   });
@@ -884,6 +884,63 @@ document.addEventListener("DOMContentLoaded", () => {
     await loadTeamOdds();
   };
 
+    el("knockoutResultForm").onsubmit = async e => {
+    e.preventDefault();
+
+    if (!session) return alert("Please sign in first.");
+
+    const teamA = el("knockoutTeamA").value;
+    const teamB = el("knockoutTeamB").value;
+    const scoreA = Number(el("knockoutScoreA").value);
+    const scoreB = Number(el("knockoutScoreB").value);
+
+    if (teamA === teamB) {
+      return alert("Choose two different teams.");
+    }
+
+    if (scoreA === scoreB) {
+      return alert("Knockout games need a winner. For penalties, enter the winner manually in Supabase for now.");
+    }
+
+    const payload = {
+      match_code: el("knockoutMatchCode").value.trim(),
+      team_a: teamA,
+      team_b: teamB,
+      score_a: scoreA,
+      score_b: scoreB,
+      winner: scoreA > scoreB ? teamA : teamB
+    };
+
+    if (!payload.match_code) {
+      return alert("Enter a match code, for example R32-01.");
+    }
+
+    const { error } = await db
+      .from("knockout_results")
+      .upsert([payload], { onConflict: "match_code" });
+
+    if (error) {
+      console.error(error);
+      return alert("Could not save knockout result.");
+    }
+
+    el("knockoutScoreA").value = "";
+    el("knockoutScoreB").value = "";
+
+    alert("Knockout result saved.");
+
+    await loadData();
+    await loadTeamOdds();
+
+    if (typeof window.renderHomeKnockoutTracker === "function") {
+      window.renderHomeKnockoutTracker();
+    }
+
+    if (typeof window.renderKnockoutAuto === "function") {
+      window.renderKnockoutAuto();
+    }
+  };
+  
   el("fixtureForm").onsubmit = async e => {
     e.preventDefault();
 
