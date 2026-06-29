@@ -323,7 +323,24 @@
        Save Result
       </button>
      </form>
+     
+<form class="result-form hidden" id="knockoutResultForm">
+  <input id="knockoutMatchCode" placeholder="Match code e.g. R32-01" type="text"/>
 
+  <select id="knockoutTeamA"></select>
+
+  <input id="knockoutScoreA" min="0" placeholder="0" type="number"/>
+
+  <span>v</span>
+
+  <input id="knockoutScoreB" min="0" placeholder="0" type="number"/>
+
+  <select id="knockoutTeamB"></select>
+
+  <button class="button gold" type="submit">
+    Save Knockout
+  </button>
+</form>
      <form class="fixture-form hidden" id="fixtureForm">
       <input id="fixtureDate" type="date"/>
       <input id="fixtureTime" type="time"/>
@@ -460,7 +477,7 @@
   </script>
   <script src="golden-boot.js?v=5.8.20">
   </script>
-  <script src="squad-hub.js?v=5.8.5>
+  <script src="squad-hub.js?v=5.8.5">
   </script>
   <script src="match-scorers-admin.js?v=5.8.5">
   </script>
