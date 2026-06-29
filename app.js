@@ -638,6 +638,69 @@ function formatOddsUpdatedAt(value) {
     year: "numeric"
   });
 }
+function isWalfordRealKnockoutTeam(name) {
+  const clean = String(name || "").trim();
+
+  if (!clean) return false;
+  if (clean === "TBC") return false;
+  if (/^Winner /i.test(clean)) return false;
+  if (/^Runner-up Group /i.test(clean)) return false;
+  if (/^Group /i.test(clean)) return false;
+  if (/^Best 3rd Place/i.test(clean)) return false;
+
+  return true;
+}
+
+async function loadAliveKnockoutTeamNames(client) {
+  const { data, error } = await client
+    .from("knockout_results")
+    .select("match_code, team_a, team_b, score_a, score_b, winner")
+    .order("match_code", { ascending: true });
+
+  if (error) {
+    console.warn("Could not load knockout teams for odds.", error);
+    return [];
+  }
+
+  const knockoutTeams = new Set();
+  const eliminatedTeams = new Set();
+
+  (data || []).forEach(row => {
+    const teamA = String(row.team_a || "").trim();
+    const teamB = String(row.team_b || "").trim();
+    const winner = String(row.winner || "").trim();
+
+    if (isWalfordRealKnockoutTeam(teamA)) {
+      knockoutTeams.add(teamA);
+    }
+
+    if (isWalfordRealKnockoutTeam(teamB)) {
+      knockoutTeams.add(teamB);
+    }
+
+    const completed = Boolean(
+      winner &&
+      row.score_a !== null &&
+      row.score_b !== null
+    );
+
+    if (completed) {
+      if (teamA && winner && normaliseTeamName(teamA) !== normaliseTeamName(winner)) {
+        eliminatedTeams.add(normaliseTeamName(teamA));
+      }
+
+      if (teamB && winner && normaliseTeamName(teamB) !== normaliseTeamName(winner)) {
+        eliminatedTeams.add(normaliseTeamName(teamB));
+      }
+
+      knockoutTeams.add(winner);
+    }
+  });
+
+  return Array.from(knockoutTeams).filter(team =>
+    !eliminatedTeams.has(normaliseTeamName(team))
+  );
+}
 
 async function loadTeamOdds() {
   const statusEl = document.getElementById("team-odds-status");
@@ -688,12 +751,23 @@ if (teamsError) {
   return;
 }
 
+const aliveKnockoutNames = await loadAliveKnockoutTeamNames(client);
+const aliveKnockoutKeys = new Set(
+  aliveKnockoutNames.map(name => normaliseTeamName(name))
+);
+
+const teamsForOdds = aliveKnockoutKeys.size
+  ? (teamsData || []).filter(team =>
+      aliveKnockoutKeys.has(normaliseTeamName(team.team))
+    )
+  : (teamsData || []);
+
 const oddsByTeamId = {};
 (oddsData || []).forEach(row => {
   oddsByTeamId[row.team_id] = row;
 });
 
-const allOddsRows = (teamsData || []).map(team => {
+const allOddsRows = teamsForOdds.map(team => {
   return {
     teamData: team,
     oddsData: oddsByTeamId[team.id] || null
@@ -703,7 +777,6 @@ const allOddsRows = (teamsData || []).map(team => {
   const bo = b.oddsData?.odds_decimal ? Number(b.oddsData.odds_decimal) : 9999;
   return ao - bo || a.teamData.team.localeCompare(b.teamData.team);
 });
-
   const teamsById = {};
   (teamsData || []).forEach(team => {
     teamsById[team.id] = team;
