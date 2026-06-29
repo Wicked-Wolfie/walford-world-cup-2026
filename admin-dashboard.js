@@ -39,7 +39,8 @@ function adIsAdminMode() {
   return location.hash === "#admin-dashboard" ||
     location.hash === "#match-scorers-admin" ||
     location.hash === "#results-editor-admin" ||
-    location.hash === "#golden-boot-admin";
+    location.hash === "#golden-boot-admin" ||
+    location.hash === "#knockout-admin";
 }
 
   function adCurrentTargetId() {
@@ -123,6 +124,7 @@ body.walford-admin-mode #golden-boot {
       <button class="button gold" type="button" data-admin-open="match-scorers-admin">Add Result + Scorers</button>
       <button class="button dark" type="button" data-admin-open="results-editor-admin">Edit Existing Result</button>
       <a class="button dark" href="#golden-boot-admin">Golden Boot Admin</a>
+      <button class="button dark" type="button" data-admin-open="knockout">Knockout Result Entry</button>
       <a class="button dark" href="#home">Public Site / Check Changes</a>
       <button id="adSignOut" class="button dark" type="button">Sign out</button>
     </div>
