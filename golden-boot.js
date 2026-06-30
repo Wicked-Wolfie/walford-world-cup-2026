@@ -786,7 +786,7 @@ function gbWireForm() {
     if (cancelBtn) cancelBtn.classList.remove("hidden");
     if (hint) {
       hint.classList.remove("hidden");
-      hint.textContent = `Editing: ${row.player} — ${row.team} — ${Number(row.goals || 0)} goal${Number(row.goals || 0) === 1 ? "" : "s"}`;
+      hint.textContent = `Editing: ${row.player} — ${row.team} — ${WC.render.goals(row.goals)}`;
     }
 
     playerSelect.focus();
