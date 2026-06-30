@@ -6,21 +6,16 @@
   let dbBanter = null;
 
   function dbCreateClient() {
-    if (dbBanter) return dbBanter;
+  if (dbBanter) return dbBanter;
 
-    const url =
-      window.SUPABASE_URL ||
-      (typeof SUPABASE_URL !== "undefined" ? SUPABASE_URL : "");
-
-    const key =
-      window.SUPABASE_ANON_KEY ||
-      (typeof SUPABASE_ANON_KEY !== "undefined" ? SUPABASE_ANON_KEY : "");
-
-    if (!window.supabase || !url || !key) return null;
-
-    dbBanter = window.supabase.createClient(url, key);
-    return dbBanter;
+  if (!window.WC || !WC.supabase) {
+    console.warn("WC Supabase not available.");
+    return null;
   }
+
+  dbBanter = WC.supabase.getClient();
+  return dbBanter;
+}
 
   function dbEsc(value) {
     return String(value ?? "")
