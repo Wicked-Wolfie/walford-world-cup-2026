@@ -768,8 +768,8 @@ function gbWireForm() {
   function gbSetEditMode(row) {
     gbEditingId = Number(row.id);
 
-    const teamSelect = document.getElementById("gbTeam");
-    const playerSelect = document.getElementById("gbPlayer");
+    const teamSelect = WC.dom.el("gbTeam");
+    const playerSelect = WC.dom.el("gbPlayer");
 
     WC.dom.el("gbMatchDate").value = row.match_date || "";
     WC.dom.el("gbMatchCode").value = row.match_code || "";
@@ -804,12 +804,12 @@ function gbWireForm() {
       playerSelect.value = "";
     }
 
-    const goals = document.getElementById("gbGoals");
+    const goals = WC.dom.el("gbGoals");
     if (goals) goals.value = 1;
 
-    const saveBtn = document.getElementById("gbSaveBtn");
-    const cancelBtn = document.getElementById("gbCancelEdit");
-    const hint = document.getElementById("gbEditHint");
+    const saveBtn = WC.dom.el("gbSaveBtn");
+    const cancelBtn = WC.dom.el("gbCancelEdit");
+    const hint = WC.dom.el("gbEditHint");
 
     if (saveBtn) saveBtn.textContent = "Save scorer";
     if (cancelBtn) cancelBtn.classList.add("hidden");
