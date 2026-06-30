@@ -750,7 +750,7 @@ function gbWireForm() {
     WC.events.on(cancelEdit, "click", gbCancelEditMode);
 
     if (teamSelect && playerSelect) {
-      teamSelect.addEventListener("change", () => {
+      WC.events.on(teamSelect, "change", () => {
         playerSelect.innerHTML = gbPlayerOptions(teamSelect.value);
         playerSelect.value = "";
       });
