@@ -20,6 +20,7 @@
   function apply() {
     const adminMode = isAdminMode();
 
+    setDisplay(WC.dom.el("knockout-admin"), adminMode);
     setDisplay(WC.dom.el("match-scorers-admin"), adminMode);
     setDisplay(WC.dom.el("results-editor-admin"), adminMode);
     setDisplay(WC.dom.el("adminPanel"), adminMode);
