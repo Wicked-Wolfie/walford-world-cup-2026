@@ -832,11 +832,11 @@ function gbWireForm() {
     const db = gbClient();
     if (!db || !gbSession) return alert("Please sign in first.");
 
-    const match_date = document.getElementById("gbMatchDate").value || null;
-    const match_code = document.getElementById("gbMatchCode").value.trim() || null;
-    const team = document.getElementById("gbTeam").value;
-    const player = document.getElementById("gbPlayer").value;
-    const goals = Number(document.getElementById("gbGoals").value);
+    const match_date = WC.dom.el("gbMatchDate").value || null;
+    const match_code = WC.dom.el("gbMatchCode").value.trim() || null;
+    const team = WC.dom.el("gbTeam").value;
+    const player = WC.dom.el("gbPlayer").value;
+    const goals = Number(WC.dom.el("gbGoals").value);
 
     if (!team || !player || !Number.isInteger(goals) || goals < 1) {
       return alert("Choose a team, player and valid number of goals.");
