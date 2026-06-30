@@ -5,14 +5,21 @@ window.WC = window.WC || {};
 window.WC.teams = {
 
     aliases: {
-        USA: ["USA","US","United States","United States of America"],
-        SUI: ["SUI","CH","Switzerland"],
-        KOR: ["KOR","KR","South Korea","Korea Republic"],
-        CIV: ["CIV","CI","Ivory Coast","Côte d'Ivoire"],
-        COD: ["COD","CD","DR Congo","Congo DR"],
-        ENG: ["ENG","GB-ENG","England"],
-        SCO: ["SCO","GB-SCT","Scotland"]
-    },
+  USA: ["USA","US","United States","United States of America"],
+  ESP: ["ESP","ES","Spain"],
+  SUI: ["SUI","CH","Switzerland"],
+  KOR: ["KOR","KR","South Korea","Korea Republic"],
+  CIV: ["CIV","CI","Ivory Coast","Côte d'Ivoire"],
+  COD: ["COD","CD","DR Congo","Congo DR"],
+  ENG: ["ENG","GB-ENG","England"],
+  SCO: ["SCO","GB-SCT","Scotland"],
+  TUR: ["TUR","TR","Türkiye","Turkey"],
+  GER: ["GER","DE","Germany"],
+  BRA: ["BRA","BR","Brazil"],
+  MEX: ["MEX","MX","Mexico"],
+  JPN: ["JPN","JP","Japan"],
+  URU: ["URU","UY","Uruguay"]
+},
 
     normalise(value) {
         return String(value || "")
