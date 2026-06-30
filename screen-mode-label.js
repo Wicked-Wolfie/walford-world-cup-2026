@@ -1,21 +1,28 @@
-// Walford Screen Mode Label
-// Shows whether you are looking at Public Site, Admin Login, or Admin Mode.
+"use strict";
+
+// Walford V6 Screen Mode Label
 
 (function () {
-  function smlInsert() {
-    let label = document.getElementById("screenModeLabel");
+  function mode() {
+    const hash = location.hash;
 
-    if (!label) {
-      label = document.createElement("div");
-      label.id = "screenModeLabel";
-      document.body.appendChild(label);
+    if (
+      hash === "#admin-dashboard" ||
+      hash === "#match-scorers-admin" ||
+      hash === "#results-editor-admin"
+    ) {
+      return { text: "Admin Mode", className: "admin-mode" };
     }
 
-    return label;
+    if (hash === "#match-centre") {
+      return { text: "Admin Login / Match Centre", className: "admin-login-mode" };
+    }
+
+    return { text: "Public Site View", className: "public-mode" };
   }
 
-  function smlInstallCss() {
-    if (document.getElementById("screenModeLabelCss")) return;
+  function installCss() {
+    if (WC.dom.el("screenModeLabelCss")) return;
 
     const style = document.createElement("style");
     style.id = "screenModeLabelCss";
@@ -50,50 +57,36 @@
         color: #ffffff;
       }
     `;
-
     document.head.appendChild(style);
   }
 
-  function smlMode() {
-    if (
-      location.hash === "#admin-dashboard" ||
-      location.hash === "#match-scorers-admin" ||
-      location.hash === "#results-editor-admin"
-    ) {
-      return {
-        text: "Admin Mode",
-        className: "admin-mode"
-      };
+  function insertLabel() {
+    let label = WC.dom.el("screenModeLabel");
+
+    if (!label) {
+      label = document.createElement("div");
+      label.id = "screenModeLabel";
+      document.body.appendChild(label);
     }
 
-    if (location.hash === "#match-centre") {
-      return {
-        text: "Admin Login / Match Centre",
-        className: "admin-login-mode"
-      };
-    }
-
-    return {
-      text: "Public Site View",
-      className: "public-mode"
-    };
+    return label;
   }
 
-  function smlRender() {
-    smlInstallCss();
+  function render() {
+    installCss();
 
-    const label = smlInsert();
-    const mode = smlMode();
+    const label = insertLabel();
+    const current = mode();
 
     label.className = "";
-    label.classList.add(mode.className);
-    label.textContent = mode.text;
+    label.classList.add(current.className);
+    label.textContent = current.text;
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    smlRender();
-    setInterval(smlRender, 1000);
+  WC.events.once(document, "DOMContentLoaded", () => {
+    render();
+    setInterval(render, 1000);
   });
 
-  window.addEventListener("hashchange", smlRender);
+  WC.events.on(window, "hashchange", render);
 })();
