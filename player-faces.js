@@ -1,49 +1,44 @@
-// Walford V5.8.1 Player Faces
-// Adds generated circular player avatars using initials.
-// Safe alternative to real player photos.
+"use strict";
+
+// Walford V6 Player Faces
 
 (function () {
-  function pfInitials(name) {
-    const cleaned = String(name || "")
-      .replace(/\s+/g, " ")
-      .trim();
+  let timer = null;
 
+  function initials(name) {
+    const cleaned = String(name || "").replace(/\s+/g, " ").trim();
     if (!cleaned) return "?";
 
     const parts = cleaned.split(" ").filter(Boolean);
-
-    if (parts.length === 1) {
-      return parts[0].slice(0, 2).toUpperCase();
-    }
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
 
     return `${parts[0][0] || ""}${parts[parts.length - 1][0] || ""}`.toUpperCase();
   }
 
-  function pfHash(text) {
-    let hash = 0;
+  function hash(text) {
+    let value = 0;
     const str = String(text || "");
 
     for (let i = 0; i < str.length; i += 1) {
-      hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash |= 0;
+      value = (value << 5) - value + str.charCodeAt(i);
+      value |= 0;
     }
 
-    return Math.abs(hash);
+    return Math.abs(value);
   }
 
-  function pfAvatarHtml(name) {
-    const initials = pfInitials(name);
-    const tone = pfHash(name) % 8;
+  function avatarHtml(name) {
+    const tone = hash(name) % 8;
 
     return `
       <span class="walford-player-face walford-player-face-${tone}" aria-hidden="true">
-        ${initials}
+        ${WC.dom.esc(initials(name))}
       </span>
     `;
   }
 
-  function pfInstallCss() {
-    if (document.getElementById("walfordPlayerFacesCss")) return;
+  function installCss() {
+    if (WC.dom.el("walfordPlayerFacesCss")) return;
 
     const style = document.createElement("style");
     style.id = "walfordPlayerFacesCss";
@@ -89,15 +84,12 @@
     document.head.appendChild(style);
   }
 
-  function pfWrapCell(cell) {
+  function wrapCell(cell) {
     if (!cell || cell.dataset.playerFaceDone === "1") return;
 
-    const name = String(cell.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    const name = String(cell.textContent || "").replace(/\s+/g, " ").trim();
 
-    if (!name) return;
-    if (name.length < 3) return;
+    if (!name || name.length < 3) return;
     if (/^(player|team|goals|date|match code)$/i.test(name)) return;
 
     cell.dataset.playerFaceDone = "1";
@@ -105,15 +97,14 @@
 
     cell.innerHTML = `
       <span class="walford-player-with-face">
-        ${pfAvatarHtml(name)}
-        <span>${name}</span>
+        ${avatarHtml(name)}
+        <span>${WC.dom.esc(name)}</span>
       </span>
     `;
   }
 
-  function pfFindPlayerColumn(table) {
-    const headers = Array.from(table.querySelectorAll("thead th"));
-
+  function findPlayerColumn(table) {
+    const headers = WC.dom.qa("thead th", table);
     if (!headers.length) return -1;
 
     return headers.findIndex(header =>
@@ -121,76 +112,52 @@
     );
   }
 
-  function pfApplyToTable(table) {
-    const playerColumn = pfFindPlayerColumn(table);
-
+  function applyToTable(table) {
+    const playerColumn = findPlayerColumn(table);
     if (playerColumn < 0) return;
 
-    table.querySelectorAll("tbody tr").forEach(row => {
+    WC.dom.qa("tbody tr", table).forEach(row => {
       const cells = Array.from(row.children);
-      const cell = cells[playerColumn];
-
-      if (cell) {
-        pfWrapCell(cell);
-      }
+      wrapCell(cells[playerColumn]);
     });
   }
 
-  function pfApply() {
-    pfInstallCss();
+  function apply() {
+    installCss();
 
-    const areas = [
-      document.getElementById("golden-boot"),
-      document.getElementById("adminAuditPanel")
-    ].filter(Boolean);
-
-    areas.forEach(area => {
-      area.querySelectorAll("table").forEach(pfApplyToTable);
+    [
+      WC.dom.el("golden-boot"),
+      WC.dom.el("adminAuditPanel")
+    ].filter(Boolean).forEach(area => {
+      WC.dom.qa("table", area).forEach(applyToTable);
     });
 
-    document
-      .querySelectorAll(".gb-player-name, .golden-boot-player, [data-player-name]")
-      .forEach(element => {
-        pfWrapCell(element);
-      });
+    WC.dom.qa(".gb-player-name, .golden-boot-player, [data-player-name]")
+      .forEach(wrapCell);
   }
 
-  let pfTimer = null;
+  function scheduleApply() {
+    clearTimeout(timer);
+    timer = setTimeout(apply, 250);
+  }
 
-function pfScheduleApply() {
-  clearTimeout(pfTimer);
+  function watchForTableChanges() {
+    if (!document.body) return;
 
-  pfTimer = setTimeout(() => {
-    pfApply();
-  }, 250);
-}
+    const observer = new MutationObserver(scheduleApply);
 
-function pfWatchForTableChanges() {
-  const target = document.body;
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
 
-  if (!target) return;
-
-  const observer = new MutationObserver(() => {
-    pfScheduleApply();
+  WC.events.once(document, "DOMContentLoaded", () => {
+    [1500, 3000, 5000].forEach(ms => setTimeout(apply, ms));
+    watchForTableChanges();
   });
 
-  observer.observe(target, {
-    childList: true,
-    subtree: true
+  WC.events.on(window, "hashchange", () => {
+    [500, 1500, 3000].forEach(ms => setTimeout(apply, ms));
   });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(pfApply, 1500);
-  setTimeout(pfApply, 3000);
-  setTimeout(pfApply, 5000);
-
-  pfWatchForTableChanges();
-});
-
-window.addEventListener("hashchange", () => {
-  setTimeout(pfApply, 500);
-  setTimeout(pfApply, 1500);
-  setTimeout(pfApply, 3000);
-});
 })();
