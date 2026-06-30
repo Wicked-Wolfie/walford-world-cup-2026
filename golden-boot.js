@@ -771,8 +771,8 @@ function gbWireForm() {
     const teamSelect = document.getElementById("gbTeam");
     const playerSelect = document.getElementById("gbPlayer");
 
-    document.getElementById("gbMatchDate").value = row.match_date || "";
-    document.getElementById("gbMatchCode").value = row.match_code || "";
+    WC.dom.el("gbMatchDate").value = row.match_date || "";
+    WC.dom.el("gbMatchCode").value = row.match_code || "";
     teamSelect.value = row.team || "";
     playerSelect.innerHTML = gbPlayerOptions(row.team || "", row.player || "");
     playerSelect.value = row.player || "";
