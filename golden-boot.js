@@ -778,10 +778,9 @@ function gbWireForm() {
     playerSelect.value = row.player || "";
     WC.dom.el("gbGoals").value = WC.helpers.number(row.goals, 1);
 
-    const saveBtn = document.getElementById("gbSaveBtn");
-    const cancelBtn = document.getElementById("gbCancelEdit");
-    const hint = document.getElementById("gbEditHint");
-
+    const saveBtn = WC.dom.el("gbSaveBtn");
+    const cancelBtn = WC.dom.el("gbCancelEdit");
+    const hint = WC.dom.el("gbEditHint");
     if (saveBtn) saveBtn.textContent = "Update scorer";
     if (cancelBtn) cancelBtn.classList.remove("hidden");
     if (hint) {
