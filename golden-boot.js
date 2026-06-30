@@ -428,8 +428,10 @@ return gbEmojiFlag(code) || "";
 }
 
   function gbOwner(teamName) {
+  return WC.render.owner(teamName) || "";
+}
 
-  function gbDateLabel(value) {
+function gbDateLabel(value) {
   return WC.format.date(value);
 }
 
