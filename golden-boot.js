@@ -527,7 +527,7 @@ return gbEmojiFlag(code) || "";
       <div class="gb-latest-row">
         <strong>${gbEsc(row.player)}</strong>
         <span>${gbFlag(row.team)} ${gbEsc(row.team)}${row.match_code ? ` · ${gbEsc(row.match_code)}` : ""}</span>
-        <em>${Number(row.goals || 0)} goal${Number(row.goals || 0) === 1 ? "" : "s"}</em>
+        <em>${WC.render.goals(row.goals)}</em>
       </div>
     `).join("");
   }
