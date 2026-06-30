@@ -10,21 +10,16 @@
   let gbEditingId = null;
 
   function gbClient() {
-    if (gbDb) return gbDb;
+  if (gbDb) return gbDb;
 
-    const url =
-      window.SUPABASE_URL ||
-      (typeof SUPABASE_URL !== "undefined" ? SUPABASE_URL : "");
-
-    const key =
-      window.SUPABASE_ANON_KEY ||
-      (typeof SUPABASE_ANON_KEY !== "undefined" ? SUPABASE_ANON_KEY : "");
-
-    if (!window.supabase || !url || !key) return null;
-
-    gbDb = window.supabase.createClient(url, key);
-    return gbDb;
+  if (!window.WC || !WC.supabase) {
+    console.warn("WC Supabase not available.");
+    return null;
   }
+
+  gbDb = WC.supabase.getClient();
+  return gbDb;
+}
 
   function gbEsc(value) {
     return String(value ?? "")
@@ -33,8 +28,6 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
   }
-
-
 
   function gbCanonTeam(value) {
     return String(value || "")
