@@ -1,9 +1,10 @@
-// Walford V5.8.5 Page Order Fix
-// Forces public homepage sections into the preferred group-stage order.
+"use strict";
+
+// Walford V6 Page Order Fix
 
 (function () {
-  function pofSectionByHeading(words) {
-    const sections = Array.from(document.querySelectorAll("section"));
+  function sectionByHeading(words) {
+    const sections = WC.dom.qa("section");
 
     return sections.find(section => {
       const text = (section.textContent || "").toLowerCase();
@@ -11,20 +12,20 @@
     });
   }
 
-  function pofFindFixtureFocus() {
+  function findFixtureFocus() {
     return (
-      document.getElementById("today") ||
-      document.getElementById("fixtures") ||
-      document.getElementById("fixture-centre") ||
-      document.getElementById("fixtureCentre") ||
-      document.querySelector(".fixture-centre") ||
-      document.querySelector(".fixtures") ||
-      pofSectionByHeading(["fixture", "focus"])
+      WC.dom.el("today") ||
+      WC.dom.el("fixtures") ||
+      WC.dom.el("fixture-centre") ||
+      WC.dom.el("fixtureCentre") ||
+      WC.dom.q(".fixture-centre") ||
+      WC.dom.q(".fixtures") ||
+      sectionByHeading(["fixture", "focus"])
     );
   }
 
-  function pofMoveToMainInOrder(sections) {
-    const main = document.querySelector("main");
+  function moveToMainInOrder(sections) {
+    const main = WC.dom.q(WC.config.selectors.main);
     if (!main) return;
 
     sections.forEach(section => {
@@ -34,52 +35,35 @@
     });
   }
 
-  function pofApply() {
-    const fixtureFocus = pofFindFixtureFocus();
-    const dailyBanter = document.getElementById("daily-banter");
-    const syndicateStandings = document.getElementById("standings");
-    const goldenBoot = document.getElementById("golden-boot");
-    const officialVideo = document.getElementById("walford-tv");
-    const knockoutTracker = document.getElementById("homeKnockoutTracker");
-    const knockoutBracket = document.getElementById("knockout");
-
-    const groups = document.getElementById("groups");
-    const allTable = document.getElementById("all-table");
-    const squadHub = document.getElementById("squad-hub");
-    const teamTracker = document.getElementById("teams");
-    const sweepstakeDraw = document.getElementById("draw");
-    const matchCentre = document.getElementById("match-centre");
-    const banterCentre = document.getElementById("banter");
-    const adminDashboard = document.getElementById("admin-dashboard");
-
-    pofMoveToMainInOrder([
-      fixtureFocus,
-      dailyBanter,
-      syndicateStandings,
-      goldenBoot,
-      officialVideo,
-      knockoutTracker,
-      knockoutBracket,
-      groups,
-      allTable,
-      squadHub,
-      teamTracker,
-      sweepstakeDraw,
-      matchCentre,
-      banterCentre,
-      adminDashboard
+  function apply() {
+    moveToMainInOrder([
+      findFixtureFocus(),
+      WC.dom.el("daily-banter"),
+      WC.dom.el("standings"),
+      WC.dom.el("golden-boot"),
+      WC.dom.el("walford-tv"),
+      WC.dom.el("homeKnockoutTracker"),
+      WC.dom.el("knockout"),
+      WC.dom.el("groups"),
+      WC.dom.el("all-table"),
+      WC.dom.el("squad-hub"),
+      WC.dom.el("teams"),
+      WC.dom.el("draw"),
+      WC.dom.el("match-centre"),
+      WC.dom.el("banter"),
+      WC.dom.el("admin-dashboard")
     ]);
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(pofApply, 1500);
-    setTimeout(pofApply, 3000);
-    setTimeout(pofApply, 5000);
-    setTimeout(pofApply, 8000);
+  function delayedApply(times) {
+    times.forEach(ms => setTimeout(apply, ms));
+  }
+
+  WC.events.once(document, "DOMContentLoaded", () => {
+    delayedApply([1500, 3000, 5000, 8000]);
   });
 
-  window.addEventListener("hashchange", () => {
-    setTimeout(pofApply, 500);
-    setTimeout(pofApply, 1500);
+  WC.events.on(window, "hashchange", () => {
+    delayedApply([500, 1500]);
   });
 })();
