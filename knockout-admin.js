@@ -12,7 +12,6 @@ let kaSelectedCode = "";
 function kaClient() {
 if (kaDb) return kaDb;
 
-```
 const url = window.SUPABASE_URL || (typeof SUPABASE_URL !== "undefined" ? SUPABASE_URL : "");
 const key = window.SUPABASE_ANON_KEY || (typeof SUPABASE_ANON_KEY !== "undefined" ? SUPABASE_ANON_KEY : "");
 
@@ -20,7 +19,6 @@ if (!window.supabase || !url || !key) return null;
 
 kaDb = window.supabase.createClient(url, key);
 return kaDb;
-```
 
 }
 
@@ -70,7 +68,6 @@ return "";
 function kaInsertSection() {
 let section = document.getElementById("knockout-admin");
 
-```
 if (!section) {
   section = document.createElement("section");
   section.id = "knockout-admin";
@@ -81,7 +78,6 @@ if (!section) {
 }
 
 return section;
-```
 
 }
 
@@ -89,7 +85,6 @@ async function kaLoad() {
 const db = kaClient();
 if (!db) return;
 
-```
 const sessionResult = await db.auth.getSession();
 kaSession = sessionResult?.data?.session || null;
 
@@ -128,7 +123,6 @@ if (playerRowsA.error || playerRowsB.error) {
     ...(playerRowsB.data || [])
   ];
 }
-```
 
 }
 
@@ -144,14 +138,12 @@ return kaRows
 function kaPlayersForTeam(teamName) {
 const wanted = kaCanon(teamName);
 
-```
 return kaPlayers
   .filter(player => {
     const rawTeam = player.team || player.team_name || player.country || "";
     return kaCanon(rawTeam) === wanted || kaCanon(rawTeam).includes(wanted) || wanted.includes(kaCanon(rawTeam));
   })
   .sort((a, b) => String(a.player_name || "").localeCompare(String(b.player_name || ""), "en", { sensitivity: "base" }));
-```
 
 }
   
@@ -187,7 +179,6 @@ return kaRows.find(row => row.match_code === code) || kaRows[0] || null;
 function kaHistoryRows() {
 const rows = kaRows.filter(kaCompleted);
 
-```
 if (!rows.length) {
   return `<p class="status">No knockout results saved yet.</p>`;
 }
@@ -200,14 +191,12 @@ return rows.map(row => `
     <button class="button dark" type="button" data-ka-edit="${kaEsc(row.match_code)}">Edit</button>
   </div>
 `).join("");
-```
 
 }
 
 function kaRender() {
 const section = kaInsertSection();
 
-```
 if (!kaSession) {
   section.innerHTML = `
     <div class="section-title">
@@ -301,7 +290,6 @@ kaWire();
 if (typeof applyEmojiFlags === "function") {
   applyEmojiFlags();
 }
-```
 
 }
 
@@ -309,10 +297,8 @@ function kaAddScorer(teamName, targetId) {
 const target = document.getElementById(targetId);
 if (!target) return;
 
-```
 target.insertAdjacentHTML("beforeend", kaScorerRow(teamName));
 kaWireScorerRemoveButtons();
-```
 
 }
 
@@ -329,7 +315,6 @@ function kaWire() {
 const form = document.getElementById("kaForm");
 const select = document.getElementById("kaMatchCode");
 
-```
 if (form) {
   form.addEventListener("submit", kaSave);
 }
@@ -359,7 +344,6 @@ document.querySelectorAll("[data-ka-edit]").forEach(button => {
 });
 
 kaWireScorerRemoveButtons();
-```
 
 }
 
@@ -378,7 +362,6 @@ goals: Number(row.querySelector(".ka-scorer-goals")?.value || 0)
 async function kaSave(event) {
 event.preventDefault();
 
-```
 const db = kaClient();
 
 if (!db || !kaSession) {
@@ -470,7 +453,6 @@ document.getElementById("kaStatus").textContent = `Saved ${code}. Winner: ${winn
 
 await kaLoad();
 kaRender();
-```
 
 }
 
@@ -489,7 +471,6 @@ window.walfordOpenKnockoutAdmin = function () {
 location.hash = "#knockout-admin";
 kaStart();
 
-```
 setTimeout(() => {
   const section = document.getElementById("knockout-admin");
 
@@ -498,7 +479,6 @@ setTimeout(() => {
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }, 250);
-```
 
 };
 })();
