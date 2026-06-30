@@ -1,28 +1,19 @@
-// Walford Hash Scroll Fix
-// Helps links jump to sections that are created after page load.
+"use strict";
+
+// Walford V6 Hash Scroll Fix
 
 (function () {
-  function hsfScrollToHash() {
+  function scrollToHash() {
     if (!location.hash) return;
 
-    const id = location.hash.replace("#", "");
-
-    if (id === "golden-boot-admin") {
-      const goldenBoot = document.getElementById("golden-boot");
-
-      if (goldenBoot) {
-        goldenBoot.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      }
-
-      return;
-    }
-
+    let id = location.hash.replace("#", "");
     if (!id) return;
 
-    const target = document.getElementById(id);
+    if (id === "golden-boot-admin") {
+      id = "golden-boot";
+    }
+
+    const target = WC.dom.el(id);
     if (!target) return;
 
     target.scrollIntoView({
@@ -31,16 +22,15 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(hsfScrollToHash, 500);
-    setTimeout(hsfScrollToHash, 1500);
-    setTimeout(hsfScrollToHash, 3000);
-    setTimeout(hsfScrollToHash, 5000);
+  function delayedScrolls(times) {
+    times.forEach(ms => setTimeout(scrollToHash, ms));
+  }
+
+  WC.events.once(document, "DOMContentLoaded", () => {
+    delayedScrolls([500, 1500, 3000, 5000]);
   });
 
-  window.addEventListener("hashchange", () => {
-    setTimeout(hsfScrollToHash, 100);
-    setTimeout(hsfScrollToHash, 800);
-    setTimeout(hsfScrollToHash, 1800);
+  WC.events.on(window, "hashchange", () => {
+    delayedScrolls([100, 800, 1800]);
   });
 })();
