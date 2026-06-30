@@ -711,7 +711,7 @@ function gbTeamOptions(selected = "") {
           <span>Current leader</span>
           <h3>${leader ? gbEsc(leader.player) : "No leader yet"}</h3>
           <p>${leader ? `${gbFlag(leader.team)} ${gbEsc(leader.team)} · ${gbEsc(gbOwner(leader.team))}` : "Add scorers to start the race."}</p>
-          <strong>${leader ? `${leader.goals} goal${leader.goals === 1 ? "" : "s"}` : "0 goals"}</strong>
+          <strong>${leader ? WC.render.goals(leader.goals) : "0 goals"}</strong>
         </div>
 
         <div class="gb-panel">
