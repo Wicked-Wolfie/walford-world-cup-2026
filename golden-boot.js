@@ -22,12 +22,8 @@
 }
 
   function gbEsc(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
+  return WC.dom.esc(value);
+}
 
   function gbCanonTeam(value) {
     return String(value || "")
