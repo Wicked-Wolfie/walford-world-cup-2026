@@ -1,55 +1,45 @@
-// Walford Hide Admin On Public
-// Keeps admin-only panels hidden on the public site.
+"use strict";
+
+// Walford V6 Hide Admin On Public
 
 (function () {
-function haIsAdminMode() {
-  return [
-    "#admin-dashboard",
-    "#match-scorers-admin",
-    "#results-editor-admin",
-    "#golden-boot-admin"
+  function isAdminMode() {
+    return [
+      "#admin-dashboard",
+      "#match-scorers-admin",
+      "#results-editor-admin",
+      "#golden-boot-admin"
+    ].includes(location.hash);
+  }
 
-    // Temporarily allow Golden Boot admin on the Golden Boot public page:
-    // "#golden-boot"
-  ].includes(location.hash);
-}
+  function setDisplay(element, show) {
+    if (!element) return;
+    element.style.display = show ? "" : "none";
+  }
 
-  function haApply() {
-    const adminMode = haIsAdminMode();
+  function apply() {
+    const adminMode = isAdminMode();
 
-    const matchScorers = document.getElementById("match-scorers-admin");
-    const resultEditor = document.getElementById("results-editor-admin");
-    const oldAdminPanel = document.getElementById("adminPanel");
-    const goldenBootAdmins = document.querySelectorAll(".gb-admin");
+    setDisplay(WC.dom.el("match-scorers-admin"), adminMode);
+    setDisplay(WC.dom.el("results-editor-admin"), adminMode);
+    setDisplay(WC.dom.el("adminPanel"), adminMode);
 
-    if (matchScorers) {
-      matchScorers.style.display = adminMode ? "" : "none";
-    }
-
-    if (resultEditor) {
-      resultEditor.style.display = adminMode ? "" : "none";
-    }
-
-    if (oldAdminPanel) {
-      oldAdminPanel.style.display = adminMode ? "" : "none";
-    }
-
-    goldenBootAdmins.forEach(panel => {
-      panel.style.display = adminMode ? "" : "none";
+    WC.dom.qa(".gb-admin").forEach(panel => {
+      setDisplay(panel, adminMode);
     });
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    haApply();
-    setTimeout(haApply, 500);
-    setTimeout(haApply, 1500);
-    setTimeout(haApply, 3500);
-    setTimeout(haApply, 7000);
-    setInterval(haApply, 1000);
+  function delayedApply(times) {
+    times.forEach(ms => setTimeout(apply, ms));
+  }
+
+  WC.events.once(document, "DOMContentLoaded", () => {
+    apply();
+    delayedApply([500, 1500, 3500, 7000]);
+    setInterval(apply, 1000);
   });
 
-  window.addEventListener("hashchange", () => {
-    setTimeout(haApply, 100);
-    setTimeout(haApply, 800);
+  WC.events.on(window, "hashchange", () => {
+    delayedApply([100, 800]);
   });
 })();
