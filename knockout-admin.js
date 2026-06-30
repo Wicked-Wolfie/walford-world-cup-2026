@@ -154,26 +154,23 @@ return kaPlayers
 ```
 
 }
-
+  
 function kaPlayerOptions(teamName) {
-const players = kaPlayersForTeam(teamName);
+  const players = kaPlayersForTeam(teamName);
 
-```
-if (!players.length) {
-  return `<option value="">No players found for ${kaEsc(teamName)}</option>`;
-}
+  if (!players.length) {
+    return `<option value="">No players found for ${kaEsc(teamName)}</option>`;
+  }
 
-return `<option value="">Select scorer...</option>` + players.map(player => {
-  const bits = [];
-  if (player.squad_number) bits.push(`#${player.squad_number}`);
-  if (player.position) bits.push(player.position);
-  if (player.club) bits.push(player.club);
-  const detail = bits.length ? ` — ${bits.join(" · ")}` : "";
+  return `<option value="">Select scorer...</option>` + players.map(player => {
+    const bits = [];
+    if (player.squad_number) bits.push(`#${player.squad_number}`);
+    if (player.position) bits.push(player.position);
+    if (player.club) bits.push(player.club);
+    const detail = bits.length ? ` — ${bits.join(" · ")}` : "";
 
-  return `<option value="${kaEsc(player.player_name)}">${kaEsc(player.player_name)}${kaEsc(detail)}</option>`;
-}).join("");
-```
-
+    return `<option value="${kaEsc(player.player_name)}">${kaEsc(player.player_name)}${kaEsc(detail)}</option>`;
+  }).join("");
 }
 
 function kaScorerRow(teamName) {
