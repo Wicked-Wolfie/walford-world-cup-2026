@@ -488,7 +488,7 @@ return gbEmojiFlag(code) || "";
         goals: 0,
         entries: 0
       };
-      existing.goals += Number(row.goals || 0);
+      existing.goals += WC.helpers.number(row.goals, 0);
       existing.entries += 1;
       map.set(key, existing);
     }
