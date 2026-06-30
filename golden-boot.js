@@ -436,11 +436,8 @@ return gbEmojiFlag(code) || "";
   }
 
   function gbDateLabel(value) {
-    if (!value) return "";
-    const parts = String(value).split("-");
-    if (parts.length !== 3) return value;
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  }
+  return WC.format.date(value);
+}
 
   async function gbLoad() {
     const db = gbClient();
