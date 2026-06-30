@@ -3,30 +3,69 @@
 window.WC = window.WC || {};
 
 window.WC.teams = {
-  aliases: {
-    USA: ["USA", "US", "United States", "United States of America"],
-    SUI: ["SUI", "CH", "Switzerland"],
-    KOR: ["KOR", "KR", "South Korea", "Korea Republic"],
-    CIV: ["CIV", "Ivory Coast", "Côte d'Ivoire"],
-    COD: ["COD", "DR Congo", "Congo DR"]
-  },
 
-  normalise(value) {
-    return String(value || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "");
-  },
+    aliases: {
+        USA: ["USA","US","United States","United States of America"],
+        SUI: ["SUI","CH","Switzerland"],
+        KOR: ["KOR","KR","South Korea","Korea Republic"],
+        CIV: ["CIV","CI","Ivory Coast","Côte d'Ivoire"],
+        COD: ["COD","CD","DR Congo","Congo DR"],
+        ENG: ["ENG","GB-ENG","England"],
+        SCO: ["SCO","GB-SCT","Scotland"]
+    },
 
-  sameTeam(a, b) {
-    const aa = this.normalise(a);
-    const bb = this.normalise(b);
-    if (!aa || !bb) return false;
-    if (aa === bb) return true;
+    normalise(value) {
+        return String(value || "")
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "");
+    },
 
-    return Object.values(this.aliases).some(list => {
-      const keys = list.map(x => this.normalise(x));
-      return keys.includes(aa) && keys.includes(bb);
-    });
-  }
+    sameTeam(a, b) {
+
+        const aa = this.normalise(a);
+        const bb = this.normalise(b);
+
+        if (!aa || !bb) return false;
+
+        if (aa === bb) return true;
+
+        for (const list of Object.values(this.aliases)) {
+
+            const keys = list.map(v => this.normalise(v));
+
+            if (keys.includes(aa) && keys.includes(bb))
+                return true;
+        }
+
+        return false;
+    },
+
+    find(team) {
+
+        const teams = window.WC.state.get("teams");
+
+        return teams.find(t =>
+            this.sameTeam(t.team, team) ||
+            this.sameTeam(t.code, team)
+        );
+
+    },
+
+    owner(team) {
+
+        const t = this.find(team);
+
+        return t ? t.owner : "";
+
+    },
+
+    flag(team) {
+
+        const t = this.find(team);
+
+        return t ? t.flag : "";
+
+    }
+
 };
