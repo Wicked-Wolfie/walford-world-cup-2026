@@ -442,8 +442,8 @@ const resultSave = await db
   .upsert(payload, { onConflict: "match_code" });
 
 if (resultSave.error) {
-  console.error(resultSave.error);
-  alert("Could not save knockout result.");
+  console.error("Knockout save error:", resultSave.error);
+  alert(JSON.stringify(resultSave.error, null, 2));
   return;
 }
 
