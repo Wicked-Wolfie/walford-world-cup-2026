@@ -776,7 +776,7 @@ function gbWireForm() {
     teamSelect.value = row.team || "";
     playerSelect.innerHTML = gbPlayerOptions(row.team || "", row.player || "");
     playerSelect.value = row.player || "";
-    document.getElementById("gbGoals").value = Number(row.goals || 1);
+    WC.dom.el("gbGoals").value = WC.helpers.number(row.goals, 1);
 
     const saveBtn = document.getElementById("gbSaveBtn");
     const cancelBtn = document.getElementById("gbCancelEdit");
