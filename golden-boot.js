@@ -285,18 +285,9 @@ function gbCleanTeamLabel(value) {
 }
 
 function gbPlayerMatchesTeam(player, teamName) {
-  const playerTeam =
-    player.team ||
-    player.team_name ||
-    player.country ||
-    player.team_code ||
-    player.country_code ||
-    player.code ||
-    "";
-
-  if (window.WC && WC.teams && WC.teams.sameTeam(playerTeam, teamName)) {
-    return true;
-  }
+  const expectedCodes = gbExpectedCodes(teamName).map(code =>
+    String(code || "").toUpperCase().trim()
+  );
 
   const rawCode = String(
     player.team_code ||
@@ -305,11 +296,72 @@ function gbPlayerMatchesTeam(player, teamName) {
     ""
   ).toUpperCase().trim();
 
-  if (rawCode && window.WC && WC.teams && WC.teams.sameTeam(rawCode, teamName)) {
+  if (rawCode && expectedCodes.includes(rawCode)) return true;
+
+  const selectedTeamClean = gbCanonTeam(gbCleanTeamLabel(teamName));
+  const playerTeamCleanDirect = gbCanonTeam(gbCleanTeamLabel(player.team || player.team_name || player.country || ""));
+
+  if (selectedTeamClean === "united states" && rawCode === "USA") return true;
+  if (selectedTeamClean === "spain" && rawCode === "ESP") return true;
+
+  if (selectedTeamClean && playerTeamCleanDirect && selectedTeamClean === playerTeamCleanDirect) return true;
+
+  const playerTeam = String(player.team || player.team_name || player.country || "").trim();
+  const playerTeamUpper = playerTeam.toUpperCase().trim();
+
+  if (expectedCodes.some(code =>
+    playerTeamUpper === code ||
+    playerTeamUpper.startsWith(code + " ") ||
+    playerTeamUpper.startsWith(code + "-") ||
+    playerTeamUpper.includes("(" + code + ")")
+  )) {
     return true;
   }
 
-  return false;
+  const selectedKey = gbCanonTeam(gbCleanTeamLabel(teamName));
+  const playerKeyRaw = gbCanonTeam(playerTeam);
+  const playerKeyClean = gbCanonTeam(gbCleanTeamLabel(playerTeam));
+
+  if (selectedKey === "united states") {
+    if (
+      playerKeyRaw === "united states" ||
+      playerKeyClean === "united states" ||
+      playerKeyRaw === "usa" ||
+      playerKeyClean === "usa" ||
+      playerKeyRaw.includes("united states") ||
+      playerKeyRaw.includes("usa")
+    ) {
+      return true;
+    }
+  }
+
+  if (selectedKey === "spain") {
+    if (
+      playerKeyRaw === "spain" ||
+      playerKeyClean === "spain" ||
+      playerKeyRaw === "esp" ||
+      playerKeyClean === "esp" ||
+      playerKeyRaw.includes("spain")
+    ) {
+      return true;
+    }
+  }
+
+  const cleanPlayerTeam = gbCleanTeamLabel(playerTeam);
+  const cleanSelectedTeam = gbCleanTeamLabel(teamName);
+
+  if (gbTeamMatches(cleanPlayerTeam, cleanSelectedTeam)) return true;
+
+  const wantedNames = gbTeamKeys(cleanSelectedTeam);
+  const playerTeamKey = gbCanonTeam(cleanPlayerTeam);
+
+  if (wantedNames.includes(playerTeamKey)) return true;
+
+  return wantedNames.some(nameKey =>
+    playerTeamKey === nameKey ||
+    playerTeamKey.startsWith(nameKey + " ") ||
+    nameKey.startsWith(playerTeamKey + " ")
+  );
 }
  function gbPlayersForTeam(team) {
   return gbPlayers
