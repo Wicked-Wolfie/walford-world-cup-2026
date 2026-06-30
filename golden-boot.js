@@ -838,7 +838,7 @@ function gbWireForm() {
     const player = WC.dom.el("gbPlayer").value;
     const goals = Number(WC.dom.el("gbGoals").value);
 
-    if (!team || !player || !Number.isInteger(goals) || goals < 1) {
+    if (!WC.validate.required(team) || !WC.validate.required(player) || !WC.validate.goals(goals)) {
       return alert("Choose a team, player and valid number of goals.");
     }
 
