@@ -428,12 +428,6 @@ return gbEmojiFlag(code) || "";
 }
 
   function gbOwner(teamName) {
-    try {
-      if (typeof owner === "function") return owner(teamName) || "";
-    } catch (e) {}
-    const row = gbTeams().find(t => t.team === teamName);
-    return row ? row.owner || "" : "";
-  }
 
   function gbDateLabel(value) {
   return WC.format.date(value);
