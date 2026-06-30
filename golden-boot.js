@@ -514,7 +514,7 @@ return gbEmojiFlag(code) || "";
           <strong>${gbEsc(row.player)}</strong>
           <span>${gbFlag(row.team)} ${gbEsc(row.team)} · ${gbEsc(gbOwner(row.team))}</span>
         </div>
-        <em>${row.goals} goal${row.goals === 1 ? "" : "s"}</em>
+        <em>${WC.render.goals(row.goals)}</em>
       </article>
     `).join("");
   }
