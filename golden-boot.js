@@ -756,12 +756,12 @@ function gbWireForm() {
       });
     }
 
-    document.querySelectorAll("[data-gb-delete]").forEach(button => {
-      button.addEventListener("click", gbDelete);
+      WC.dom.qa("[data-gb-delete]").forEach(button => {
+      WC.events.on(button, "click", gbDelete);
     });
 
-    document.querySelectorAll("[data-gb-edit]").forEach(button => {
-      button.addEventListener("click", gbStartEdit);
+    WC.dom.qa("[data-gb-edit]").forEach(button => {
+    WC.events.on(button, "click", gbStartEdit);
     });
   }
 
