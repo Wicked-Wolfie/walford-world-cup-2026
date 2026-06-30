@@ -741,10 +741,10 @@ if (typeof applyEmojiFlags === "function") {
     
 function gbWireForm() {
 
-    const form = document.getElementById("goldenBootForm");
-    const teamSelect = document.getElementById("gbTeam");
-    const playerSelect = document.getElementById("gbPlayer");
-    const cancelEdit = document.getElementById("gbCancelEdit");
+    const form = WC.dom.el("goldenBootForm");
+    const teamSelect = WC.dom.el("gbTeam");
+    const playerSelect = WC.dom.el("gbPlayer");
+    const cancelEdit = WC.dom.el("gbCancelEdit");
 
     WC.events.on(form, "submit", gbSave);
     WC.events.on(cancelEdit, "click", gbCancelEditMode);
