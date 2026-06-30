@@ -794,7 +794,7 @@ function gbWireForm() {
   function gbCancelEditMode() {
     gbEditingId = null;
 
-    const form = document.getElementById("goldenBootForm");
+    const form = WC.dom.el("goldenBootForm");
     if (form) form.reset();
 
     const teamSelect = document.getElementById("gbTeam");
