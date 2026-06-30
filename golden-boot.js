@@ -919,7 +919,7 @@ if (goalsInput) goalsInput.value = keepGoals;
     gbRender();
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(gbStart, 2200);
-  });
+  WC.events.once(document, "DOMContentLoaded", () => {
+  setTimeout(gbStart, 2200);
+  });;
 })();
