@@ -238,23 +238,34 @@ section.innerHTML = `
       </label>
 
       <div class="ka-match-card">
-        <div>
-          <strong>${kaFlag(match.team_a)} ${kaEsc(match.team_a)}</strong>
-          <em>${kaEsc(kaOwner(match.team_a) || "Owner TBC")}</em>
-        </div>
+  <div>
+    <strong>${kaFlag(match.team_a)} ${kaEsc(match.team_a)}</strong>
+    <em>${kaEsc(kaOwner(match.team_a) || "Owner TBC")}</em>
+  </div>
 
-        <input id="kaScoreA" type="number" min="0" placeholder="0" value="${match.score_a ?? ""}">
+  <input id="kaScoreA" type="number" min="0" placeholder="0" value="${match.score_a ?? ""}">
 
-        <span>v</span>
+  <span>v</span>
 
-        <input id="kaScoreB" type="number" min="0" placeholder="0" value="${match.score_b ?? ""}">
+  <input id="kaScoreB" type="number" min="0" placeholder="0" value="${match.score_b ?? ""}">
 
-        <div>
-          <strong>${kaFlag(match.team_b)} ${kaEsc(match.team_b)}</strong>
-          <em>${kaEsc(kaOwner(match.team_b) || "Owner TBC")}</em>
-        </div>
-      </div>
+  <div>
+    <strong>${kaFlag(match.team_b)} ${kaEsc(match.team_b)}</strong>
+    <em>${kaEsc(kaOwner(match.team_b) || "Owner TBC")}</em>
+  </div>
+</div>
 
+<div class="ka-pens">
+  <label>
+    Pens ${kaEsc(match.team_a)}
+    <input id="kaPensA" type="number" min="0" placeholder="-" value="${match.pens_a ?? ""}">
+  </label>
+  <label>
+    Pens ${kaEsc(match.team_b)}
+    <input id="kaPensB" type="number" min="0" placeholder="-" value="${match.pens_b ?? ""}">
+  </label>
+</div>
+    
       <div class="ka-scorers">
         <h3>Goal Scorers</h3>
 
@@ -385,9 +396,17 @@ if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB)) {
   return;
 }
 
+const pensAValue = document.getElementById("kaPensA")?.value || "";
+const pensBValue = document.getElementById("kaPensB")?.value || "";
+
+const pensA = pensAValue === "" ? null : Number(pensAValue);
+const pensB = pensBValue === "" ? null : Number(pensBValue);
+
 if (scoreA === scoreB) {
-  alert("Knockout matches need a winner. Enter the post-penalty winner score.");
-  return;
+  if (!Number.isInteger(pensA) || !Number.isInteger(pensB) || pensA === pensB) {
+    alert("This match is tied. Enter a valid penalty score with a clear winner.");
+    return;
+  }
 }
 
 const scorers = kaCollectScorers();
@@ -402,7 +421,9 @@ if (scorerGoalTotal !== matchGoalTotal) {
   if (!ok) return;
 }
 
-const winner = kaWinner(row.team_a, row.team_b, scoreA, scoreB);
+const winner = scoreA === scoreB
+  ? kaWinner(row.team_a, row.team_b, pensA, pensB)
+  : kaWinner(row.team_a, row.team_b, scoreA, scoreB);
 
 const payload = {
   match_code: row.match_code,
@@ -411,6 +432,8 @@ const payload = {
   team_b: row.team_b,
   score_a: scoreA,
   score_b: scoreB,
+  pens_a: pensA,
+  pens_b: pensB,
   winner
 };
 
