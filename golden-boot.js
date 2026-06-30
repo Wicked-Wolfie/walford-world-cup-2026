@@ -556,7 +556,7 @@ function gbDateLabel(value) {
                 <strong>${gbEsc(row.player)}</strong>
                 <span>${gbFlag(row.team)} ${gbEsc(row.team)}${row.match_code ? ` · ${gbEsc(row.match_code)}` : ""}${row.match_date ? ` · ${gbEsc(gbDateLabel(row.match_date))}` : ""}</span>
               </div>
-              <em>${Number(row.goals || 0)} goal${Number(row.goals || 0) === 1 ? "" : "s"}</em>
+              <em>${WC.render.goals(row.goals)}</em>
               <div class="gb-admin-buttons">
                 <button type="button" class="button dark gb-edit" data-gb-edit="${row.id}">Edit</button>
                 <button type="button" class="button dark gb-delete" data-gb-delete="${row.id}">Delete</button>
