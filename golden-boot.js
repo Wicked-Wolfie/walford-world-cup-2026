@@ -746,8 +746,8 @@ function gbWireForm() {
     const playerSelect = document.getElementById("gbPlayer");
     const cancelEdit = document.getElementById("gbCancelEdit");
 
-    if (form) form.addEventListener("submit", gbSave);
-    if (cancelEdit) cancelEdit.addEventListener("click", gbCancelEditMode);
+    WC.events.on(form, "submit", gbSave);
+    WC.events.on(cancelEdit, "click", gbCancelEditMode);
 
     if (teamSelect && playerSelect) {
       teamSelect.addEventListener("change", () => {
