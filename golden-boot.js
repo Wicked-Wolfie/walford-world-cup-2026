@@ -895,7 +895,7 @@ if (goalsInput) goalsInput.value = keepGoals;
     const row = gbRows.find(r => Number(r.id) === id);
     if (!row) return;
 
-    const ok = confirm(`Delete this scorer entry?\n\n${row.player} — ${row.team} — ${row.goals} goal${Number(row.goals) === 1 ? "" : "s"}${row.match_code ? ` — ${row.match_code}` : ""}`);
+    const ok = confirm(`Delete this scorer entry?\n\n${row.player} — ${row.team} — ${WC.render.goals(row.goals)}${row.match_code ? ` — ${row.match_code}` : ""}`);
     if (!ok) return;
 
     const db = gbClient();
