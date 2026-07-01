@@ -95,10 +95,6 @@ window.WC.teams = {
 
 },
 
-        return fallback ? fallback.owner : "";
-
-    },
-
     flag(team) {
 
     const t = this.find(team);
