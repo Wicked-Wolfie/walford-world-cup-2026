@@ -459,8 +459,8 @@ function renderResults() {
         return `
           <div class="result-item">
             <div>
-              <strong>${flag(m.teamA)} ${m.teamA}</strong> v
-              <strong>${flag(m.teamB)} ${m.teamB}</strong><br>
+              <strong>${window.WC.teams.flag(m.teamA)} ${m.teamA}</strong> v
+              <strong>${window.WC.teams.flag(m.teamB)} ${m.teamB}</strong><br>
               <span>${m.date} • ${WC.teams.owner(m.teamA)} +${pa}, ${WC.teams.owner(m.teamB)} +${pb}</span>
             </div>
             <div class="result-score">${a}-${b}</div>
