@@ -20,6 +20,17 @@ window.WC.teams = {
   JPN: ["JPN","JP","Japan"],
   URU: ["URU","UY","Uruguay"]
 },
+    displayName(team) {
+
+    const t = this.find(team);
+
+    if (t) return t.team;
+
+    const fallback = this.fallbackForTeam(team);
+
+    return fallback ? fallback.team : String(team || "");
+
+},
 
     normalise(value) {
         return String(value || "")
