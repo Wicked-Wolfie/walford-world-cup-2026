@@ -110,7 +110,7 @@ const WALFORD_FLAG_CODES = {
   "Panama": "PA"
 };
 
-function fallbackForTeam(n, code) {
+function WC.teams.fallbackForTeam(n, code) {
   const nameKey = WC.teams.normalise(n);
   const codeKey = String(code || "").toUpperCase();
 
@@ -128,7 +128,7 @@ function flag(n) {
   if (code === "SCOTLAND") return SCOTLAND_FLAG;
   if (code) return makeEmojiFlag(code);
 
-  const fallback = fallbackForTeam(teamName);
+  const fallback = WC.teams.fallbackForTeam(teamName);
   const fallbackCode = fallback?.code;
 
   if (fallbackCode === "GB-ENG") return ENGLAND_FLAG;
@@ -162,7 +162,7 @@ async function loadData() {
     
     if (td?.length) {
   teams = td.map(t => {
-    const fb = fallbackForTeam(t.team, t.flag) || {};
+    const fb = WC.teams.fallbackForTeam(t.team, t.flag) || {};
     return {
       id: t.id,
       code: fb.code || t.flag || "",
@@ -764,7 +764,7 @@ const allOddsRows = teamsForOdds.map(team => {
   const team = item.teamData || {};
   const row = item.oddsData || {};
   const teamName = team.team || "Unknown team";
-  const fallbackTeam = fallbackForTeam(teamName, team.flag) || {};
+  const fallbackTeam = WC.teams.fallbackForTeam(teamName, team.flag) || {};
   const teamFlag = flag(teamName) || team.flag || fallbackTeam.flag || "";
   const teamOwner = WC.helpers.ownerName(team.owner || fallbackTeam.owner || "");
 
