@@ -17,7 +17,11 @@ window.WC.helpers = {
   dateKey(value) {
     return String(value || "").slice(0, 10);
   },
-
+  
+  todayISO() {
+  return new Date().toISOString().slice(0, 10);
+  },
+  
   sortByDateTime(a, b) {
     const ax = `${a.date || ""} ${a.time || ""}`;
     const bx = `${b.date || ""} ${b.time || ""}`;
