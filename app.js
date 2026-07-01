@@ -31,10 +31,6 @@ function el(id) {
   return document.getElementById(id);
 }
 
-function renameOwner(o) {
-  return o === "Debbie" ? "Dubs" : o === "Charlotte" ? "Lottie" : o;
-}
-
 function normaliseTeamName(value) {
   return String(value || "")
     .toLowerCase()
@@ -188,7 +184,7 @@ async function loadData() {
       code: fb.code || t.flag || "",
       flag: flag(t.team) || t.flag || fb.flag || "",
       team: t.team,
-      owner: renameOwner(t.owner || fb.owner || ""),
+      owner: WC.helpers.ownerName(t.owner || fb.owner || ""),
       stage: t.stage || "Group Stage",
       group: fb.group || "?"
     };
@@ -790,7 +786,7 @@ const allOddsRows = teamsForOdds.map(team => {
   const teamName = team.team || "Unknown team";
   const fallbackTeam = fallbackForTeam(teamName, team.flag) || {};
   const teamFlag = flag(teamName) || team.flag || fallbackTeam.flag || "";
-  const teamOwner = renameOwner(team.owner || fallbackTeam.owner || "");
+  const teamOwner = WC.helpers.ownerName(team.owner || fallbackTeam.owner || "");
 
   const hasOdds = !!row.odds_fractional;
   const decimal = row.odds_decimal ? Number(row.odds_decimal).toFixed(2) : "";
