@@ -439,7 +439,7 @@ function renderToday() {
         return `
           <article class="today-card">
             <div class="today-time">${f.time || "TBC"} GMT</div>
-            <h3>${flag(f.team_a)} ${f.team_a} v ${flag(f.team_b)} ${f.team_b}</h3>
+            <h3>${window.WC.teams.flag(f.team_a)} ${f.team_a} v ${window.WC.teams.flag(f.team_b)} ${f.team_b}</h3>
             <div class="owners-line">${oa} v ${ob}</div>
             <p class="banter-copy">“${banterFor(oa, ob, f.team_a, f.team_b)}”</p>
           </article>
