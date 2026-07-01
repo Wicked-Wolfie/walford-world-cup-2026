@@ -156,7 +156,7 @@ async function loadData() {
     return {
       id: t.id,
       code: fb.code || t.flag || "",
-      flag: flag(t.team) || t.flag || fb.flag || "",
+      flag: window.WC.teams.flag(t.team) || t.flag || fb.flag || "",
       team: t.team,
       owner: WC.helpers.ownerName(t.owner || fb.owner || ""),
       stage: t.stage || "Group Stage",
