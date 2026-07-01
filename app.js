@@ -110,16 +110,6 @@ const WALFORD_FLAG_CODES = {
   "Panama": "PA"
 };
 
-function WC.teams.fallbackForTeam(n, code) {
-  const nameKey = WC.teams.normalise(n);
-  const codeKey = String(code || "").toUpperCase();
-
-  return (window.FALLBACK_TEAMS || []).find(t =>
-    WC.teams.normalise(t.team) === nameKey ||
-    String(t.code || "").toUpperCase() === codeKey
-  );
-}
-
 function flag(n) {
   const teamName = String(n || "").trim();
   const code = WALFORD_FLAG_CODES[teamName];
@@ -340,7 +330,7 @@ function render() {
 
   const todayGames = fixtures.filter(f => f.date === el("todayDate").value);
   el("feudStat").textContent = todayGames[0]
-    ? `${WC.teams.WC.teams.owner(todayGames[0].team_a)} v ${WC.teams.WC.teams.owner(todayGames[0].team_b)}`
+    ? `${WC.teams.owner(todayGames[0].team_a)} v ${WC.teams.owner(todayGames[0].team_b)}`
     : "-";
 
   el("leaderboard").innerHTML = lb
@@ -443,8 +433,8 @@ function renderToday() {
 
   el("todayMatches").innerHTML = games.length
     ? games.map(f => {
-        const oa = WC.teams.WC.teams.owner(f.team_a);
-        const ob = WC.teams.WC.teams.owner(f.team_b);
+        const oa = WC.teams.owner(f.team_a);
+        const ob = WC.teams.owner(f.team_b);
 
         return `
           <article class="today-card">
@@ -471,7 +461,7 @@ function renderResults() {
             <div>
               <strong>${flag(m.teamA)} ${m.teamA}</strong> v
               <strong>${flag(m.teamB)} ${m.teamB}</strong><br>
-              <span>${m.date} • ${WC.teams.WC.teams.owner(m.teamA)} +${pa}, ${WC.teams.WC.teams.owner(m.teamB)} +${pb}</span>
+              <span>${m.date} • ${WC.teams.owner(m.teamA)} +${pa}, ${WC.teams.owner(m.teamB)} +${pb}</span>
             </div>
             <div class="result-score">${a}-${b}</div>
           </div>
@@ -533,7 +523,7 @@ function renderBanter(lb, totals, todayGames) {
   el("banterEngland").textContent = `${eng.stage || "Group Stage"}, ${eng.total || 0} pts`;
   el("banterTeam").textContent = totals[0] ? `${totals[0].flag} ${totals[0].team}, ${totals[0].total} pts` : "-";
   el("banterFeud").textContent = feud
-    ? `${WC.teams.WC.teams.owner(feud.team_a)} v ${WC.teams.WC.teams.owner(feud.team_b)} - ${banterFor(WC.teams.WC.teams.owner(feud.team_a), WC.teams.WC.teams.owner(feud.team_b), feud.team_a, feud.team_b)}`
+    ? `${WC.teams.owner(feud.team_a)} v ${WC.teams.owner(feud.team_b)} - ${banterFor(WC.teams.owner(feud.team_a), WC.teams.owner(feud.team_b), feud.team_a, feud.team_b)}`
     : "Awaiting today's fixtures";
 }
 
