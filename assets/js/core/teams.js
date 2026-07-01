@@ -89,10 +89,14 @@ window.WC.teams = {
 
     flag(team) {
 
-        const t = this.find(team);
+    const t = this.find(team);
 
-        return t ? t.flag : "";
+    if (t) return t.flag;
 
-    }
+    const fallback = this.fallbackForTeam(team);
+
+    return fallback ? fallback.flag : "";
+
+}
 
 };
