@@ -31,14 +31,6 @@ function el(id) {
   return document.getElementById(id);
 }
 
-function normaliseTeamName(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "")
-    .trim();
-}
-
 function makeEmojiFlag(code) {
   return String.fromCodePoint(
     ...String(code || "")
@@ -119,11 +111,11 @@ const WALFORD_FLAG_CODES = {
 };
 
 function fallbackForTeam(n, code) {
-  const nameKey = normaliseTeamName(n);
+  const nameKey = WC.teams.normalise(n);
   const codeKey = String(code || "").toUpperCase();
 
   return (window.FALLBACK_TEAMS || []).find(t =>
-    normaliseTeamName(t.team) === nameKey ||
+    WC.teams.normalise(t.team) === nameKey ||
     String(t.code || "").toUpperCase() === codeKey
   );
 }
@@ -673,12 +665,12 @@ async function loadAliveKnockoutTeamNames(client) {
     );
 
     if (completed) {
-      if (teamA && winner && normaliseTeamName(teamA) !== normaliseTeamName(winner)) {
-        eliminatedTeams.add(normaliseTeamName(teamA));
+      if (teamA && winner && WC.teams.normalise(teamA) !== WC.teams.normalise(winner)) {
+        eliminatedTeams.add(WC.teams.normalise(teamA));
       }
 
-      if (teamB && winner && normaliseTeamName(teamB) !== normaliseTeamName(winner)) {
-        eliminatedTeams.add(normaliseTeamName(teamB));
+      if (teamB && winner && WC.teams.normalise(teamB) !== WC.teams.normalise(winner)) {
+        eliminatedTeams.add(WC.teams.normalise(teamB));
       }
 
       knockoutTeams.add(winner);
@@ -686,7 +678,7 @@ async function loadAliveKnockoutTeamNames(client) {
   });
 
   return Array.from(knockoutTeams).filter(team =>
-    !eliminatedTeams.has(normaliseTeamName(team))
+    !eliminatedTeams.has(WC.teams.normalise(team))
   );
 }
 
@@ -741,12 +733,12 @@ if (teamsError) {
 
 const aliveKnockoutNames = await loadAliveKnockoutTeamNames(client);
 const aliveKnockoutKeys = new Set(
-  aliveKnockoutNames.map(name => normaliseTeamName(name))
+  aliveKnockoutNames.map(name => WC.teams.normalise(name))
 );
 
 const teamsForOdds = aliveKnockoutKeys.size
   ? (teamsData || []).filter(team =>
-      aliveKnockoutKeys.has(normaliseTeamName(team.team))
+      aliveKnockoutKeys.has(WC.teams.normalise(team.team))
     )
   : (teamsData || []);
 
