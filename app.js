@@ -144,10 +144,6 @@ function flag(n) {
   return "";
 }
 
-function owner(n) {
-  return teams.find(x => x.team === n)?.owner || fallbackForTeam(n)?.owner || "";
-}
-
 function applyEmojiFlags() {
   if (window.twemoji) {
     twemoji.parse(document.body, {
@@ -344,7 +340,7 @@ function render() {
 
   const todayGames = fixtures.filter(f => f.date === el("todayDate").value);
   el("feudStat").textContent = todayGames[0]
-    ? `${owner(todayGames[0].team_a)} v ${owner(todayGames[0].team_b)}`
+    ? `${WC.teams.WC.teams.owner(todayGames[0].team_a)} v ${WC.teams.WC.teams.owner(todayGames[0].team_b)}`
     : "-";
 
   el("leaderboard").innerHTML = lb
@@ -447,8 +443,8 @@ function renderToday() {
 
   el("todayMatches").innerHTML = games.length
     ? games.map(f => {
-        const oa = owner(f.team_a);
-        const ob = owner(f.team_b);
+        const oa = WC.teams.WC.teams.owner(f.team_a);
+        const ob = WC.teams.WC.teams.owner(f.team_b);
 
         return `
           <article class="today-card">
@@ -475,7 +471,7 @@ function renderResults() {
             <div>
               <strong>${flag(m.teamA)} ${m.teamA}</strong> v
               <strong>${flag(m.teamB)} ${m.teamB}</strong><br>
-              <span>${m.date} • ${owner(m.teamA)} +${pa}, ${owner(m.teamB)} +${pb}</span>
+              <span>${m.date} • ${WC.teams.WC.teams.owner(m.teamA)} +${pa}, ${WC.teams.WC.teams.owner(m.teamB)} +${pb}</span>
             </div>
             <div class="result-score">${a}-${b}</div>
           </div>
@@ -537,7 +533,7 @@ function renderBanter(lb, totals, todayGames) {
   el("banterEngland").textContent = `${eng.stage || "Group Stage"}, ${eng.total || 0} pts`;
   el("banterTeam").textContent = totals[0] ? `${totals[0].flag} ${totals[0].team}, ${totals[0].total} pts` : "-";
   el("banterFeud").textContent = feud
-    ? `${owner(feud.team_a)} v ${owner(feud.team_b)} - ${banterFor(owner(feud.team_a), owner(feud.team_b), feud.team_a, feud.team_b)}`
+    ? `${WC.teams.WC.teams.owner(feud.team_a)} v ${WC.teams.WC.teams.owner(feud.team_b)} - ${banterFor(WC.teams.WC.teams.owner(feud.team_a), WC.teams.WC.teams.owner(feud.team_b), feud.team_a, feud.team_b)}`
     : "Awaiting today's fixtures";
 }
 
