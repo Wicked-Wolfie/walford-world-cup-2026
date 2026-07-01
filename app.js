@@ -893,6 +893,33 @@ document.addEventListener("DOMContentLoaded", () => {
       return alert("Could not save knockout result.");
     }
 
+      let nextStage = "Round of 16";
+
+if (/^M(89|90|91|92|93|94|95|96)$/.test(payload.match_code)) {
+  nextStage = "Quarter-final";
+}
+
+if (/^M9[7-9]$|^M100$/.test(payload.match_code)) {
+  nextStage = "Semi-final";
+}
+
+if (/^M10[1-2]$/.test(payload.match_code)) {
+  nextStage = "Final";
+}
+
+if (payload.match_code === "M104") {
+  nextStage = "Winner";
+}
+
+const { error: stageError } = await db
+  .from("teams")
+  .update({ stage: nextStage })
+  .eq("team", payload.winner);
+
+if (stageError) {
+  console.error(stageError);
+  return alert("Result saved, but could not update team stage.");
+}
     el("knockoutScoreA").value = "";
     el("knockoutScoreB").value = "";
 
