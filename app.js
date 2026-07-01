@@ -152,7 +152,7 @@ async function loadData() {
     
     if (td?.length) {
   teams = td.map(t => {
-    const fb = WC.teams.fallbackForTeam(t.team, t.flag) || {};
+    const fb = window.WC.teams.fallbackForTeam(t.team, t.flag) || {};
     return {
       id: t.id,
       code: fb.code || t.flag || "",
