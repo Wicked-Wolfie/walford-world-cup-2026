@@ -74,14 +74,15 @@ window.WC.teams = {
 
     owner(team) {
 
-        const t = this.find(team);
+    const t = this.find(team);
 
-            if (t) return t.owner;
+    if (t) return t.owner;
 
-        const fallback = (window.FALLBACK_TEAMS || []).find(x =>
-            this.sameTeam(x.team, team) ||
-            this.sameTeam(x.code, team)
-    );
+    const fallback = this.fallbackForTeam(team);
+
+    return fallback ? fallback.owner : "";
+
+},
 
         return fallback ? fallback.owner : "";
 
