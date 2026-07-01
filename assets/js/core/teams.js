@@ -48,6 +48,19 @@ window.WC.teams = {
         return false;
     },
 
+    fallbackForTeam(team, code) {
+
+    const nameKey = this.normalise(team);
+    const codeKey = String(code || "").toUpperCase();
+
+    return (window.FALLBACK_TEAMS || []).find(t =>
+        this.normalise(t.team) === nameKey ||
+        String(t.code || "").toUpperCase() === codeKey ||
+        this.sameTeam(t.team, team) ||
+        this.sameTeam(t.code, code)
+    );
+
+},
     find(team) {
 
         const teams = window.WC.state.get("teams");
