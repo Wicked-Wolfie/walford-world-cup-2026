@@ -183,6 +183,7 @@ async function loadData() {
       }));
     }
 
+    window.WC.state.set("results", results);
     const { data: fd, error: fe } = await db
       .from("fixtures")
       .select("*")
