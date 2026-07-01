@@ -46,8 +46,18 @@
   try {
     const name = window.WC?.teams?.owner(team) || "";
 
-    if (name) {
-      return name;
+    if (name) return name;
+
+    const clean = String(team || "").trim().toLowerCase();
+
+    const fallback = (window.FALLBACK_TEAMS || []).find(t =>
+      String(t.team || "").trim().toLowerCase() === clean
+    );
+
+    if (fallback && fallback.owner) {
+      return window.WC?.helpers?.ownerName
+        ? window.WC.helpers.ownerName(fallback.owner)
+        : fallback.owner;
     }
 
     return "Owner TBC";
