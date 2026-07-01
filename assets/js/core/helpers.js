@@ -21,6 +21,10 @@ window.WC.helpers = {
   todayISO() {
   return new Date().toISOString().slice(0, 10);
   },
+
+  suffix(n) {
+  return n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th";
+},
   
   sortByDateTime(a, b) {
     const ax = `${a.date || ""} ${a.time || ""}`;
