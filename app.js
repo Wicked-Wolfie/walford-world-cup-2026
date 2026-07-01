@@ -541,7 +541,7 @@ function renderBanter(lb, totals, todayGames) {
 
   el("banterFavourite").textContent = `${lb[0]?.owner || "-"}, ${lb[0]?.total || 0} pts`;
   el("banterFlop").textContent = `${lb[lb.length - 1]?.owner || "-"}, ${lb[lb.length - 1]?.total || 0} pts`;
-  el("banterDavid").textContent = `${dRank}${suffix(dRank)} place, ${(lb[0]?.total || 0) - dPts} behind`;
+  el("banterDavid").textContent = `${dRank}${WC.helpers.suffix(dRank)} place, ${(lb[0]?.total || 0) - dPts} behind`;
   el("banterEngland").textContent = `${eng.stage || "Group Stage"}, ${eng.total || 0} pts`;
   el("banterTeam").textContent = totals[0] ? `${totals[0].flag} ${totals[0].team}, ${totals[0].total} pts` : "-";
   el("banterFeud").textContent = feud
@@ -559,10 +559,6 @@ function renderAdmin() {
     : db
       ? "Sign in to enter scores and fixtures."
       : "Supabase key not set yet.";
-}
-
-function suffix(n) {
-  return n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th";
 }
 
 function banterFor(a, b, ta, tb) {
