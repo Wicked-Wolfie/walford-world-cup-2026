@@ -164,6 +164,8 @@ async function loadData() {
     };
   });
 }
+
+    window.WC.state.set("teams", teams);
     const { data: md, error: me } = await db
       .from("results")
       .select("*")
