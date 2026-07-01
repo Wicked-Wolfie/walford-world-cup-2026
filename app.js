@@ -156,10 +156,6 @@ function owner(n) {
   return teams.find(x => x.team === n)?.owner || fallbackForTeam(n)?.owner || "";
 }
 
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function applyEmojiFlags() {
   if (window.twemoji) {
     twemoji.parse(document.body, {
@@ -338,7 +334,7 @@ function render() {
   fillSelects();
 
   if (el("todayDate") && !el("todayDate").value) {
-    el("todayDate").value = todayISO();
+    el("todayDate").value = WC.helpers.todayISO();
   }
 
   const lb = leaderboardData();
