@@ -35,26 +35,26 @@
   }
 
   function dbFlag(team) {
-    try {
-      return typeof flag === "function" ? flag(team) || "" : "";
-    } catch (e) {
-      return "";
-    }
+  try {
+    return window.WC?.teams?.flag(team) || "";
+  } catch (e) {
+    return "";
   }
+}
 
   function dbOwner(team) {
-    try {
-      const name = typeof owner === "function" ? owner(team) || "" : "";
+  try {
+    const name = window.WC?.teams?.owner(team) || "";
 
-      if (name) {
-        return name;
-      }
-
-      return "Owner TBC";
-    } catch (e) {
-      return "Owner TBC";
+    if (name) {
+      return name;
     }
+
+    return "Owner TBC";
+  } catch (e) {
+    return "Owner TBC";
   }
+}
 
   function dbPossessive(name) {
     const clean = String(name || "").trim();
