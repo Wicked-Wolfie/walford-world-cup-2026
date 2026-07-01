@@ -504,7 +504,7 @@ function renderDraw() {
         <h3>${o}</h3>
         ${teams
           .filter(t => t.owner === o)
-          .map(t => `<span class="pill">${t.flag} ${t.team}</span>`)
+          .map(t => `<span class="pill">${window.WC.teams.flag(t.team)} ${t.team}</span>`)
           .join("")}
       </article>
     `)
