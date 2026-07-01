@@ -52,24 +52,32 @@
 
   function kbOwner(teamName) {
   try {
-    const value = window.WC?.teams?.owner(teamName) || "";
+    const team = String(teamName || "").trim();
 
-    if (value) {
+    if (!team) return "";
+
+    const coreOwner = window.WC?.teams?.owner(team) || "";
+    if (coreOwner) {
       return window.WC?.helpers?.ownerName
-        ? window.WC.helpers.ownerName(value)
-        : value;
+        ? window.WC.helpers.ownerName(coreOwner)
+        : coreOwner;
     }
 
-    const clean = String(teamName || "").trim().toLowerCase();
+    const allTeams = [
+      ...(window.WC?.state?.get ? window.WC.state.get("teams") : []),
+      ...(window.FALLBACK_TEAMS || [])
+    ];
 
-    const fallback = (window.FALLBACK_TEAMS || []).find(t =>
-      String(t.team || "").trim().toLowerCase() === clean
+    const found = allTeams.find(t =>
+      window.WC?.teams?.sameTeam
+        ? window.WC.teams.sameTeam(t.team, team) || window.WC.teams.sameTeam(t.code, team)
+        : String(t.team || "").trim().toLowerCase() === team.toLowerCase()
     );
 
-    if (fallback && fallback.owner) {
+    if (found && found.owner) {
       return window.WC?.helpers?.ownerName
-        ? window.WC.helpers.ownerName(fallback.owner)
-        : fallback.owner;
+        ? window.WC.helpers.ownerName(found.owner)
+        : found.owner;
     }
 
     return "";
@@ -77,7 +85,7 @@
     return "";
   }
 }
-
+  
   function kbRoundName(value) {
     return String(value || "Knockout")
       .replace("Quarter-final", "Quarter-final")
