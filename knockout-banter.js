@@ -51,17 +51,32 @@
   }
 
   function kbOwner(teamName) {
-    try {
-      if (typeof owner === "function") {
-        const value = owner(teamName) || "";
-        if (value === "Debbie") return "Dubs";
-        if (value === "Charlotte") return "Lottie";
-        return value;
-      }
-    } catch (e) {}
+  try {
+    const value = window.WC?.teams?.owner(teamName) || "";
+
+    if (value) {
+      return window.WC?.helpers?.ownerName
+        ? window.WC.helpers.ownerName(value)
+        : value;
+    }
+
+    const clean = String(teamName || "").trim().toLowerCase();
+
+    const fallback = (window.FALLBACK_TEAMS || []).find(t =>
+      String(t.team || "").trim().toLowerCase() === clean
+    );
+
+    if (fallback && fallback.owner) {
+      return window.WC?.helpers?.ownerName
+        ? window.WC.helpers.ownerName(fallback.owner)
+        : fallback.owner;
+    }
 
     return "";
+  } catch (e) {
+    return "";
   }
+}
 
   function kbRoundName(value) {
     return String(value || "Knockout")
