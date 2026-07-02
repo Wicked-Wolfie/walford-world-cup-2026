@@ -111,28 +111,8 @@ const WALFORD_FLAG_CODES = {
 };
 
 function flag(n) {
-  const teamName = String(n || "").trim();
-  const code = WALFORD_FLAG_CODES[teamName];
-
-  if (code === "ENGLAND") return ENGLAND_FLAG;
-  if (code === "SCOTLAND") return SCOTLAND_FLAG;
-  if (code) return makeEmojiFlag(code);
-
-  const fallback = WC.teams.fallbackForTeam(teamName);
-  const fallbackCode = fallback?.code;
-
-  if (fallbackCode === "GB-ENG") return ENGLAND_FLAG;
-  if (fallbackCode === "GB-SCT") return SCOTLAND_FLAG;
-  if (fallbackCode && /^[A-Z]{2}$/.test(fallbackCode)) return makeEmojiFlag(fallbackCode);
-
-  const storedFlag = teams.find(x => x.team === teamName)?.flag || fallback?.flag || "";
-
-  if (storedFlag && storedFlag !== "🏴" && !/^[A-Z]{2,3}$/.test(storedFlag)) {
-    return storedFlag;
-  }
-
-  return "";
-}
+  return window.WC?.teams?.flag(n) || "";
+}}
 
 function applyEmojiFlags() {
   if (window.twemoji) {
