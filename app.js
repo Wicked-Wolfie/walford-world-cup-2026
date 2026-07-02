@@ -258,9 +258,9 @@ function render() {
       </div>
     `)
     .join("");
-
+      WC.features.setGroupStatsFn(groupStats);
   WC.features.renderToday(fixtures);
-  renderGroups(gs);
+  WC.features.renderGroups(gs);
   WC.features.renderOverall(gs);
   WC.features.renderResults();
   WC.features.renderTeams(teamTotals);
