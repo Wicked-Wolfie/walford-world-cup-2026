@@ -1,7 +1,7 @@
 // Walford V5.8.13 Knockout Phase
 // Replaces knockout-auto.js only.
 // Reads Round of 32 teams/results from Supabase knockout_results.
-// Uses global walfordFlag() from flag-fix.js where available.
+// Uses WC.teams.flag() from the V6 Team Engine.
 
 const WALFORD_KNOCKOUT = {
   r32: [
