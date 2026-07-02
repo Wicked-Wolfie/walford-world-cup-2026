@@ -282,7 +282,7 @@ function leaderboardData() {
 
 function fillSelects() {
   const opts = teams
-    .map(t => `<option value="${t.team}">${t.flag} ${t.team}</option>`)
+    .map(t => `<option value="${t.team}">${WC.teams.flag(t.team)} ${t.team}</option>`)
     .join("");
 
   ["teamA", "teamB", "fixtureTeamA", "fixtureTeamB", "knockoutTeamA", "knockoutTeamB"].forEach(id => {
