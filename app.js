@@ -309,7 +309,7 @@ function render() {
   el("currentLeaderPoints").textContent = (lb[0]?.total || 0) + " pts";
   el("leaderStat").textContent = `${lb[0]?.owner || "-"} (${lb[0]?.total || 0})`;
   el("matchStat").textContent = results.length;
-  el("nationStat").textContent = top.team ? `${top.flag} ${top.team} (${top.total})` : "-";
+  el("nationStat").innerHTML = top.team ? `${WC.teams.flag(top.team)} ${top.team} (${top.total})` : "-";
 
   const todayGames = fixtures.filter(f => f.date === el("todayDate").value);
   el("feudStat").textContent = todayGames[0]
