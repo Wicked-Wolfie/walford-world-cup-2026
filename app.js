@@ -112,7 +112,7 @@ const WALFORD_FLAG_CODES = {
 
 function flag(n) {
   return window.WC?.teams?.flag(n) || "";
-}}
+}
 
 function applyEmojiFlags() {
   if (window.twemoji) {
