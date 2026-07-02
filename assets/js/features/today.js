@@ -1,5 +1,6 @@
-function renderToday(fixtures) {
-  const games = fixtures.filter(f => f.date === el("todayDate").value);
+function renderToday(fixturesArg) {
+  const fixtureList = fixturesArg || window.FALLBACK_FIXTURES || [];
+  const games = fixtureList.filter(f => f.date === el("todayDate").value);
 
   el("todayMatches").innerHTML = games.length
     ? games.map(f => {
