@@ -19,7 +19,7 @@ WC.render = {
   teamName(team) {
     const found = WC.teams.find(team);
     if (!found) return WC.dom.esc(team);
-    return `${WC.dom.esc(found.flag || "")} ${WC.dom.esc(found.team || team)}`;
+    return `${WC.teams.flag(found.team || team)} ${WC.dom.esc(found.team || team)}`;
   },
 
   owner(team) {
