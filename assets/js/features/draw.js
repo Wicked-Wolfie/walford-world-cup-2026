@@ -11,3 +11,6 @@ function renderDraw() {
     `)
     .join("");
 }
+window.WC = window.WC || {};
+window.WC.features = window.WC.features || {};
+window.WC.features.renderDraw = renderDraw;
