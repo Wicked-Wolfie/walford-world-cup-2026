@@ -365,7 +365,7 @@ function tableMarkup(rows) {
     </div>
   ` + rows.map(s => `
     <div class="table-row">
-      <div>${s.flag} <strong>${s.team}</strong></div>
+      <div>${WC.teams.flag(s.team)} <strong>${s.team}</strong></div>
       <div>${s.owner}</div>
       <div>${s.P}</div>
       <div>${s.W}</div>
@@ -469,7 +469,7 @@ function renderTeams() {
     .filter(t => (t.team + t.owner + t.group).toLowerCase().includes(q))
     .map(t => `
       <div class="table-row">
-        <div>${t.flag} <strong>${t.team}</strong></div>
+        <div>${WC.teams.flag(t.team)} <strong>${t.team}</strong></div>
         <div>${t.owner}</div>
         <div>${t.match}</div>
         <div>${t.bonus}</div>
