@@ -264,7 +264,7 @@ function render() {
   renderOverall(gs);
   renderResults();
   renderTeams();
-  renderDraw();
+  WC.features.renderDraw();
   WC.features.renderBanter(lb, totals, todayGames);
   renderAdmin();
   applyEmojiFlags();
@@ -401,19 +401,6 @@ function renderTeams() {
     .join("");
 }
 
-function renderDraw() {
-  el("drawGrid").innerHTML = OWNERS
-    .map(o => `
-      <article class="draw-card">
-        <h3>${o}</h3>
-        ${teams
-          .filter(t => t.owner === o)
-          .map(t => `<span class="pill">${window.WC.teams.flag(t.team)} ${t.team}</span>`)
-          .join("")}
-      </article>
-    `)
-    .join("");
-}
 
 function renderAdmin() {
   el("loginForm").classList.toggle("hidden", !!session);
