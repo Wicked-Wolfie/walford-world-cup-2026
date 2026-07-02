@@ -97,14 +97,25 @@ window.WC.teams = {
 
     flag(team) {
 
-    const t = this.find(team);
+    const name = String(team || "").trim();
 
-    if (t) return t.flag;
+    if (this.sameTeam(name, "England")) {
+        return '<img class="team-flag-img" src="https://flagcdn.com/24x18/gb-eng.png" alt="England">';
+    }
 
-    const fallback = this.fallbackForTeam(team);
+    if (this.sameTeam(name, "Scotland")) {
+        return '<img class="team-flag-img" src="https://flagcdn.com/24x18/gb-sct.png" alt="Scotland">';
+    }
 
-    return fallback ? fallback.flag : "";
+    const t = this.find(name);
 
+    if (t && t.flag && t.flag !== "🏴") return t.flag;
+
+    const fallback = this.fallbackForTeam(name);
+
+    if (fallback && fallback.flag && fallback.flag !== "🏴") return fallback.flag;
+
+    return "";
 }
 
 };
