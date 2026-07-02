@@ -96,6 +96,7 @@ const wkMatchSchedule = {
 function wkInitDb() {
   if (wkDb) return wkDb;
 
+  
   if (
     window.supabase &&
     typeof SUPABASE_URL === "string" &&
