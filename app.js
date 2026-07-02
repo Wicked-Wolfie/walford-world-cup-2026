@@ -530,7 +530,8 @@ const allOddsRows = teamsForOdds.map(team => {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  el("adminToggle").onclick = () => {
+  el("adminToggle").onclick = (e) => {
+    e.preventDefault();
     el("adminPanel").classList.remove("hidden");
     el("match-centre").scrollIntoView({
       behavior: "smooth",
