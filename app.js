@@ -524,7 +524,7 @@ function renderBanter(lb, totals, todayGames) {
   el("banterFlop").textContent = `${lb[lb.length - 1]?.owner || "-"}, ${lb[lb.length - 1]?.total || 0} pts`;
   el("banterDavid").textContent = `${dRank}${WC.helpers.suffix(dRank)} place, ${(lb[0]?.total || 0) - dPts} behind`;
   el("banterEngland").textContent = `${eng.stage || "Group Stage"}, ${eng.total || 0} pts`;
-  el("banterTeam").textContent = totals[0] ? `${totals[0].flag} ${totals[0].team}, ${totals[0].total} pts` : "-";
+  el("banterTeam").innerHTML = totals[0] ? `${window.WC.teams.flag(totals[0].team)} ${totals[0].team}, ${totals[0].total} pts` : "-";
   el("banterFeud").textContent = feud
     ? `${WC.teams.owner(feud.team_a)} v ${WC.teams.owner(feud.team_b)} - ${banterFor(WC.teams.owner(feud.team_a), WC.teams.owner(feud.team_b), feud.team_a, feud.team_b)}`
     : "Awaiting today's fixtures";
