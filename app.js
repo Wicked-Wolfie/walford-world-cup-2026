@@ -259,10 +259,10 @@ function render() {
     `)
     .join("");
 
-  renderToday();
+  WC.features.renderToday(fixtures);
   renderGroups(gs);
   renderOverall(gs);
-  renderResults();
+  WC.features.renderResults();
   renderTeams();
   WC.features.renderDraw();
   WC.features.renderBanter(lb, totals, todayGames);
@@ -332,47 +332,9 @@ function renderOverall(gs) {
   );
 }
 
-function renderToday() {
-  const games = fixtures.filter(f => f.date === el("todayDate").value);
 
-  el("todayMatches").innerHTML = games.length
-    ? games.map(f => {
-        const oa = WC.teams.owner(f.team_a);
-        const ob = WC.teams.owner(f.team_b);
 
-        return `
-          <article class="today-card">
-            <div class="today-time">${f.time || "TBC"} GMT</div>
-            <h3>${window.WC.teams.flag(f.team_a)} ${f.team_a} v ${window.WC.teams.flag(f.team_b)} ${f.team_b}</h3>
-            <div class="owners-line">${oa} v ${ob}</div>
-            <p class="banter-copy">“${WC.features.banterFor(oa, ob, f.team_a, f.team_b)}”</p>
-          </article>
-        `;
-      }).join("")
-    : "<p>No fixtures loaded for this date yet.</p>";
-}
 
-function renderResults() {
-  el("resultsList").innerHTML = results.length
-    ? results.slice().reverse().map(m => {
-        const a = Number(m.scoreA);
-        const b = Number(m.scoreB);
-        const pa = a > b ? 3 : a === b ? 1 : 0;
-        const pb = b > a ? 3 : a === b ? 1 : 0;
-
-        return `
-          <div class="result-item">
-            <div>
-              <strong>${window.WC.teams.flag(m.teamA)} ${m.teamA}</strong> v
-              <strong>${window.WC.teams.flag(m.teamB)} ${m.teamB}</strong><br>
-              <span>${m.date} • ${WC.teams.owner(m.teamA)} +${pa}, ${WC.teams.owner(m.teamB)} +${pb}</span>
-            </div>
-            <div class="result-score">${a}-${b}</div>
-          </div>
-        `;
-      }).join("")
-    : "<p>No results yet.</p>";
-}
 
 function renderTeams() {
   const q = (el("teamSearch").value || "").toLowerCase();
