@@ -263,7 +263,7 @@ function render() {
   renderGroups(gs);
   renderOverall(gs);
   WC.features.renderResults();
-  renderTeams();
+  WC.features.renderTeams(teamTotals);
   WC.features.renderDraw();
   WC.features.renderBanter(lb, totals, todayGames);
   renderAdmin();
@@ -336,32 +336,7 @@ function renderOverall(gs) {
 
 
 
-function renderTeams() {
-  const q = (el("teamSearch").value || "").toLowerCase();
 
-  el("teamTable").innerHTML = `
-    <div class="table-row table-head">
-      <div>Team</div>
-      <div>Owner</div>
-      <div>Match</div>
-      <div>Bonus</div>
-      <div>Total</div>
-      <div>Stage</div>
-    </div>
-  ` + teamTotals()
-    .filter(t => (t.team + t.owner + t.group).toLowerCase().includes(q))
-    .map(t => `
-      <div class="table-row">
-        <div>${WC.teams.flag(t.team)} <strong>${t.team}</strong></div>
-        <div>${t.owner}</div>
-        <div>${t.match}</div>
-        <div>${t.bonus}</div>
-        <div class="total">${t.total}</div>
-        <div>${t.stage}</div>
-      </div>
-    `)
-    .join("");
-}
 
 
 function renderAdmin() {
@@ -597,10 +572,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  el("teamSearch").oninput = renderTeams;
+  el("teamSearch").oninput = () => WC.features.renderTeams(teamTotals);
   el("groupSearch").oninput = () => renderOverall(groupStats());
   el("todayDate").onchange = render;
-  el("showTodayBtn").onclick = renderToday;
+  el("showTodayBtn").onclick = () => WC.features.renderToday(fixtures);
 
   el("loginForm").onsubmit = async e => {
     e.preventDefault();
