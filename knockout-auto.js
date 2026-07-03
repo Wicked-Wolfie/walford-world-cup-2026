@@ -127,12 +127,10 @@ function wkCleanTeamName(label) {
 
 function wkFlag(teamName) {
   try {
-    if (typeof flag === "function") {
-      return flag(teamName) || "";
-    }
-  } catch (e) {}
-
-  return "";
+    return window.WC?.teams?.flag(teamName) || "";
+  } catch (_) {
+    return "";
+  }
 }
 
 function wkOwner(teamName) {
