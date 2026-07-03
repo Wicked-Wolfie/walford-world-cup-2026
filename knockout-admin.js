@@ -42,10 +42,11 @@ return String(value || "")
 }
 
 function kaFlag(teamName) {
-try {
-if (typeof flag === "function") return flag(teamName) || "";
-} catch (e) {}
-return "";
+  try {
+    return window.WC?.teams?.flag(teamName) || "";
+  } catch (_) {
+    return "";
+  }
 }
 
 function kaOwner(teamName) {
