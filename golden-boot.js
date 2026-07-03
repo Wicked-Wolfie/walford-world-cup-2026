@@ -403,28 +403,25 @@ return String.fromCodePoint(
 }
 
 function gbFlag(teamName) {
-try {
-if (typeof flag === "function") {
-const mainFlag = flag(teamName) || "";
+  try {
+    const mainFlag = window.WC?.teams?.flag(teamName) || "";
 
-  if (mainFlag && !/^[A-Z]{2,3}$/.test(mainFlag)) {
-    return mainFlag;
-  }
+    if (mainFlag && !/^[A-Z]{2,3}$/.test(mainFlag)) {
+      return mainFlag;
+    }
 
-  if (/^[A-Z]{2}$/.test(mainFlag)) {
-    return gbEmojiFlag(mainFlag);
-  }
-}
+    if (/^[A-Z]{2}$/.test(mainFlag)) {
+      return gbEmojiFlag(mainFlag);
+    }
+  } catch (e) {}
 
-} catch (e) {}
+  const row = gbFindTeamRow(teamName);
+  const code = gbTeamCodeFromRow(row) || gbTeamFlagFromRow(row);
 
-const row = gbFindTeamRow(teamName);
-const code = gbTeamCodeFromRow(row) || gbTeamFlagFromRow(row);
+  if (gbCanonTeam(teamName) === "england") return gbEmojiFlag("GB-ENG");
+  if (gbCanonTeam(teamName) === "scotland") return gbEmojiFlag("GB-SCT");
 
-if (gbCanonTeam(teamName) === "england") return gbEmojiFlag("GB-ENG");
-if (gbCanonTeam(teamName) === "scotland") return gbEmojiFlag("GB-SCT");
-
-return gbEmojiFlag(code) || "";
+  return gbEmojiFlag(code) || "";
 }
 
   function gbOwner(teamName) {
