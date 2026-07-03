@@ -50,12 +50,12 @@
   }   
 
   function hOwner(team) {
-    try {
-      return typeof owner === "function" ? owner(team) || "" : "";
-    } catch (e) {
-      return "";
-    }
+  try {
+    return window.WC?.teams?.owner(team) || "";
+  } catch (_) {
+    return "";
   }
+}
 
   function hClean(label) {
     return String(label || "")
