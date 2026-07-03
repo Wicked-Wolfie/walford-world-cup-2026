@@ -42,12 +42,14 @@
   }
 
   function shOwner(team) {
-    try {
-      if (typeof owner === "function") return owner(team) || "";
-    } catch (e) {}
-    const row = shFallbackTeams().find(t => t.team === team);
-    return row ? row.owner || "" : "";
-  }
+  try {
+    const v6Owner = window.WC?.teams?.owner(team);
+    if (v6Owner) return v6Owner;
+  } catch (e) {}
+
+  const row = shFallbackTeams().find(t => t.team === team);
+  return row ? row.owner || "" : "";
+}
 
   function shEmojiFlag(code) {
   const clean = String(code || "").toUpperCase().trim();
