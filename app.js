@@ -660,18 +660,16 @@ if (payload.match_code === "M104") {
 
 const winnerName = String(payload.winner || "").trim();
 
-function cleanTeamName(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/&/g, "and")
-    .replace(/[^a-zA-Z0-9 ]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
-}
+const cleanWinner = winnerName
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/&/g, "and")
+  .replace(/[^a-zA-Z0-9 ]/g, " ")
+  .replace(/\s+/g, " ")
+  .trim()
+  .toLowerCase();
 
-const TEAM_ALIASES = {
+const winnerAlias = {
   "usa": "united states",
   "u s a": "united states",
   "united states of america": "united states",
@@ -682,17 +680,32 @@ const TEAM_ALIASES = {
   "cabo verde": "cabo verde",
   "turkey": "turkiye",
   "türkiye": "turkiye"
-};
-
-function teamKey(value) {
-  const key = cleanTeamName(value);
-  return TEAM_ALIASES[key] || key;
-}
-
-const winnerKey = teamKey(winnerName);
+}[cleanWinner] || cleanWinner;
 
 const winnerRow = teams.find(t => {
-  return teamKey(t.team) === winnerKey;
+  const cleanTeam = String(t.team || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, "and")
+    .replace(/[^a-zA-Z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+
+  const teamAlias = {
+    "usa": "united states",
+    "u s a": "united states",
+    "united states of america": "united states",
+    "ivory coast": "cote d ivoire",
+    "cote d ivoire": "cote d ivoire",
+    "côte d ivoire": "cote d ivoire",
+    "cape verde": "cabo verde",
+    "cabo verde": "cabo verde",
+    "turkey": "turkiye",
+    "türkiye": "turkiye"
+  }[cleanTeam] || cleanTeam;
+
+  return teamAlias === winnerAlias;
 });
 
 const stageTeamName = winnerRow ? winnerRow.team : winnerName;
