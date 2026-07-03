@@ -49,10 +49,7 @@ return "";
 }
 
 function kaOwner(teamName) {
-try {
-if (typeof owner === "function") return owner(teamName) || "";
-} catch (e) {}
-return "";
+  return window.WC?.teams?.owner(teamName) || "";
 }
 
 function kaCompleted(row) {
