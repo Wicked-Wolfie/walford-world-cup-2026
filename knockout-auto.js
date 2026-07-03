@@ -151,7 +151,7 @@ function wkOwner(teamName) {
     if (found && found.owner) return found.owner;
   } catch (e) {}
 
-  return "";
+  return ""; 
 }
 
 function wkSlotLabel(slot) {
