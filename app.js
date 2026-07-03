@@ -657,10 +657,50 @@ if (payload.match_code === "M104") {
   nextStage = "Winner";
 }
 
+
+const winnerName = String(payload.winner || "").trim();
+
+function cleanTeamName(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, "and")
+    .replace(/[^a-zA-Z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+const TEAM_ALIASES = {
+  "usa": "united states",
+  "u s a": "united states",
+  "united states of america": "united states",
+  "ivory coast": "cote d ivoire",
+  "cote d ivoire": "cote d ivoire",
+  "côte d ivoire": "cote d ivoire",
+  "cape verde": "cabo verde",
+  "cabo verde": "cabo verde",
+  "turkey": "turkiye",
+  "türkiye": "turkiye"
+};
+
+function teamKey(value) {
+  const key = cleanTeamName(value);
+  return TEAM_ALIASES[key] || key;
+}
+
+const winnerKey = teamKey(winnerName);
+
+const winnerRow = teams.find(t => {
+  return teamKey(t.team) === winnerKey;
+});
+
+const stageTeamName = winnerRow ? winnerRow.team : winnerName;
+
 const { error: stageError } = await db
   .from("teams")
   .update({ stage: nextStage })
-  .eq("team", payload.winner);
+  .eq("team", stageTeamName);
 
 if (stageError) {
   console.error(stageError);
