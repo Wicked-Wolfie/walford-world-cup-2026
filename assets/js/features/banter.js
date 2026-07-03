@@ -2,7 +2,7 @@ function renderBanter(lb, totals, todayGames) {
   const dRank = lb.findIndex(x => x.owner === "David") + 1;
   const dPts = lb.find(x => x.owner === "David")?.total || 0;
   const eng = totals.find(t => t.team === "England") || {};
-  const feud = todayGames[0];
+  const feud = todayGames[0] || knockoutFeudToday();
 
   el("banterFavourite").textContent = `${lb[0]?.owner || "-"}, ${lb[0]?.total || 0} pts`;
   el("banterFlop").textContent = `${lb[lb.length - 1]?.owner || "-"}, ${lb[lb.length - 1]?.total || 0} pts`;
@@ -13,6 +13,32 @@ function renderBanter(lb, totals, todayGames) {
   el("banterFeud").textContent = feud
     ? `${WC.teams.owner(feud.team_a)} v ${WC.teams.owner(feud.team_b)} - ${WC.features.banterFor(WC.teams.owner(feud.team_a), WC.teams.owner(feud.team_b), feud.team_a, feud.team_b)}`
     : "Awaiting today's fixtures";
+}
+
+function knockoutFeudToday() {
+  const today = el("todayDate")?.value || WC.helpers.todayISO();
+
+  const games = {
+    "2026-07-03": [
+      { team_a: "Australia", team_b: "Egypt" },
+      { team_a: "Argentina", team_b: "Cape Verde" }
+    ],
+    "2026-07-04": [
+      { team_a: "Colombia", team_b: "Ghana" },
+      { team_a: "Canada", team_b: "Morocco" },
+      { team_a: "Paraguay", team_b: "France" }
+    ],
+    "2026-07-05": [
+      { team_a: "Brazil", team_b: "Norway" }
+    ],
+    "2026-07-06": [
+      { team_a: "Mexico", team_b: "England" },
+      { team_a: "Portugal", team_b: "Spain" },
+      { team_a: "United States", team_b: "Belgium" }
+    ]
+  };
+
+  return games[today]?.[0] || null;
 }
 
 function banterFor(a, b, ta, tb) {
