@@ -10,10 +10,16 @@ function renderBanter(lb, totals, todayGames) {
   el("banterEngland").innerHTML =
   `${window.WC.teams.flag("England")} ${eng.stage || "Group Stage"}, ${eng.total || 0} pts`;
   el("banterTeam").innerHTML = totals[0] ? `${window.WC.teams.flag(totals[0].team)} ${totals[0].team}, ${totals[0].total} pts` : "-";
-  el("banterFeud").textContent = feud
-    ? `${WC.teams.owner(feud.team_a)} v ${WC.teams.owner(feud.team_b)} - ${WC.features.banterFor(WC.teams.owner(feud.team_a), WC.teams.owner(feud.team_b), feud.team_a, feud.team_b)}`
-    : "Awaiting today's fixtures";
+  if (feud) {
+  const ownerA = WC.teams.owner(feud.team_a);
+  const ownerB = WC.teams.owner(feud.team_b);
+
+  el("banterFeud").textContent =
+    `${ownerA} v ${ownerB} - ${WC.features.banterFor(ownerA, ownerB, feud.team_a, feud.team_b)}`;
+    } else {
+  el("banterFeud").textContent = "Awaiting today's fixtures";
 }
+};
 
 function knockoutFeudToday() {
   const today = el("todayDate")?.value || WC.helpers.todayISO();
