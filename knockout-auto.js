@@ -136,22 +136,7 @@ function wkFlag(teamName) {
 }
 
 function wkOwner(teamName) {
-  try {
-    if (typeof owner === "function") return owner(teamName) || "";
-  } catch (e) {}
-
-  try {
-    const cleanName = wkCleanTeamName(teamName);
-    const teams = window.FALLBACK_TEAMS || window.teams || window.TEAMS || [];
-    const found = teams.find(t =>
-      wkCleanTeamName(t.team) === cleanName ||
-      wkCleanTeamName(t.name) === cleanName
-    );
-
-    if (found && found.owner) return found.owner;
-  } catch (e) {}
-
-  return ""; 
+  return window.WC?.teams?.owner(teamName) || "";
 }
 
 function wkSlotLabel(slot) {
