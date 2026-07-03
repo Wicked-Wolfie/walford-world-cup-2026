@@ -40,27 +40,28 @@
   }
 
   function reFlag(teamName) {
-    try {
-      if (typeof flag === "function") return flag(teamName) || "";
-    } catch (e) {}
+  try {
+    const v6Flag = window.WC?.teams?.flag(teamName);
+    if (v6Flag) return v6Flag;
+  } catch (e) {}
 
-    const lists = [
-      typeof teams !== "undefined" ? teams : null,
-      window.teams,
-      typeof allocations !== "undefined" ? allocations : null,
-      window.allocations,
-      typeof TEAMS !== "undefined" ? TEAMS : null,
-      window.TEAMS
-    ];
+  const lists = [
+    typeof teams !== "undefined" ? teams : null,
+    window.teams,
+    typeof allocations !== "undefined" ? allocations : null,
+    window.allocations,
+    typeof TEAMS !== "undefined" ? TEAMS : null,
+    window.TEAMS
+  ];
 
-    for (const list of lists) {
-      if (!Array.isArray(list)) continue;
-      const row = list.find(t => t.team === teamName || t.name === teamName || t.country === teamName);
-      if (row) return row.flag || row.emoji || "";
-    }
-
-    return "";
+  for (const list of lists) {
+    if (!Array.isArray(list)) continue;
+    const row = list.find(t => t.team === teamName || t.name === teamName || t.country === teamName);
+    if (row) return row.flag || row.emoji || "";
   }
+
+  return "";
+}}
 
   async function reLoad() {
     const db = reClient();
