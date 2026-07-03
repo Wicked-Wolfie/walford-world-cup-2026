@@ -179,9 +179,9 @@
               <div>
                 <strong>${reEsc(reDateLabel(row.match_date))}</strong>
                 <span>
-                 ${reEsc(reFlag(row.team_a))} ${reEsc(row.team_a)}
+                 ${reFlag(row.team_a)} ${reEsc(row.team_a)}
                  ${Number(row.score_a || 0)}-${Number(row.score_b || 0)}
-                 ${reEsc(reFlag(row.team_b))} ${reEsc(row.team_b)}
+                 ${reFlag(row.team_b)} ${reEsc(row.team_b)}
                   · OG: ${Number(row.own_goals || 0)}
                 </span>
               </div>
