@@ -43,11 +43,11 @@
 
   function hFlag(team) {
     try {
-      return typeof flag === "function" ? flag(team) || "" : "";
-    } catch (e) {
+      return window.WC?.teams?.flag(team) || "";
+    } catch (_) {
       return "";
-    }
-  }
+   }
+  }   
 
   function hOwner(team) {
     try {
