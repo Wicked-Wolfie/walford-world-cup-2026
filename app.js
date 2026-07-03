@@ -560,6 +560,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await loadTeamOdds();
   };
 
+  
   el("logoutBtn").onclick = async () => {
     if (db) await db.auth.signOut();
 
