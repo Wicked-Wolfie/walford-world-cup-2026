@@ -565,8 +565,12 @@ async function wkSaveResult(event) {
   document.getElementById("wkScoreA").value = "";
   document.getElementById("wkScoreB").value = "";
 
-  await wkLoadResults();
+    await wkLoadResults();
   wkRenderBracket();
+
+  if (typeof window.kbStart === "function") {
+    window.kbStart();
+  }
 }
 
 async function wkStart() {
