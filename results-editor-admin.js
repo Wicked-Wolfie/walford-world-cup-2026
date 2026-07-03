@@ -61,7 +61,7 @@
   }
 
   return "";
-}}
+}
 
   async function reLoad() {
     const db = reClient();
