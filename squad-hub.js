@@ -71,16 +71,14 @@
 
 function shFlag(team) {
   try {
-    if (typeof flag === "function") {
-      const mainFlag = flag(team) || "";
+    const mainFlag = window.WC?.teams?.flag(team) || "";
 
-      if (mainFlag && !/^[A-Z]{2,3}$/.test(mainFlag)) {
-        return mainFlag;
-      }
+    if (mainFlag && !/^[A-Z]{2,3}$/.test(mainFlag)) {
+      return mainFlag;
+    }
 
-      if (/^[A-Z]{2}$/.test(mainFlag)) {
-        return shEmojiFlag(mainFlag);
-      }
+    if (/^[A-Z]{2}$/.test(mainFlag)) {
+      return shEmojiFlag(mainFlag);
     }
   } catch (e) {}
 
