@@ -513,13 +513,29 @@ if (playerResultA.error || playerResultB.error) {
     const pens_a = pensAValue === "" ? null : Number(pensAValue);
     const pens_b = pensBValue === "" ? null : Number(pensBValue);
     const own_goals = Number(document.getElementById("msOwnGoals").value || 0);
-    const scorers = msCollectedScorers();
+    const rawScorers = msCollectedScorers();
+    const scorerMap = new Map();
 
-    if (!match_date || !team_a || !team_b || team_a === team_b) {
-      status.textContent = "";
-      return alert("Choose a date and two different teams.");
-    }
+rawScorers.forEach(s => {
+  const key = [
+    String(match_code || "").trim().toLowerCase(),
+    msCanonTeam(s.team),
+    String(s.player || "").trim().toLowerCase()
+  ].join("|");
 
+  if (!scorerMap.has(key)) {
+    scorerMap.set(key, { ...s });
+  } else {
+    const existing = scorerMap.get(key);
+    existing.goals += s.goals;
+  }
+});
+
+const scorers = Array.from(scorerMap.values());
+if (!match_date || !team_a || !team_b || team_a === team_b) {
+  status.textContent = "";
+  return alert("Choose a date and two different teams.");
+}
     if (
   !Number.isInteger(score_a) ||
   !Number.isInteger(score_b) ||
@@ -703,24 +719,7 @@ if (!resultError && winner) {
   }
 }
 
-    if (scorers.length) {
-      const payload = scorers.map(s => ({
-        match_date,
-        match_code,
-        team: s.team,
-        player: s.player,
-        goals: s.goals
-      }));
-
-      const scorerInsert = await db.from("goal_scorers").insert(payload);
-      if (scorerInsert.error) {
-        console.error(scorerInsert.error);
-        status.textContent = "";
-        return alert("Result saved, but scorer entries failed. Check the Golden Boot table/policies.");
-      }
-    }
-
-    status.textContent = "Saved result and scorers.";
+        status.textContent = "Saved result and scorers.";
     setTimeout(() => location.reload(), 900);
   }
 
