@@ -1,20 +1,28 @@
 "use strict";
 
-// Hide admin-only tools from normal public viewing.
-// Admin tools should only appear when signed in or when viewing the admin dashboard.
+// Walford V6 - Hide admin tools on public page
 
 (function () {
-  function isAdminHash() {
+  function adminAllowed() {
     return String(window.location.hash || "").toLowerCase().includes("admin");
   }
 
-  function hideAdminPublicSections() {
-    const signedIn =
-      !!document.querySelector("#logoutBtn:not(.hidden)") ||
-      !!document.querySelector(".admin:not(.hidden)") ||
-      !!document.body.classList.contains("admin-mode");
+  function forceHide(el) {
+    if (!el) return;
+    el.classList.add("hidden");
+    el.setAttribute("aria-hidden", "true");
+    el.style.setProperty("display", "none", "important");
+  }
 
-    const allowAdmin = signedIn || isAdminHash();
+  function forceShow(el) {
+    if (!el) return;
+    el.classList.remove("hidden");
+    el.removeAttribute("aria-hidden");
+    el.style.removeProperty("display");
+  }
+
+  function hideAdminTools() {
+    const allowAdmin = adminAllowed();
 
     const adminSelectors = [
       "#match-scorers-admin",
@@ -25,43 +33,57 @@
       "#knockoutResultForm",
       "#fixtureForm",
       "#loginForm",
-      "#logoutBtn"
+      "#logoutBtn",
+      ".admin-dashboard",
+      ".admin-panel",
+      ".admin",
+      ".match-scorers-admin",
+      ".results-editor-admin"
     ];
 
     adminSelectors.forEach(selector => {
       document.querySelectorAll(selector).forEach(el => {
-        if (!allowAdmin) {
-          el.classList.add("hidden");
-          el.style.display = "none";
+        if (allowAdmin) {
+          forceShow(el);
         } else {
-          el.style.display = "";
+          forceHide(el);
         }
       });
     });
 
-    document.querySelectorAll("section").forEach(section => {
-      const text = (section.textContent || "").toLowerCase();
+    document.querySelectorAll("section, div.panel, form").forEach(el => {
+      const text = String(el.textContent || "").toLowerCase();
 
       const looksAdmin =
         text.includes("admin shortcut") ||
-        text.includes("admin result editor") ||
         text.includes("match result + scorers") ||
         text.includes("save result + scorers") ||
+        text.includes("admin result editor") ||
+        text.includes("save result") ||
+        text.includes("save fixture") ||
         text.includes("sign in using the main admin button");
 
-      if (looksAdmin && !allowAdmin) {
-        section.classList.add("hidden");
-        section.style.display = "none";
+      if (looksAdmin) {
+        if (allowAdmin) {
+          forceShow(el);
+        } else {
+          forceHide(el);
+        }
       }
     });
   }
 
-  function runOften() {
-    [500, 1500, 3000, 5000, 8000].forEach(ms => {
-      setTimeout(hideAdminPublicSections, ms);
+  function runRepeatedly() {
+    hideAdminTools();
+
+    [250, 750, 1500, 3000, 5000, 8000, 12000].forEach(ms => {
+      setTimeout(hideAdminTools, ms);
     });
   }
 
-  document.addEventListener("DOMContentLoaded", runOften);
-  window.addEventListener("hashchange", runOften);
+  document.addEventListener("DOMContentLoaded", runRepeatedly);
+  window.addEventListener("load", runRepeatedly);
+  window.addEventListener("hashchange", runRepeatedly);
+
+  setInterval(hideAdminTools, 3000);
 })();
