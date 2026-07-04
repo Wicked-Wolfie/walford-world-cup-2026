@@ -93,22 +93,22 @@
   }
 
   function hideGroupStageSections() {
-    if (!isKnockoutMode()) return;
+  if (!isKnockoutMode()) return;
 
-    forceHide(findFixtureFocus());
-    forceHide(WC.dom.el("groups"));
-    forceHide(WC.dom.el("all-table"));
-  }
+  forceHide(findFixtureFocus());
+  forceHide(WC.dom.el("groups"));
+  forceHide(WC.dom.el("all-table"));
+  forceHide(WC.dom.el("daily-banter"));
+}
 
   function apply() {
     const knockoutMode = isKnockoutMode();
 
     moveToMainInOrder([
-      WC.dom.el("standings"),
+  WC.dom.el("standings"),
 
-      findBanterBlock(),
-      WC.dom.el("daily-banter"),
-      WC.dom.el("knockout-banter"),
+  findBanterBlock(),
+  WC.dom.el("knockout-banter"),
 
       findTeamsGoneHome(),
       findKnockoutResults(),
