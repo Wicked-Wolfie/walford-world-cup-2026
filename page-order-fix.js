@@ -24,6 +24,23 @@
     );
   }
 
+  function findTeamsGoneHome() {
+    return (
+      WC.dom.el("homeKnockoutTracker") ||
+      WC.dom.el("teams-gone-home") ||
+      WC.dom.el("gone-home") ||
+      sectionByHeading(["gone", "home"]) ||
+      sectionByHeading(["teams", "home"])
+    );
+  }
+
+  function findBanterBlock() {
+    return (
+      WC.dom.el("banter") ||
+      sectionByHeading(["banter"])
+    );
+  }
+
   function moveToMainInOrder(sections) {
     const main = WC.dom.q(WC.config.selectors.main);
     if (!main) return;
@@ -37,20 +54,26 @@
 
   function apply() {
     moveToMainInOrder([
-      findFixtureFocus(),
-      WC.dom.el("daily-banter"),
-      WC.dom.el("standings"),
-      WC.dom.el("golden-boot"),
+      WC.dom.el("team-odds-section"),
       WC.dom.el("walford-tv"),
-      WC.dom.el("homeKnockoutTracker"),
-      WC.dom.el("knockout"),
+      findFixtureFocus(),
+
       WC.dom.el("groups"),
       WC.dom.el("all-table"),
-      WC.dom.el("squad-hub"),
       WC.dom.el("teams"),
       WC.dom.el("draw"),
+
+      findTeamsGoneHome(),
+      WC.dom.el("standings"),
+      WC.dom.el("golden-boot"),
+
+      WC.dom.el("daily-banter"),
+      WC.dom.el("knockout-banter"),
+      findBanterBlock(),
+
+      WC.dom.el("squad-hub"),
       WC.dom.el("match-centre"),
-      WC.dom.el("banter"),
+      WC.dom.el("knockout"),
       WC.dom.el("admin-dashboard")
     ]);
   }
