@@ -377,41 +377,51 @@ if (playerResultA.error || playerResultB.error) {
       <div class="ms-panel">
         <form id="msForm" class="ms-form">
           <div class="ms-result-grid">
-            <label>
-              Match date
-              <input id="msMatchDate" type="date" required>
-            </label>
+  <label>
+    Match date
+    <input id="msMatchDate" type="date" required>
+  </label>
 
-            <label>
-              Match code
-              <input id="msMatchCode" type="text" placeholder="e.g. M75">
-            </label>
+  <label>
+    Match code
+    <input id="msMatchCode" type="text" placeholder="e.g. M86">
+  </label>
 
-            <label>
-              Team A
-              <select id="msTeamA" required>${msTeamOptions(firstTeam)}</select>
-            </label>
+  <label>
+    Team A
+    <select id="msTeamA" required>${msTeamOptions(firstTeam)}</select>
+  </label>
 
-            <label>
-              Score A
-              <input id="msScoreA" type="number" min="0" value="0" required>
-            </label>
+  <label>
+    Team B
+    <select id="msTeamB" required>${msTeamOptions(secondTeam)}</select>
+  </label>
 
-            <label>
-  Score B
-              <input id="msScoreB" type="number" min="0" value="0" required>
-             </label>
+  <label>
+    Score A
+    <input id="msScoreA" type="number" min="0" value="0" required>
+  </label>
 
-            <label>
-             Own goals
-             <input id="msOwnGoals" type="number" min="0" value="0" required>
-          </label>
+  <label>
+    Score B
+    <input id="msScoreB" type="number" min="0" value="0" required>
+  </label>
 
-          <label>
-            Team B
-            <select id="msTeamB" required>${msTeamOptions(secondTeam)}</select>
-          </label>
-          </div>
+  <label>
+    Penalties A
+    <input id="msPensA" type="number" min="0" placeholder="Only if needed">
+  </label>
+
+  <label>
+    Penalties B
+    <input id="msPensB" type="number" min="0" placeholder="Only if needed">
+  </label>
+
+  <label>
+    Own goals
+    <input id="msOwnGoals" type="number" min="0" value="0" required>
+  </label>
+</div>
 
           <div class="ms-scorer-head">
             <div>
@@ -498,6 +508,10 @@ if (playerResultA.error || playerResultB.error) {
     const team_b = document.getElementById("msTeamB").value;
     const score_a = Number(document.getElementById("msScoreA").value);
     const score_b = Number(document.getElementById("msScoreB").value);
+    const pensAValue = document.getElementById("msPensA")?.value || "";
+    const pensBValue = document.getElementById("msPensB")?.value || "";
+    const pens_a = pensAValue === "" ? null : Number(pensAValue);
+    const pens_b = pensBValue === "" ? null : Number(pensBValue);
     const own_goals = Number(document.getElementById("msOwnGoals").value || 0);
     const scorers = msCollectedScorers();
 
@@ -507,20 +521,43 @@ if (playerResultA.error || playerResultB.error) {
     }
 
     if (
-      !Number.isInteger(score_a) ||
-      !Number.isInteger(score_b) ||
-      !Number.isInteger(own_goals) ||
-      score_a < 0 ||
-      score_b < 0 ||
-      own_goals < 0
-    ) {
-      status.textContent = "";
-      return alert("Enter valid scores and own goals.");
-    }
+  !Number.isInteger(score_a) ||
+  !Number.isInteger(score_b) ||
+  !Number.isInteger(own_goals) ||
+  score_a < 0 ||
+  score_b < 0 ||
+  own_goals < 0 ||
+  (pens_a !== null && (!Number.isInteger(pens_a) || pens_a < 0)) ||
+  (pens_b !== null && (!Number.isInteger(pens_b) || pens_b < 0))
+) {
+  status.textContent = "";
+  return alert("Enter valid scores, penalties and own goals.");
+}
 
 if (own_goals > score_a + score_b) {
   status.textContent = "";
   return alert("Own goals cannot be more than the total goals in the match.");
+}
+  const isKnockout = !!match_code;
+
+let winner = null;
+
+if (score_a > score_b) {
+  winner = team_a;
+} else if (score_b > score_a) {
+  winner = team_b;
+} else if (isKnockout) {
+  if (pens_a === null || pens_b === null) {
+    status.textContent = "";
+    return alert("This knockout match is level. Enter penalty scores.");
+  }
+
+  if (pens_a === pens_b) {
+    status.textContent = "";
+    return alert("Penalty scores cannot be level.");
+  }
+
+  winner = pens_a > pens_b ? team_a : team_b;
 }
 
     const totalScorerGoals = scorers.reduce((sum, s) => sum + Number(s.goals || 0), 0);
@@ -538,18 +575,78 @@ if (own_goals > score_a + score_b) {
 
     let resultError = null;
 
-    if (existing && existing.length) {
-      const update = await db
-        .from("results")
-        .update({ match_date, team_a, team_b, score_a, score_b, own_goals })
-        .eq("id", existing[0].id);
-      resultError = update.error;
-    } else {
-      const insert = await db
-        .from("results")
-        .insert({ match_date, team_a, team_b, score_a, score_b, own_goals });
-      resultError = insert.error;
-    }
+if (isKnockout) {
+  const knockoutPayload = {
+    match_code,
+    team_a,
+    team_b,
+    score_a,
+    score_b,
+    pens_a,
+    pens_b,
+    own_goals,
+    winner
+  };
+
+  const saveKnockout = await db
+  .from("knockout_results")
+  .upsert([knockoutPayload], { onConflict: "match_code" });
+
+resultError = saveKnockout.error;
+
+if (!resultError && winner) {
+  let nextStage = "Round of 16";
+
+  if (/^M(89|90|91|92|93|94|95|96)$/.test(match_code)) {
+    nextStage = "Quarter-final";
+  }
+
+  if (/^M9[7-9]$|^M100$/.test(match_code)) {
+    nextStage = "Semi-final";
+  }
+
+  if (/^M10[1-2]$/.test(match_code)) {
+    nextStage = "Final";
+  }
+
+  if (match_code === "M104") {
+    nextStage = "Winner";
+  }
+
+  const winnerKey = msCanonTeam(winner);
+
+  const winnerRow = msTeams.find(t => {
+    const teamName = msTeamName(t);
+    return msTeamKeys(teamName).includes(winnerKey) || msTeamMatches(teamName, winner);
+  });
+
+  const stageTeamName = winnerRow ? msTeamName(winnerRow) : winner;
+
+  const stageUpdate = await db
+    .from("teams")
+    .update({ stage: nextStage })
+    .eq("team", stageTeamName);
+
+  if (stageUpdate.error) {
+    console.error(stageUpdate.error);
+    status.textContent = "";
+    return alert("Result saved, but could not update the winner stage.");
+  }
+}
+} else if (existing && existing.length) {
+  const update = await db
+    .from("results")
+    .update({ match_date, team_a, team_b, score_a, score_b, own_goals })
+    .eq("id", existing[0].id);
+
+  resultError = update.error;
+} else {
+  const insert = await db
+    .from("results")
+    .insert({ match_date, team_a, team_b, score_a, score_b, own_goals });
+
+  resultError = insert.error;
+}
 
     if (resultError) {
       console.error(resultError);
