@@ -55,10 +55,15 @@
       const text = String(el.textContent || "").toLowerCase();
 
       const looksAdmin =
-        text.includes("admin shortcut") ||
-        text.includes("match result + scorers") ||
-        text.includes("save result + scorers") ||
-        text.includes("admin result editor") ||
+         text.includes("admin shortcut") ||
+         text.includes("match result + scorers") ||
+         text.includes("save result + scorers") ||
+         text.includes("admin result editor") ||
+         text.includes("admin: add / fix goal scorers") ||
+          text.includes("add / fix goal scorers") ||
+          text.includes("admin hq") ||
+        text.includes("knockout match admin") ||
+        text.includes("save knockout") ||
         text.includes("save result") ||
         text.includes("save fixture") ||
         text.includes("sign in using the main admin button");
@@ -69,6 +74,27 @@
         } else {
           forceHide(el);
         }
+      }
+    });
+   document.querySelectorAll("main *").forEach(el => {
+      const text = String(el.textContent || "").toLowerCase();
+
+      const isGoldenBootAdmin =
+        text.includes("admin: add / fix goal scorers") ||
+        text.includes("add / fix goal scorers");
+
+      const isKnockoutAdmin =
+        text.includes("knockout match admin") ||
+        text.includes("admin hq");
+
+      if ((isGoldenBootAdmin || isKnockoutAdmin) && !allowAdmin) {
+        const block =
+          el.closest(".panel") ||
+          el.closest("form") ||
+          el.closest("article") ||
+          el.closest("div");
+
+        forceHide(block || el);
       }
     });
   }
