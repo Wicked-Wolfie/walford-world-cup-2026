@@ -1,46 +1,67 @@
 "use strict";
 
-// Walford V6 Hide Admin On Public
+// Hide admin-only tools from normal public viewing.
+// Admin tools should only appear when signed in or when viewing the admin dashboard.
 
 (function () {
-  function isAdminMode() {
-    return [
-      "#admin-dashboard",
+  function isAdminHash() {
+    return String(window.location.hash || "").toLowerCase().includes("admin");
+  }
+
+  function hideAdminPublicSections() {
+    const signedIn =
+      !!document.querySelector("#logoutBtn:not(.hidden)") ||
+      !!document.querySelector(".admin:not(.hidden)") ||
+      !!document.body.classList.contains("admin-mode");
+
+    const allowAdmin = signedIn || isAdminHash();
+
+    const adminSelectors = [
       "#match-scorers-admin",
       "#results-editor-admin",
-      "#golden-boot-admin"
-    ].includes(location.hash);
-  }
+      "#admin-dashboard",
+      "#adminPanel",
+      "#resultForm",
+      "#knockoutResultForm",
+      "#fixtureForm",
+      "#loginForm",
+      "#logoutBtn"
+    ];
 
-  function setDisplay(element, show) {
-    if (!element) return;
-    element.style.display = show ? "" : "none";
-  }
+    adminSelectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(el => {
+        if (!allowAdmin) {
+          el.classList.add("hidden");
+          el.style.display = "none";
+        } else {
+          el.style.display = "";
+        }
+      });
+    });
 
-  function apply() {
-    const adminMode = isAdminMode();
+    document.querySelectorAll("section").forEach(section => {
+      const text = (section.textContent || "").toLowerCase();
 
-    setDisplay(WC.dom.el("knockout-admin"), adminMode);
-    setDisplay(WC.dom.el("match-scorers-admin"), adminMode);
-    setDisplay(WC.dom.el("results-editor-admin"), adminMode);
-    setDisplay(WC.dom.el("adminPanel"), adminMode);
+      const looksAdmin =
+        text.includes("admin shortcut") ||
+        text.includes("admin result editor") ||
+        text.includes("match result + scorers") ||
+        text.includes("save result + scorers") ||
+        text.includes("sign in using the main admin button");
 
-    WC.dom.qa(".gb-admin").forEach(panel => {
-      setDisplay(panel, adminMode);
+      if (looksAdmin && !allowAdmin) {
+        section.classList.add("hidden");
+        section.style.display = "none";
+      }
     });
   }
 
-  function delayedApply(times) {
-    times.forEach(ms => setTimeout(apply, ms));
+  function runOften() {
+    [500, 1500, 3000, 5000, 8000].forEach(ms => {
+      setTimeout(hideAdminPublicSections, ms);
+    });
   }
 
-  WC.events.once(document, "DOMContentLoaded", () => {
-    apply();
-    delayedApply([500, 1500, 3500, 7000]);
-    setInterval(apply, 1000);
-  });
-
-  WC.events.on(window, "hashchange", () => {
-    delayedApply([100, 800]);
-  });
+  document.addEventListener("DOMContentLoaded", runOften);
+  window.addEventListener("hashchange", runOften);
 })();
