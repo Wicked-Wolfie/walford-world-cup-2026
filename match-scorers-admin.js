@@ -576,17 +576,40 @@ if (score_a > score_b) {
     let resultError = null;
 
 if (isKnockout) {
-  const knockoutPayload = {
-    match_code,
-    team_a,
-    team_b,
-    score_a,
-    score_b,
-    pens_a,
-    pens_b,
-    own_goals,
-    winner
-  };
+  let round = "Round of 32";
+
+if (/^M(89|90|91|92|93|94|95|96)$/.test(match_code)) {
+  round = "Round of 16";
+}
+
+if (/^M9[7-9]$|^M100$/.test(match_code)) {
+  round = "Quarter-final";
+}
+
+if (/^M10[1-2]$/.test(match_code)) {
+  round = "Semi-final";
+}
+
+if (match_code === "M103") {
+  round = "Third-place play-off";
+}
+
+if (match_code === "M104") {
+  round = "Final";
+}
+
+const knockoutPayload = {
+  match_code,
+  round,
+  team_a,
+  team_b,
+  score_a,
+  score_b,
+  pens_a,
+  pens_b,
+  own_goals,
+  winner
+};
 
   const saveKnockout = await db
   .from("knockout_results")
