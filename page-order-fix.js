@@ -1,6 +1,7 @@
 "use strict";
 
 // Walford V6 Page Order Fix
+// Knockout mode: show the most useful public sections first and hide group-stage clutter.
 
 (function () {
   function sectionByHeading(words) {
@@ -34,11 +35,33 @@
     );
   }
 
+  function findKnockoutResults() {
+    return (
+      WC.dom.el("knockout") ||
+      WC.dom.q(".knockout") ||
+      sectionByHeading(["knockout"])
+    );
+  }
+
   function findBanterBlock() {
     return (
       WC.dom.el("banter") ||
       sectionByHeading(["banter"])
     );
+  }
+
+  function forceHide(section) {
+    if (!section) return;
+    section.classList.add("hidden");
+    section.setAttribute("aria-hidden", "true");
+    section.style.setProperty("display", "none", "important");
+  }
+
+  function forceShow(section) {
+    if (!section) return;
+    section.classList.remove("hidden");
+    section.removeAttribute("aria-hidden");
+    section.style.removeProperty("display");
   }
 
   function moveToMainInOrder(sections) {
@@ -52,30 +75,61 @@
     });
   }
 
+  function isKnockoutMode() {
+    const knockout = findKnockoutResults();
+    const goneHome = findTeamsGoneHome();
+
+    const knockoutText = String(knockout?.textContent || "").toLowerCase();
+    const goneHomeText = String(goneHome?.textContent || "").toLowerCase();
+
+    return (
+      knockoutText.includes("round of 32") ||
+      knockoutText.includes("round of 16") ||
+      knockoutText.includes("quarter") ||
+      knockoutText.includes("semi") ||
+      knockoutText.includes("final") ||
+      goneHomeText.includes("gone home")
+    );
+  }
+
+  function hideGroupStageSections() {
+    if (!isKnockoutMode()) return;
+
+    forceHide(findFixtureFocus());
+    forceHide(WC.dom.el("groups"));
+    forceHide(WC.dom.el("all-table"));
+  }
+
   function apply() {
+    const knockoutMode = isKnockoutMode();
+
     moveToMainInOrder([
-      WC.dom.el("team-odds-section"),
-      WC.dom.el("walford-tv"),
-      findFixtureFocus(),
-
-      WC.dom.el("groups"),
-      WC.dom.el("all-table"),
-      WC.dom.el("teams"),
-      WC.dom.el("draw"),
-
-      findTeamsGoneHome(),
       WC.dom.el("standings"),
-      WC.dom.el("golden-boot"),
 
+      findBanterBlock(),
       WC.dom.el("daily-banter"),
       WC.dom.el("knockout-banter"),
-      findBanterBlock(),
 
+      findTeamsGoneHome(),
+      findKnockoutResults(),
+
+      WC.dom.el("golden-boot"),
+      WC.dom.el("team-odds-section"),
+      WC.dom.el("walford-tv"),
+
+      WC.dom.el("teams"),
       WC.dom.el("squad-hub"),
+      WC.dom.el("draw"),
+
+      knockoutMode ? null : findFixtureFocus(),
+      knockoutMode ? null : WC.dom.el("groups"),
+      knockoutMode ? null : WC.dom.el("all-table"),
+
       WC.dom.el("match-centre"),
-      WC.dom.el("knockout"),
       WC.dom.el("admin-dashboard")
     ]);
+
+    hideGroupStageSections();
   }
 
   function delayedApply(times) {
