@@ -654,14 +654,31 @@ if (!resultError && winner) {
       return alert("Could not save match result. Use the original Match Centre form for the result, then try scorers again.");
     }
 
-    if (match_code) {
-      const del = await db.from("goal_scorers").delete().eq("match_code", match_code);
-      if (del.error) {
-        console.error(del.error);
-        status.textContent = "";
-        return alert("Result saved, but could not clear old scorers for this match code.");
-      }
+    if (scorers.length) {
+  if (match_code) {
+    const del = await db.from("goal_scorers").delete().eq("match_code", match_code);
+    if (del.error) {
+      console.error(del.error);
+      status.textContent = "";
+      return alert("Result saved, but could not clear old scorers for this match code.");
     }
+  }
+
+  const payload = scorers.map(s => ({
+    match_date,
+    match_code,
+    team: s.team,
+    player: s.player,
+    goals: s.goals
+  }));
+
+  const scorerInsert = await db.from("goal_scorers").insert(payload);
+  if (scorerInsert.error) {
+    console.error(scorerInsert.error);
+    status.textContent = "";
+    return alert("Result saved, but scorer entries failed. Check the Golden Boot table/policies.");
+  }
+}
 
     if (scorers.length) {
       const payload = scorers.map(s => ({
