@@ -598,7 +598,6 @@ if (match_code === "M104") {
   round = "Final";
 }
 
-
 const knockoutPayload = {
   match_code,
   round,
