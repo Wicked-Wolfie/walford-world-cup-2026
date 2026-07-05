@@ -47,7 +47,7 @@ const WALFORD_KNOCKOUT = {
   ],
 
   final: [
-    ["FINAL", "Final", "Winner M101", "Winner M102"]
+    ["M104", "Final", "Winner M101", "Winner M102"]
   ]
 };
 
@@ -90,7 +90,7 @@ const wkMatchSchedule = {
   M101: { date: "2026-07-14", time: "20:00" },
   M102: { date: "2026-07-15", time: "20:00" },
 
-  FINAL: { date: "2026-07-19", time: "20:00" }
+  M104: { date: "2026-07-19", time: "20:00" }
 };
 
 function wkInitDb() {
@@ -320,7 +320,7 @@ function wkRenderBracket() {
 }
 
 function wkRenderChampion() {
-  const finalResult = wkResults.FINAL;
+  const finalResult = wkResults.M104;
   const finalRound = document.querySelector("#knockout .wk-round:last-child");
 
   if (!finalRound) return;
@@ -450,130 +450,55 @@ function wkAvailableMatches() {
 
 function wkRenderAdmin() {
   const admin = document.getElementById("wkAdminPanel");
-
-  if (!admin) return;
-
-  const isAdminPage =
-  window.location.hash === "#admin-dashboard" ||
-  window.location.hash === "#knockout-admin" ||
-  document.body.classList.contains("walford-admin-mode");
-
-if (!isAdminPage) {
-  admin.innerHTML = "";
-  return;
+  if (admin) admin.innerHTML = "";
 }
-
-if (!wkSession) {
-  admin.innerHTML = `
-    <div class="wk-admin-note">
-      Sign in using the main Admin button to enter knockout results.
-    </div>
-  `;
-  return;
-}
-  const availableMatches = wkAvailableMatches();
-
-  if (!availableMatches.length) {
-    admin.innerHTML = `
-      <div class="wk-admin-note">
-        No knockout matches are fully available yet.
-      </div>
-    `;
-    return;
-  }
-
-  const options = availableMatches
-    .map(m => `<option value="${m.code}">${m.code} — ${m.teamA} v ${m.teamB}</option>`)
-    .join("");
-
-  admin.innerHTML = `
-    <div class="wk-admin-box">
-      <h3>Knockout Result Entry</h3>
-      <form id="wkResultForm">
-        <select id="wkMatchCode">${options}</select>
-        <input id="wkScoreA" type="number" min="0" placeholder="A">
-        <span>v</span>
-        <input id="wkScoreB" type="number" min="0" placeholder="B">
-        <button class="button gold" type="submit">Save Knockout Result</button>
-      </form>
-      <p id="wkStatus" class="status"></p>
-    </div>
-  `;
-
-  const form = document.getElementById("wkResultForm");
-
-  if (form) {
-    form.addEventListener("submit", wkSaveResult);
-  }
-}
-
-async function wkSaveResult(event) {
-  event.preventDefault();
-
+async function wkSeedAvailableFixtures() {
   const db = wkInitDb();
+  if (!db) return;
 
-  if (!db || !wkSession) {
-    return alert("Please sign in first.");
-  }
+  const fixturesToCreate = wkAllMatches()
+    .map(m => wkResolvedMatchTeams(m[0]))
+    .filter(match =>
+      match &&
+      match.code &&
+      match.round !== "Round of 32" &&
+      wkIsRealTeam(match.teamA) &&
+      wkIsRealTeam(match.teamB) &&
+      !wkResults[match.code]
+    );
 
-  const code = document.getElementById("wkMatchCode").value;
-  const scoreA = Number(document.getElementById("wkScoreA").value);
-  const scoreB = Number(document.getElementById("wkScoreB").value);
-  const match = wkResolvedMatchTeams(code);
+  if (!fixturesToCreate.length) return;
 
-  if (!match) return alert("Match not available yet.");
-
-  if (!wkIsRealTeam(match.teamA) || !wkIsRealTeam(match.teamB)) {
-    return alert("This knockout match is not ready yet.");
-  }
-
-  if (match.teamA === match.teamB) {
-    return alert("Invalid match.");
-  }
-
-  if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB)) {
-    return alert("Enter valid scores.");
-  }
-
-  if (scoreA === scoreB) {
-    return alert("Knockout matches need a winner. Enter the post-penalty winner score.");
-  }
-
-  const winner = scoreA > scoreB ? match.teamA : match.teamB;
-
-  const payload = {
-    match_code: code,
+  const payload = fixturesToCreate.map(match => ({
+    match_code: match.code,
     round: match.round,
     team_a: match.teamA,
     team_b: match.teamB,
-    score_a: scoreA,
-    score_b: scoreB,
-    winner
-  };
+    score_a: null,
+    score_b: null,
+    pens_a: null,
+    pens_b: null,
+    own_goals: 0,
+    winner: null
+  }));
 
   const { error } = await db
     .from("knockout_results")
-    .upsert(payload, { onConflict: "match_code" });
+    .insert(payload);
 
   if (error) {
-    console.error(error);
-    return alert("Could not save knockout result. Check the SQL table and RLS policies.");
+    console.warn("Could not auto-create knockout fixtures.", error);
+    return;
   }
 
-  document.getElementById("wkScoreA").value = "";
-  document.getElementById("wkScoreB").value = "";
-
-    await wkLoadResults();
-  wkRenderBracket();
-
-  if (typeof window.kbStart === "function") {
-    window.kbStart();
-  }
+  await wkLoadResults();
 }
+
 
 async function wkStart() {
   wkInsertSection();
   await wkLoadResults();
+  await wkSeedAvailableFixtures();
   wkRenderBracket();
 }
 
