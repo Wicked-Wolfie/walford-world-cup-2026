@@ -107,9 +107,37 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", runRepeatedly);
-  window.addEventListener("load", runRepeatedly);
-  window.addEventListener("hashchange", runRepeatedly);
+  document.addEventListener("DOMContentLoaded", () => {
+  runRepeatedly();
 
-  setInterval(hideAdminTools, 3000);
+  const adminButton = document.getElementById("adminToggle");
+
+  if (adminButton) {
+    adminButton.addEventListener("click", event => {
+      event.preventDefault();
+
+      window.location.hash = "admin-dashboard";
+
+      setTimeout(() => {
+        runRepeatedly();
+
+        const adminDashboard =
+          document.getElementById("admin-dashboard") ||
+          document.getElementById("match-centre");
+
+        if (adminDashboard) {
+          adminDashboard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }
+      }, 250);
+    });
+  }
+});
+
+window.addEventListener("load", runRepeatedly);
+window.addEventListener("hashchange", runRepeatedly);
+
+setInterval(hideAdminTools, 3000);
 })();
