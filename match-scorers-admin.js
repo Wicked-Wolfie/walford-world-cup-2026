@@ -6,8 +6,9 @@
   let msSession = null;
   let msTeams = [];
   let msPlayers = [];
+  let msKnockoutMatches = [];
   let msRowCounter = 0;
-
+  
   function msClient() {
     if (msDb) return msDb;
 
@@ -179,7 +180,14 @@ function msTeamName(row) {
 }
 
 function msTeamFlag(row) {
-  return String(row?.flag || row?.emoji || "");
+  const flag = String(row?.flag || row?.emoji || "");
+
+  if (flag.includes("<img")) {
+    const alt = flag.match(/alt=["']([^"']+)["']/i);
+    return alt ? alt[1] : "";
+  }
+
+  return flag;
 }
 
 function msSortedTeams() {
@@ -327,6 +335,23 @@ if (playerResultA.error || playerResultB.error) {
     ...(playerResultB.data || [])
   ];
 }
+
+const knockoutResult = await db
+  .from("knockout_results")
+  .select("match_code,round,team_a,team_b,score_a,score_b,winner")
+  .order("match_code", { ascending: true });
+
+if (knockoutResult.error) {
+  msKnockoutMatches = [];
+  console.warn("Combined admin could not load knockout_results.", knockoutResult.error);
+} else {
+  msKnockoutMatches = (knockoutResult.data || []).filter(match =>
+    match.match_code &&
+    match.team_a &&
+    match.team_b &&
+    match.winner === null
+  );
+}
   }
 
   function msInsert() {
@@ -345,6 +370,17 @@ if (playerResultA.error || playerResultB.error) {
     }
     return section;
   }
+
+  function msKnockoutMatchOptions() {
+  let html = `<option value="">Select knockout match...</option>`;
+
+  html += msKnockoutMatches.map(match => {
+    const label = `${match.match_code} — ${match.team_a} v ${match.team_b}`;
+    return `<option value="${msEsc(match.match_code)}">${msEsc(label)}</option>`;
+  }).join("");
+
+  return html;
+}
 
   function msRender() {
     const section = msInsert();
@@ -378,14 +414,21 @@ if (playerResultA.error || playerResultB.error) {
         <form id="msForm" class="ms-form">
           <div class="ms-result-grid">
   <label>
-    Match date
-    <input id="msMatchDate" type="date" required>
-  </label>
+  Knockout match
+  <select id="msKnockoutMatch">
+    ${msKnockoutMatchOptions()}
+  </select>
+</label>
 
-  <label>
-    Match code
-    <input id="msMatchCode" type="text" placeholder="e.g. M86">
-  </label>
+<label>
+  Match date
+  <input id="msMatchDate" type="date" required>
+</label>
+
+<label>
+  Match code
+  <input id="msMatchCode" type="text" placeholder="e.g. M86">
+</label>
 
   <label>
     Team A
@@ -449,7 +492,25 @@ if (playerResultA.error || playerResultB.error) {
       msRowCounter = 0;
       msAddScorerRow();
     });
+    
     document.getElementById("msForm").addEventListener("submit", msSaveAll);
+    document.getElementById("msKnockoutMatch")?.addEventListener("change", event => {
+  const matchCode = event.target.value;
+  const match = msKnockoutMatches.find(m => m.match_code === matchCode);
+
+  if (!match) return;
+
+  document.getElementById("msMatchCode").value = match.match_code;
+  document.getElementById("msTeamA").value = match.team_a;
+  document.getElementById("msTeamB").value = match.team_b;
+
+  const scorerRows = document.getElementById("msScorerRows");
+  if (scorerRows) {
+    scorerRows.innerHTML = "";
+    msRowCounter = 0;
+    msAddScorerRow(match.team_a);
+  }
+});
 
     msAddScorerRow(firstTeam);
   }
