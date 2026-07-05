@@ -502,6 +502,8 @@ async function wkStart() {
   wkRenderBracket();
 }
 
+
 document.addEventListener("DOMContentLoaded", () => {
   setTimeout(wkStart, 1600);
+  
 });
