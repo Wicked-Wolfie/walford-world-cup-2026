@@ -981,128 +981,57 @@ img.emoji {
   text-align: center;
 }
 
-/* Nav centre and mobile fix - v5.8.38 */
+/* Nav clean alignment - v5.8.45 */
 
 .nav {
-  justify-content: center;
-  position: sticky;
-}
-
-.nav nav {
-  justify-content: center;
-  align-items: center;
-}
-
-#adminToggle,
-.nav .admin-link,
-.nav a[href*="admin"] {
-  margin-left: 18px;
-}
-
-@media (max-width: 1050px) {
-  .nav {
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding: 12px 14px;
-  }
-
-  .nav nav {
-    display: flex !important;
-    gap: 14px;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-  }
-
-  .nav a {
-    font-size: 0.86rem;
-  }
-}
-
-/* Nav balanced layout - v5.8.40 */
-
-.nav {
-  justify-content: center;
+  width: 100%;
+  justify-content: flex-start !important;
 }
 
 .nav .logo {
-  flex: 0 0 auto;
+  flex: 0 0 auto !important;
+  margin-right: 26px !important;
 }
 
 .nav nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 18px !important;
 }
 
 #adminToggle {
-  flex: 0 0 auto;
-  margin-left: 12px;
+  flex: 0 0 auto !important;
+  margin-left: 20px !important;
+}
+
+@media (min-width: 1051px) {
+  .nav {
+    padding-left: clamp(210px, 16vw, 300px) !important;
+    padding-right: 5vw !important;
+    overflow: visible !important;
+  }
+
+  .nav nav {
+    flex-wrap: nowrap !important;
+  }
 }
 
 @media (max-width: 1050px) {
   .nav {
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding: 12px 14px;
+    padding: 12px 14px !important;
+    overflow-x: auto !important;
   }
 
   .nav nav {
-    display: flex !important;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-    gap: 14px;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    gap: 14px !important;
   }
 
   .nav a,
   .nav button {
-    flex: 0 0 auto;
-    font-size: 0.86rem;
-  }
-}
-
-/* Nav align with hero content - v5.8.42 */
-
-@media (min-width: 1051px) {
-  .nav {
-    justify-content: flex-start;
-    padding-left: clamp(190px, 13vw, 260px);
-    padding-right: 5vw;
-  }
-
-  .nav .logo {
-    margin-right: 24px;
-  }
-
-  .nav nav {
-    justify-content: flex-start;
-    gap: 18px;
-  }
-
-  #adminToggle {
-    margin-left: 18px;
-  }
-}
-/* Nav further right - v5.8.43 */
-
-@media (min-width: 1051px) {
-  .nav {
-    justify-content: flex-start !important;
-    padding-left: clamp(280px, 16vw, 360px) !important;
-    padding-right: 5vw !important;
-  }
-
-  .nav .logo {
-    margin-right: 24px !important;
-  }
-
-  .nav nav {
-    justify-content: flex-start !important;
-    gap: 18px !important;
-  }
-
-  #adminToggle {
-    margin-left: 18px !important;
+    flex: 0 0 auto !important;
+    font-size: 0.86rem !important;
   }
 }
