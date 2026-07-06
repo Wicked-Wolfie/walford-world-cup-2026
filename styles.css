@@ -1061,3 +1061,26 @@ img.emoji {
     font-size: 0.86rem;
   }
 }
+
+/* Nav align with page content - v5.8.41 */
+
+@media (min-width: 1051px) {
+  .nav {
+    justify-content: flex-start;
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+
+  .nav .logo {
+    margin-right: 24px;
+  }
+
+  .nav nav {
+    justify-content: flex-start;
+    gap: 18px;
+  }
+
+  #adminToggle {
+    margin-left: 18px;
+  }
+}
