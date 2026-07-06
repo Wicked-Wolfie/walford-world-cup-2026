@@ -29,7 +29,7 @@ function leaderChangeBanter(currentLeader) {
   const newName = leaderDisplayName(currentLeader);
 
   const lines = [
-    `${oldName} has lost his 👑 All hail ${newName} 🙇`,
+    `${oldName} has lost the 👑 All hail ${newName} 🙇`,
     `${oldName} has been knocked off the throne 👑 ${newName} takes command.`,
     `Breaking news: ${oldName}'s reign is over. ${newName} is now top dog.`,
     `${newName} has stolen the crown from ${oldName}. Family WhatsApp will be unbearable.`,
