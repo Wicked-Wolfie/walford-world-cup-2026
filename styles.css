@@ -1017,3 +1017,26 @@ img.emoji {
     font-size: 0.86rem;
   }
 }
+
+/* Nav final desktop polish - v5.8.39 */
+
+@media (min-width: 1051px) {
+  .nav {
+    justify-content: center;
+  }
+
+  .nav .logo {
+    margin-right: 18px;
+  }
+
+  .nav nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+  }
+
+  #adminToggle {
+    margin-left: 18px;
+  }
+}
