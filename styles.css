@@ -981,56 +981,51 @@ img.emoji {
   text-align: center;
 }
 
-/* Nav clean alignment - v5.8.45 */
+/* Nav reset and safe mobile menu - v5.8.47 */
 
 .nav {
   width: 100%;
-  justify-content: flex-start !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  padding: 12px 5vw !important;
 }
 
 .nav .logo {
   flex: 0 0 auto !important;
-  margin-right: 26px !important;
+  margin-right: 22px !important;
 }
 
 .nav nav {
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important;
+  justify-content: center !important;
   gap: 18px !important;
+  flex-wrap: nowrap !important;
 }
 
 #adminToggle {
   flex: 0 0 auto !important;
-  margin-left: 20px !important;
-}
-
-@media (min-width: 1051px) {
-  .nav {
-    padding-left: clamp(210px, 16vw, 300px) !important;
-    padding-right: 5vw !important;
-    overflow: visible !important;
-  }
-
-  .nav nav {
-    flex-wrap: nowrap !important;
-  }
+  margin-left: 18px !important;
 }
 
 @media (max-width: 1050px) {
   .nav {
-    padding: 12px 14px !important;
+    justify-content: flex-start !important;
     overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 12px 14px !important;
   }
 
   .nav nav {
+    display: flex !important;
     flex-wrap: nowrap !important;
     white-space: nowrap !important;
     gap: 14px !important;
   }
 
   .nav a,
-  .nav button {
+  .nav button,
+  .nav .logo {
     flex: 0 0 auto !important;
     font-size: 0.86rem !important;
   }
