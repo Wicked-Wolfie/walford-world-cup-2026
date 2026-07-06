@@ -1062,12 +1062,12 @@ img.emoji {
   }
 }
 
-/* Nav align with page content - v5.8.41 */
+/* Nav align with hero content - v5.8.42 */
 
 @media (min-width: 1051px) {
   .nav {
     justify-content: flex-start;
-    padding-left: 5vw;
+    padding-left: clamp(190px, 13vw, 260px);
     padding-right: 5vw;
   }
 
