@@ -1,4 +1,3 @@
-```css
 * {
   box-sizing: border-box;
 }
@@ -972,4 +971,12 @@ img.emoji {
     grid-template-columns: 1fr;
   }
 }
-```
+
+.leader-change-banter {
+  margin: 10px 0 0;
+  color: var(--gold2);
+  font-weight: 900;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  text-align: center;
+}

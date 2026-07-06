@@ -1,25 +1,85 @@
+function leaderDisplayName(owner) {
+  const names = {
+    Charlotte: "Lottie",
+    Debbie: "Dubs"
+  };
+
+  return names[owner] || owner;
+}
+
+function leaderChangeBanter(currentLeader) {
+  if (!currentLeader) return "";
+
+  const storageKey = "walfordLastLeader";
+  let previousLeader = "";
+
+  try {
+    previousLeader = localStorage.getItem(storageKey) || "";
+    localStorage.setItem(storageKey, currentLeader);
+  } catch (error) {
+    console.warn("Leader change banter storage unavailable.", error);
+    return "";
+  }
+
+  if (!previousLeader || previousLeader === currentLeader) {
+    return "";
+  }
+
+  const oldName = leaderDisplayName(previousLeader);
+  const newName = leaderDisplayName(currentLeader);
+
+  const lines = [
+    `${oldName} has lost his 👑 All hail ${newName} 🙇`,
+    `${oldName} has been knocked off the throne 👑 ${newName} takes command.`,
+    `Breaking news: ${oldName}'s reign is over. ${newName} is now top dog.`,
+    `${newName} has stolen the crown from ${oldName}. Family WhatsApp will be unbearable.`,
+    `${oldName} slips. ${newName} rises. The syndicate has a new ruler.`
+  ];
+
+  return lines[Math.floor(Math.random() * lines.length)];
+}
+
 function renderBanter(lb, totals, todayGames) {
   const dRank = lb.findIndex(x => x.owner === "David") + 1;
   const dPts = lb.find(x => x.owner === "David")?.total || 0;
   const eng = totals.find(t => t.team === "England") || {};
   const feud = todayGames[0] || knockoutFeudToday();
 
-  el("banterFavourite").textContent = `${lb[0]?.owner || "-"}, ${lb[0]?.total || 0} pts`;
-  el("banterFlop").textContent = `${lb[lb.length - 1]?.owner || "-"}, ${lb[lb.length - 1]?.total || 0} pts`;
-  el("banterDavid").textContent = `${dRank}${WC.helpers.suffix(dRank)} place, ${(lb[0]?.total || 0) - dPts} behind`;
-  el("banterEngland").innerHTML =
-  `${window.WC.teams.flag("England")} ${eng.stage || "Group Stage"}, ${eng.total || 0} pts`;
-  el("banterTeam").innerHTML = totals[0] ? `${window.WC.teams.flag(totals[0].team)} ${totals[0].team}, ${totals[0].total} pts` : "-";
-  if (feud) {
-  const ownerA = WC.teams.owner(feud.team_a);
-  const ownerB = WC.teams.owner(feud.team_b);
+  const currentLeader = lb[0]?.owner || "";
+  const leadChange = leaderChangeBanter(currentLeader);
+  const leaderBanterEl = el("leaderChangeBanter");
 
-  el("banterFeud").textContent =
-    `${ownerA} v ${ownerB} - ${WC.features.banterFor(ownerA, ownerB, feud.team_a, feud.team_b)}`;
-    } else {
-  el("banterFeud").textContent = "Awaiting today's fixtures";
+  if (leaderBanterEl) {
+    leaderBanterEl.textContent = leadChange || "";
+  }
+
+  el("banterFavourite").textContent =
+    `${leaderDisplayName(lb[0]?.owner) || "-"}, ${lb[0]?.total || 0} pts`;
+
+  el("banterFlop").textContent =
+    `${leaderDisplayName(lb[lb.length - 1]?.owner) || "-"}, ${lb[lb.length - 1]?.total || 0} pts`;
+
+  el("banterDavid").textContent =
+    `${dRank}${WC.helpers.suffix(dRank)} place, ${(lb[0]?.total || 0) - dPts} behind`;
+
+  el("banterEngland").innerHTML =
+    `${window.WC.teams.flag("England")} ${eng.stage || "Group Stage"}, ${eng.total || 0} pts`;
+
+  el("banterTeam").innerHTML =
+    totals[0]
+      ? `${window.WC.teams.flag(totals[0].team)} ${totals[0].team}, ${totals[0].total} pts`
+      : "-";
+
+  if (feud) {
+    const ownerA = WC.teams.owner(feud.team_a);
+    const ownerB = WC.teams.owner(feud.team_b);
+
+    el("banterFeud").textContent =
+      `${leaderDisplayName(ownerA)} v ${leaderDisplayName(ownerB)} - ${WC.features.banterFor(ownerA, ownerB, feud.team_a, feud.team_b)}`;
+  } else {
+    el("banterFeud").textContent = "Awaiting today's fixtures";
+  }
 }
-};
 
 function knockoutFeudToday() {
   const today = el("todayDate")?.value || WC.helpers.todayISO();
