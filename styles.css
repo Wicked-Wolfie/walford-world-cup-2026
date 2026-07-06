@@ -1018,25 +1018,46 @@ img.emoji {
   }
 }
 
-/* Nav final desktop polish - v5.8.39 */
+/* Nav balanced layout - v5.8.40 */
 
-@media (min-width: 1051px) {
+.nav {
+  justify-content: center;
+}
+
+.nav .logo {
+  flex: 0 0 auto;
+}
+
+.nav nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+#adminToggle {
+  flex: 0 0 auto;
+  margin-left: 12px;
+}
+
+@media (max-width: 1050px) {
   .nav {
-    justify-content: center;
-  }
-
-  .nav .logo {
-    margin-right: 18px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 12px 14px;
   }
 
   .nav nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 18px;
+    display: flex !important;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    gap: 14px;
   }
 
-  #adminToggle {
-    margin-left: 18px;
+  .nav a,
+  .nav button {
+    flex: 0 0 auto;
+    font-size: 0.86rem;
   }
 }
