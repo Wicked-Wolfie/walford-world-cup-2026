@@ -1149,3 +1149,64 @@ img.emoji {
     margin: 24px auto 0;
   }
 }
+
+/* Hero right column tidy fix - v5.8.53 */
+
+@media (min-width: 1051px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) 300px !important;
+    gap: 44px !important;
+    align-items: start !important;
+  }
+
+  .hero > div:first-child {
+    grid-column: 1 !important;
+    grid-row: 1 / span 2 !important;
+  }
+
+  .champion-card {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-height: 360px !important;
+    margin: 0 !important;
+  }
+
+  .golden-boot-promo {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    max-width: 300px !important;
+    min-height: 0 !important;
+    margin: 24px 0 0 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(215, 173, 71, 0.55) !important;
+    background: #000 !important;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.38) !important;
+  }
+
+  .golden-boot-promo img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    object-fit: contain !important;
+    border-radius: 24px !important;
+  }
+}
+
+@media (max-width: 1050px) {
+  .golden-boot-promo {
+    max-width: 260px !important;
+    margin: 24px auto 0 !important;
+  }
+
+  .golden-boot-promo img {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    object-fit: contain !important;
+  }
+}
