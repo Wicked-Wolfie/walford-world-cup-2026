@@ -1030,3 +1030,35 @@ img.emoji {
     font-size: 0.86rem !important;
   }
 }
+
+/* Golden Boot promo hero image - v5.8.49 */
+
+.golden-boot-promo {
+  align-self: center;
+  max-width: 260px;
+  justify-self: center;
+}
+
+.golden-boot-promo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 26px;
+  border: 1px solid rgba(215, 173, 71, 0.55);
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, 0.42),
+    0 0 0 6px rgba(255, 215, 120, 0.055);
+}
+
+@media (min-width: 1051px) {
+  .hero {
+    grid-template-columns: 1.05fr 0.45fr 0.35fr;
+  }
+}
+
+@media (max-width: 1050px) {
+  .golden-boot-promo {
+    max-width: 220px;
+    margin: 0 auto;
+  }
+}
