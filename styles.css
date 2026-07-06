@@ -1084,3 +1084,25 @@ img.emoji {
     margin-left: 18px;
   }
 }
+/* Nav further right - v5.8.43 */
+
+@media (min-width: 1051px) {
+  .nav {
+    justify-content: flex-start !important;
+    padding-left: clamp(280px, 16vw, 360px) !important;
+    padding-right: 5vw !important;
+  }
+
+  .nav .logo {
+    margin-right: 24px !important;
+  }
+
+  .nav nav {
+    justify-content: flex-start !important;
+    gap: 18px !important;
+  }
+
+  #adminToggle {
+    margin-left: 18px !important;
+  }
+}
