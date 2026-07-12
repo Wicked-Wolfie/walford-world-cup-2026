@@ -52,52 +52,49 @@
     });
 
     document.querySelectorAll("section, div.panel, form").forEach(el => {
-      const text = String(el.textContent || "").toLowerCase();
+  const text = String(el.textContent || "").toLowerCase();
 
-      const looksAdmin =
-         text.includes("admin shortcut") ||
-         text.includes("match result + scorers") ||
-         text.includes("save result + scorers") ||
-         text.includes("admin result editor") ||
-         text.includes("admin: add / fix goal scorers") ||
-          text.includes("add / fix goal scorers") ||
-          text.includes("admin hq") ||
-        text.includes("knockout match admin") ||
-        text.includes("save knockout") ||
-        text.includes("save result") ||
-        text.includes("save fixture") ||
-        text.includes("sign in using the main admin button");
+  const isGoldenBootSection = el.id === "golden-boot";
 
-      if (looksAdmin) {
-        if (allowAdmin) {
-          forceShow(el);
-        } else {
-          forceHide(el);
-        }
-      }
-    });
-   document.querySelectorAll("main *").forEach(el => {
-      const text = String(el.textContent || "").toLowerCase();
+  const looksAdmin =
+    text.includes("admin shortcut") ||
+    text.includes("match result + scorers") ||
+    text.includes("save result + scorers") ||
+    text.includes("admin result editor") ||
+    text.includes("admin hq") ||
+    text.includes("knockout match admin") ||
+    text.includes("save knockout") ||
+    text.includes("save result") ||
+    text.includes("save fixture");
 
-      const isGoldenBootAdmin =
-        text.includes("admin: add / fix goal scorers") ||
-        text.includes("add / fix goal scorers");
-
-      const isKnockoutAdmin =
-        text.includes("knockout match admin") ||
-        text.includes("admin hq");
-
-      if ((isGoldenBootAdmin || isKnockoutAdmin) && !allowAdmin) {
-        const block =
-          el.closest(".panel") ||
-          el.closest("form") ||
-          el.closest("article") ||
-          el.closest("div");
-
-        forceHide(block || el);
-      }
-    });
+  if (looksAdmin && !isGoldenBootSection) {
+    if (allowAdmin) {
+      forceShow(el);
+    } else {
+      forceHide(el);
+    }
   }
+});
+   const goldenBootAdmin = document.querySelector("#golden-boot .gb-admin");
+
+if (goldenBootAdmin) {
+  if (allowAdmin) {
+    forceShow(goldenBootAdmin);
+  } else {
+    forceHide(goldenBootAdmin);
+  }
+}
+
+document.querySelectorAll(
+  "#match-scorers-admin, #results-editor-admin, #admin-dashboard, .knockout-admin"
+).forEach(el => {
+  if (allowAdmin) {
+    forceShow(el);
+  } else {
+    forceHide(el);
+  }
+});
+}
 
   function runRepeatedly() {
     hideAdminTools();
