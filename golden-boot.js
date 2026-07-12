@@ -914,11 +914,27 @@ if (goalsInput) goalsInput.value = keepGoals;
   }
 
   async function gbStart() {
+  try {
     await gbLoad();
-    gbRender();
+  } catch (error) {
+    console.error("Golden Boot load failed:", error);
   }
 
-  WC.events.once(document, "DOMContentLoaded", () => {
-  setTimeout(gbStart, 2200);
-  });;
+  gbRender();
+}
+
+function gbStartWhenReady() {
+  setTimeout(gbStart, 500);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    gbStartWhenReady,
+    { once: true }
+  );
+} else {
+  gbStartWhenReady();
+}
+
 })();
