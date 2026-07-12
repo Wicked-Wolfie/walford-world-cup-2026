@@ -428,7 +428,13 @@ return gbEmojiFlag(code) || "";
 }
 
   function gbOwner(teamName) {
-  return WC.render.owner(teamName) || "";
+    
+  return window.WC?.teams?.owner(teamName) || "";
+}
+
+function gbGoalsLabel(value) {
+  const goals = Number(value) || 0;
+  return `${goals} ${goals === 1 ? "goal" : "goals"}`;
 }
 
 function gbDateLabel(value) {
@@ -516,7 +522,7 @@ function gbDateLabel(value) {
           <strong>${gbEsc(row.player)}</strong>
           <span>${gbFlag(row.team)} ${gbEsc(row.team)} · ${gbEsc(gbOwner(row.team))}</span>
         </div>
-        <em>${WC.render.goals(row.goals)}</em>
+        <em>${gbGoalsLabel(row.goals)}</em>
       </article>
     `).join("");
   }
@@ -529,7 +535,7 @@ function gbDateLabel(value) {
       <div class="gb-latest-row">
         <strong>${gbEsc(row.player)}</strong>
         <span>${gbFlag(row.team)} ${gbEsc(row.team)}${row.match_code ? ` · ${gbEsc(row.match_code)}` : ""}</span>
-        <em>${WC.render.goals(row.goals)}</em>
+        <em>${gbGoalsLabel(row.goals)}</em>
       </div>
     `).join("");
   }
@@ -556,7 +562,7 @@ function gbDateLabel(value) {
                 <strong>${gbEsc(row.player)}</strong>
                 <span>${gbFlag(row.team)} ${gbEsc(row.team)}${row.match_code ? ` · ${gbEsc(row.match_code)}` : ""}${row.match_date ? ` · ${gbEsc(gbDateLabel(row.match_date))}` : ""}</span>
               </div>
-              <em>${WC.render.goals(row.goals)}</em>
+              <em>${gbGoalsLabel(row.goals)}</em>
               <div class="gb-admin-buttons">
                 <button type="button" class="button dark gb-edit" data-gb-edit="${row.id}">Edit</button>
                 <button type="button" class="button dark gb-delete" data-gb-delete="${row.id}">Delete</button>
@@ -711,7 +717,7 @@ function gbTeamOptions(selected = "") {
           <span>Current leader</span>
           <h3>${leader ? gbEsc(leader.player) : "No leader yet"}</h3>
           <p>${leader ? `${gbFlag(leader.team)} ${gbEsc(leader.team)} · ${gbEsc(gbOwner(leader.team))}` : "Add scorers to start the race."}</p>
-          <strong>${leader ? WC.render.goals(leader.goals) : "0 goals"}</strong>
+          <strong>${leader ? gbGoalsLabel(leader.goals) : "0 goals"}</strong>
         </div>
 
         <div class="gb-panel">
@@ -740,29 +746,34 @@ if (typeof applyEmojiFlags === "function") {
 }
     
 function gbWireForm() {
+  const form = WC.dom.el("goldenBootForm");
+  const teamSelect = WC.dom.el("gbTeam");
+  const playerSelect = WC.dom.el("gbPlayer");
+  const cancelEdit = WC.dom.el("gbCancelEdit");
 
-    const form = WC.dom.el("goldenBootForm");
-    const teamSelect = WC.dom.el("gbTeam");
-    const playerSelect = WC.dom.el("gbPlayer");
-    const cancelEdit = WC.dom.el("gbCancelEdit");
-
+  if (form) {
     WC.events.on(form, "submit", gbSave);
+  }
+
+  if (cancelEdit) {
     WC.events.on(cancelEdit, "click", gbCancelEditMode);
+  }
 
-    if (teamSelect && playerSelect) {
-      WC.events.on(teamSelect, "change", () => {
-        playerSelect.innerHTML = gbPlayerOptions(teamSelect.value);
-        playerSelect.value = "";
-      });
-    }
-
-      WC.dom.qa("[data-gb-delete]").forEach(button => {
-      WC.events.on(button, "click", gbDelete);
+  if (teamSelect && playerSelect) {
+    WC.events.on(teamSelect, "change", () => {
+      playerSelect.innerHTML = gbPlayerOptions(teamSelect.value);
+      playerSelect.value = "";
     });
+  }
 
-    WC.dom.qa("[data-gb-edit]").forEach(button => {
+  WC.dom.qa("[data-gb-delete]").forEach(button => {
+    WC.events.on(button, "click", gbDelete);
+  });
+
+  WC.dom.qa("[data-gb-edit]").forEach(button => {
     WC.events.on(button, "click", gbStartEdit);
-    });
+  });
+
   }
 
   function gbSetEditMode(row) {
@@ -785,7 +796,7 @@ function gbWireForm() {
     if (cancelBtn) cancelBtn.classList.remove("hidden");
     if (hint) {
       hint.classList.remove("hidden");
-      hint.textContent = `Editing: ${row.player} — ${row.team} — ${WC.render.goals(row.goals)}`;
+      hint.textContent = `Editing: ${row.player} — ${row.team} — ${gbGoalsLabel(row.goals)}`;
     }
 
     playerSelect.focus();
@@ -894,7 +905,7 @@ if (goalsInput) goalsInput.value = keepGoals;
     const row = gbRows.find(r => Number(r.id) === id);
     if (!row) return;
 
-    const ok = confirm(`Delete this scorer entry?\n\n${row.player} — ${row.team} — ${WC.render.goals(row.goals)}${row.match_code ? ` — ${row.match_code}` : ""}`);
+    const ok = confirm(`Delete this scorer entry?\n\n${row.player} — ${row.team} — ${gbGoalsLabel(row.goals)}${row.match_code ? ` — ${row.match_code}` : ""}`);
     if (!ok) return;
 
     const db = gbClient();
@@ -914,11 +925,27 @@ if (goalsInput) goalsInput.value = keepGoals;
   }
 
   async function gbStart() {
+  try {
     await gbLoad();
-    gbRender();
+  } catch (error) {
+    console.error("Golden Boot load failed:", error);
   }
 
-  WC.events.once(document, "DOMContentLoaded", () => {
-  setTimeout(gbStart, 2200);
-  });;
+  gbRender();
+}
+
+function gbStartWhenReady() {
+  setTimeout(gbStart, 500);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    gbStartWhenReady,
+    { once: true }
+  );
+} else {
+  gbStartWhenReady();
+}
+
 })();
