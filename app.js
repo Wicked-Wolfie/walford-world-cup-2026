@@ -98,7 +98,6 @@ if (ke) {
   knockoutResults = kd || [];
 }
 
-window.WC.state.set("knockoutResults", knockoutResults);
     const { data: fd, error: fe } = await db
       .from("fixtures")
       .select("*")
