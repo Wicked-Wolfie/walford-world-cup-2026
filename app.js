@@ -13,6 +13,7 @@ const STAGES = {
 let db = null;
 let teams = window.FALLBACK_TEAMS || [];
 let results = [];
+let knockoutResults = [];
 let fixtures = window.FALLBACK_FIXTURES || [];
 let session = null;
 let activeGroup = "A";
@@ -85,6 +86,19 @@ async function loadData() {
     }
 
     window.WC.state.set("results", results);
+    const { data: kd, error: ke } = await db
+  .from("knockout_results")
+  .select("match_code, team_a, team_b, score_a, score_b, winner")
+  .order("match_code", { ascending: true });
+
+if (ke) {
+  console.warn("Could not load knockout results for syndicate scores.", ke);
+  knockoutResults = [];
+} else {
+  knockoutResults = kd || [];
+}
+
+window.WC.state.set("knockoutResults", knockoutResults);
     const { data: fd, error: fe } = await db
       .from("fixtures")
       .select("*")
@@ -169,24 +183,58 @@ function groupStats() {
   );
 }
 
+function knockoutPointsByTeam() {
+  const points = {};
+
+  knockoutResults.forEach(match => {
+    const winner = String(match.winner || "").trim();
+
+    const completed =
+      winner &&
+      match.score_a !== null &&
+      match.score_b !== null;
+
+    if (!completed) return;
+
+    const teamRow = teams.find(team =>
+      WC.teams.normalise(team.team) === WC.teams.normalise(winner)
+    );
+
+    const teamName = teamRow ? teamRow.team : winner;
+
+    points[teamName] = (points[teamName] || 0) + 3;
+  });
+
+  return points;
+}
+
 function teamTotals() {
-  const gs = Object.fromEntries(groupStats().map(s => [s.team, s]));
+  const gs = Object.fromEntries(
+    groupStats().map(s => [s.team, s])
+  );
+
+  const knockoutPoints = knockoutPointsByTeam();
 
   return teams.map(t => {
     const g = gs[t.team] || {};
+
+    const groupPoints = g.Pts || 0;
+    const knockoutMatchPoints = knockoutPoints[t.team] || 0;
+    const matchPoints = groupPoints + knockoutMatchPoints;
     const bonus = STAGES[t.stage || "Group Stage"] || 0;
 
     return {
       ...t,
-      match: g.Pts || 0,
+      match: matchPoints,
+      groupMatchPoints: groupPoints,
+      knockoutMatchPoints,
       bonus,
-      total: (g.Pts || 0) + bonus,
+      total: matchPoints + bonus,
       stage: t.stage || "Group Stage",
       gd: g.GD || 0
     };
   });
 }
-
 function leaderboardData() {
   const scores = Object.fromEntries(OWNERS.map(o => [o, 0]));
 
