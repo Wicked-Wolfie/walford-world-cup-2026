@@ -159,3 +159,4 @@ window.WC = window.WC || {};
 window.WC.features = window.WC.features || {};
 window.WC.features.renderBanter = renderBanter;
 window.WC.features.banterFor = banterFor;
+

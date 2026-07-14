@@ -12,6 +12,7 @@
   <link href="home-knockout-tracker.css?v=5.8.1" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
   </script>
+  <link href="assets/js/banter-gallery.css?v=6.0.0" rel="stylesheet"/>
   <link href="match-scorers-admin.css?v=5.8.1" rel="stylesheet"/>
   <link href="golden-boot.css?v=5.8.1" rel="stylesheet"/>
   <link href="squad-hub.css?v=5.8.1" rel="stylesheet"/>
@@ -446,6 +447,50 @@
      </article>
     </div>
    </section>
+
+   <section class="section banter-gallery-section" id="banter-gallery">
+    <div class="section-title">
+     <span>
+      Walford World Cup 2026
+     </span>
+     <h2>
+      V6 Banter Gallery
+     </h2>
+     <p>
+      Match posters, family rivalries and unforgettable knockout moments.
+     </p>
+    </div>
+
+    <div
+     class="banter-gallery-grid"
+     id="banterGalleryGrid"
+     aria-live="polite">
+    </div>
+   </section>
+
+   <div
+    class="banter-gallery-modal hidden"
+    id="banterGalleryModal"
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Banter Gallery image">
+
+    <button
+     class="banter-gallery-modal-close"
+     type="button"
+     data-banter-modal-close
+     aria-label="Close image">
+     ×
+    </button>
+
+    <img
+     class="banter-gallery-modal-image"
+     id="banterGalleryModalImage"
+     src=""
+     alt="Banter Gallery full-size image">
+   </div>
+
   </main>
 
   <footer>
@@ -482,6 +527,8 @@
   <script src="assets/js/core/storage.js?v=6.0.0"></script>
   <script src="assets/js/core/startup.js?v=6.0.0"></script>
   <script src="assets/js/features/banter.js?v=6.0.9"></script>
+  <script src="assets/js/features/banter-gallery-data.js?v=6.0.0"></script>
+  <script src="assets/js/features/banter-gallery.js?v=6.0.0"></script>
   <script src="assets/js/features/draw.js?v=6.0.1"></script>
   <script src="assets/js/features/today.js?v=6.0.1"></script>
   <script src="assets/js/features/results.js?v=6.0.0"></script>
