@@ -71,19 +71,20 @@ window.WC_BANTER_GALLERY = [
   },
 
   {
-    id: "pops-valhalla-losers-arena",
-    date: "2026-07-11",
-    stage: "Quarter-final Result",
-    teamA: "England",
-    teamB: "Norway",
-    ownerA: "Lottie",
-    ownerB: "Pops",
-    score: "2–1",
-    headline: "Valhalla Awaits the Valiant Viking",
-    caption: "Pops heads home and joins Matt and Myles in the Losers Arena.",
-    type: "image",
-    file: "assets/images/banter/pops-valhalla-losers-arena.png"
-  },
+  id: "pops-valhalla-losers-arena",
+  date: "2026-07-11",
+  stage: "Quarter-final Result",
+  teamA: "England",
+  teamB: "Norway",
+  ownerA: "Lottie",
+  ownerB: "Pops",
+  score: "2–1",
+  headline: "Valhalla Awaits the Valiant Viking",
+  caption: "Pops heads home and joins Matt and Myles in the Losers Arena.",
+  type: "video",
+  file: "assets/images/banter/pops-valhalla-losers-arena.mp4",
+  poster: "assets/images/banter/pops-valhalla-losers-arena.png"
+},
 
   {
     id: "norway-row-row",
