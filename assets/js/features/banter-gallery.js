@@ -198,7 +198,7 @@
     video.className = "banter-gallery-modal-image";
     video.controls = true;
     video.playsInline = true;
-    video.preload = "metadata";
+    video.preload = "none";
 
     if (poster) {
       video.poster = poster;
@@ -216,14 +216,6 @@
     document.body.classList.add("banter-gallery-modal-open");
 
     video.load();
-
-    const playAttempt = video.play();
-
-    if (playAttempt && typeof playAttempt.catch === "function") {
-      playAttempt.catch(function () {
-        // Mobile browsers may require the user to press Play.
-      });
-    }
   }
 
   function closeMedia() {
