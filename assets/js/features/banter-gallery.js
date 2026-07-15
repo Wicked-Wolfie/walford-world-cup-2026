@@ -36,12 +36,16 @@
     const caption = esc(item.caption || item.headline || "Banter Gallery item");
 
     if (item.type === "video") {
+      const poster = item.poster
+        ? ` poster="${esc(item.poster)}"`
+        : "";
+
       return `
         <video
           class="banter-gallery-media"
           controls
           playsinline
-          preload="metadata"
+          preload="metadata"${poster}
         >
           <source src="${file}" type="video/mp4">
           Your browser does not support video playback.
