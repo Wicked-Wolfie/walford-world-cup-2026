@@ -33,23 +33,42 @@
 
   function renderMedia(item) {
     const file = esc(item.file);
-    const caption = esc(item.caption || item.headline || "Banter Gallery item");
+    const caption = esc(
+      item.caption || item.headline || "Banter Gallery item"
+    );
 
     if (item.type === "video") {
-      const poster = item.poster
-        ? ` poster="${esc(item.poster)}"`
-        : "";
+      const poster = esc(item.poster || "");
 
       return `
-        <video
-          class="banter-gallery-media"
-          controls
-          playsinline
-          preload="metadata"${poster}
+        <button
+          class="banter-gallery-image-button banter-gallery-video-button"
+          type="button"
+          data-banter-video="${file}"
+          data-banter-poster="${poster}"
+          aria-label="Play ${caption}"
         >
-          <source src="${file}" type="video/mp4">
-          Your browser does not support video playback.
-        </video>
+          ${
+            poster
+              ? `
+                <img
+                  class="banter-gallery-media"
+                  src="${poster}"
+                  alt="${caption}"
+                  loading="lazy"
+                >
+              `
+              : `
+                <div class="banter-gallery-video-placeholder">
+                  Video
+                </div>
+              `
+          }
+
+          <span class="banter-gallery-play-button" aria-hidden="true">
+            ▶
+          </span>
+        </button>
       `;
     }
 
@@ -110,9 +129,7 @@
   function renderGallery() {
     const gallery = document.getElementById("banterGalleryGrid");
 
-    if (!gallery) {
-      return;
-    }
+    if (!gallery) return;
 
     const items = Array.isArray(window.WC_BANTER_GALLERY)
       ? window.WC_BANTER_GALLERY
@@ -121,7 +138,7 @@
     if (!items.length) {
       gallery.innerHTML = `
         <p class="banter-gallery-empty">
-          No Banter Gallery images have been added yet.
+          No Banter Gallery items have been added yet.
         </p>
       `;
       return;
@@ -130,36 +147,115 @@
     gallery.innerHTML = items.map(renderCard).join("");
   }
 
-  function openImage(file) {
+  function getModalElements() {
     const modal = document.getElementById("banterGalleryModal");
-    const modalImage = document.getElementById("banterGalleryModalImage");
+    const modalImage = document.getElementById(
+      "banterGalleryModalImage"
+    );
 
-    if (!modal || !modalImage) {
-      return;
-    }
+    return { modal, modalImage };
+  }
+
+  function removeModalVideo() {
+    const video = document.getElementById("banterGalleryModalVideo");
+
+    if (!video) return;
+
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    video.remove();
+  }
+
+  function openImage(file) {
+    const { modal, modalImage } = getModalElements();
+
+    if (!modal || !modalImage) return;
+
+    removeModalVideo();
 
     modalImage.src = file;
+    modalImage.style.display = "block";
+
     modal.classList.remove("hidden");
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("banter-gallery-modal-open");
   }
 
-  function closeImage() {
-    const modal = document.getElementById("banterGalleryModal");
-    const modalImage = document.getElementById("banterGalleryModalImage");
+  function openVideo(file, poster) {
+    const { modal, modalImage } = getModalElements();
 
-    if (!modal || !modalImage) {
-      return;
+    if (!modal || !modalImage) return;
+
+    removeModalVideo();
+
+    modalImage.src = "";
+    modalImage.style.display = "none";
+
+    const video = document.createElement("video");
+
+    video.id = "banterGalleryModalVideo";
+    video.className = "banter-gallery-modal-image";
+    video.controls = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+
+    if (poster) {
+      video.poster = poster;
     }
+
+    const source = document.createElement("source");
+    source.src = file;
+    source.type = "video/mp4";
+
+    video.appendChild(source);
+    modalImage.insertAdjacentElement("afterend", video);
+
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("banter-gallery-modal-open");
+
+    video.load();
+
+    const playAttempt = video.play();
+
+    if (playAttempt && typeof playAttempt.catch === "function") {
+      playAttempt.catch(function () {
+        // Mobile browsers may require the user to press Play.
+      });
+    }
+  }
+
+  function closeMedia() {
+    const { modal, modalImage } = getModalElements();
+
+    if (!modal || !modalImage) return;
+
+    removeModalVideo();
 
     modal.classList.add("hidden");
     modal.setAttribute("aria-hidden", "true");
+
     modalImage.src = "";
+    modalImage.style.display = "block";
+
     document.body.classList.remove("banter-gallery-modal-open");
   }
 
   document.addEventListener("click", function (event) {
-    const imageButton = event.target.closest("[data-banter-full-image]");
+    const videoButton = event.target.closest("[data-banter-video]");
+
+    if (videoButton) {
+      openVideo(
+        videoButton.dataset.banterVideo,
+        videoButton.dataset.banterPoster || ""
+      );
+      return;
+    }
+
+    const imageButton = event.target.closest(
+      "[data-banter-full-image]"
+    );
 
     if (imageButton) {
       openImage(imageButton.dataset.banterFullImage);
@@ -170,13 +266,13 @@
       event.target.closest("[data-banter-modal-close]") ||
       event.target.id === "banterGalleryModal"
     ) {
-      closeImage();
+      closeMedia();
     }
   });
 
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
-      closeImage();
+      closeMedia();
     }
   });
 
