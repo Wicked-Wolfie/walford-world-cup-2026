@@ -21,7 +21,7 @@ window.WC_BANTER_GALLERY = [
   caption: "Dubs celebrates Argentina reaching the World Cup final as Lottie is left with the same old England story.",
   type: "video",
   file: "assets/images/banter/argentina-victory-lottie-dubs.mp4",
-  poster: "assets/images/banter/england-argentina-lottie-dubs-poster.png"
+  poster: "assets/images/banter/argentina-victory-lottie-dubs-poster.png"
 },
 
 {
