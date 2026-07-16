@@ -8,6 +8,21 @@
 */
 
 window.WC_BANTER_GALLERY = [
+  {
+  id: "spain-argentina-final-marnie-dubs",
+  date: "2026-07-19",
+  stage: "World Cup Final Preview",
+  teamA: "Spain",
+  teamB: "Argentina",
+  ownerA: "Marnie",
+  ownerB: "Dubs",
+  score: "",
+  headline: "There Can Only Be One Winner",
+  caption: "Marnie's Spanish conquistadors face Dubs and the World Cup holders. Spain have the trophy in their sights, but Argentina are bringing the beef.",
+  type: "image",
+  file: "assets/images/banter/spain-argentina-final-marnie-dubs.png"
+},
+
 {
   id: "argentina-victory-lottie-dubs",
   date: "2026-07-15",
