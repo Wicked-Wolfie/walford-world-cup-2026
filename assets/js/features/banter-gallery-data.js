@@ -8,6 +8,38 @@
 */
 
 window.WC_BANTER_GALLERY = [
+{
+  id: "argentina-victory-lottie-dubs",
+  date: "2026-07-15",
+  stage: "Semi-final Result",
+  teamA: "England",
+  teamB: "Argentina",
+  ownerA: "Lottie",
+  ownerB: "Dubs",
+  score: "1–2",
+  headline: "Argentina Victory",
+  caption: "Dubs celebrates Argentina reaching the World Cup final as Lottie is left with the same old England story.",
+  type: "video",
+  file: "assets/images/banter/argentina-victory-lottie-dubs.mp4",
+  poster: "assets/images/banter/england-argentina-lottie-dubs-poster.png"
+},
+
+{
+  id: "same-old-story-lottie",
+  date: "2026-07-15",
+  stage: "Semi-final Result",
+  teamA: "England",
+  teamB: "Argentina",
+  ownerA: "Lottie",
+  ownerB: "Dubs",
+  score: "1–2",
+  headline: "Same Old Story",
+  caption: "England lose again as Lottie joins the Losers Arena with the three lions and another £50 gone.",
+  type: "video",
+  file: "assets/images/banter/same-old-story-sos01.mp4",
+  poster: "assets/images/banter/same-old-story-sos01-poster.png"
+},
+
   {
     id: "england-argentina-lottie-dubs",
     date: "2026-07-15",
