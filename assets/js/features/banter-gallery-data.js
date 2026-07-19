@@ -22,6 +22,7 @@ window.WC_BANTER_GALLERY = [
   type: "image",
   file: "assets/images/banter/marnie-dubs-syndicate-champion.png"
 },
+
 {
   id: "spain-world-champions-01",
   date: "2026-07-19",
@@ -35,6 +36,21 @@ window.WC_BANTER_GALLERY = [
   caption: "Spain defeated Argentina 1-0 after extra time to win the 2026 World Cup. Ferran Torres scored the winning goal in the 106th minute.",
   type: "image",
   file: "assets/images/banter/spain-world-champions-01.png"
+},
+
+{
+  id: "golden-boot-syndicate-winners",
+  date: "2026-07-19",
+  stage: "Final Tournament Awards",
+  teamA: "France",
+  teamB: "Argentina",
+  ownerA: "Dan",
+  ownerB: "Dubs",
+  score: "10-8-7",
+  headline: "Golden Boot Winners",
+  caption: "Mbappé wins the Golden Boot for Dan, Messi takes Silver for Dubs, and Bellingham claims Bronze for Lottie.",
+  type: "image",
+  file: "assets/images/banter/golden-boot-syndicate-winners.png"
 },
 
   {
