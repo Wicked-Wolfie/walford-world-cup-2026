@@ -24,7 +24,7 @@ window.WC_BANTER_GALLERY = [
 },
 
 {
-  id: "third-place-01",
+  id: "third-place-02",
   date: "2026-07-18",
   stage: "Third Place Playoff",
   teamA: "England",
@@ -35,7 +35,7 @@ window.WC_BANTER_GALLERY = [
   headline: "A Little Too Late",
   caption: "England finally found their shooting boots, beating France 6-4 in a ten-goal thriller. Saka scored a hat-trick, while Mbappé struck twice to finish the tournament with 10 goals and take the Golden Boot lead.",
   type: "image",
-  file: "assets/images/banter/third-place-01-england-france.png"
+  file: "assets/images/banter/third-place-02-england-france.png"
 },
 
 {
