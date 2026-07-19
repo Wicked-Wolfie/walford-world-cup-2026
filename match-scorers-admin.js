@@ -694,7 +694,7 @@ const knockoutPayload = {
 
 resultError = saveKnockout.error;
 
-if (!resultError && winner) {
+if (!resultError && winner && match_code !== "M103") {
   let nextStage = "Round of 16";
 
   if (/^M(89|90|91|92|93|94|95|96)$/.test(match_code)) {
