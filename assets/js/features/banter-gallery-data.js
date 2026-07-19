@@ -8,6 +8,35 @@
 */
 
 window.WC_BANTER_GALLERY = [
+{
+  id: "marnie-dubs-syndicate-champion",
+  date: "2026-07-19",
+  stage: "Syndicate Final",
+  teamA: "Spain",
+  teamB: "Argentina",
+  ownerA: "Marnie",
+  ownerB: "Dubs",
+  score: "1-0",
+  headline: "Our Syndicate Champion",
+  caption: "Marnie takes the crown with Spain, while Dubs finishes runner-up with Argentina. One winner. One family.",
+  type: "image",
+  file: "assets/images/banter/marnie-dubs-syndicate-champion.png"
+},
+{
+  id: "spain-world-champions-01",
+  date: "2026-07-19",
+  stage: "World Cup Final",
+  teamA: "Spain",
+  teamB: "Argentina",
+  ownerA: "Marnie",
+  ownerB: "Dubs",
+  score: "1-0",
+  headline: "Spain Are World Champions",
+  caption: "Spain defeated Argentina 1-0 after extra time to win the 2026 World Cup. Ferran Torres scored the winning goal in the 106th minute.",
+  type: "image",
+  file: "assets/images/banter/spain-world-champions-01.png"
+},
+
   {
   id: "spain-argentina-final-marnie-dubs",
   date: "2026-07-19",
